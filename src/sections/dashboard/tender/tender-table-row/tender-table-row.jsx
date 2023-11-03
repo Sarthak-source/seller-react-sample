@@ -4,27 +4,31 @@ import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
-import TableRow from '@mui/material/TableRow';
-import Checkbox from '@mui/material/Checkbox';
 import MenuItem from '@mui/material/MenuItem';
+import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({
-  selected,
+export default function TenderTableRow({
+  tenderId,
   name,
-  avatarUrl,
-  company,
-  role,
-  isVerified,
+  location,
+  date,
+  price,
   status,
-  handleClick,
+  tenderType,
+  productType,
+  grade,
+  season,
+  total,
+  sold,
+  balance,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -38,37 +42,39 @@ export default function UserTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
+      <TableRow hover tabIndex={-1} role="checkbox">
+        {/* <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell>
+        </TableCell> */}
 
-        <TableCell component="th" scope="row" padding="none">
+        <TableCell>{tenderId}</TableCell>
+        <TableCell component="th" scope="row" padding="normal" >
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src={avatarUrl} />
+            <Avatar alt={name} src='avatarUrl'/>
             <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>
           </Stack>
         </TableCell>
-
-        <TableCell>{company}</TableCell>
-
-        <TableCell>{role}</TableCell>
-
-        <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
-
+        <TableCell>{location}</TableCell>
+        <TableCell>{date}</TableCell>
+        <TableCell>{price}</TableCell>
         <TableCell>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
         </TableCell>
-
+        <TableCell>{tenderType}</TableCell>
+        <TableCell>{productType}</TableCell>
+        <TableCell>{grade}</TableCell>
+        <TableCell>{season}</TableCell>
+        <TableCell>{total}</TableCell>
+        <TableCell>{sold}</TableCell>
+        <TableCell>{balance}</TableCell>
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
-
       <Popover
         open={!!open}
         anchorEl={open}
@@ -93,13 +99,18 @@ export default function UserTableRow({
   );
 }
 
-UserTableRow.propTypes = {
-  avatarUrl: PropTypes.any,
-  company: PropTypes.any,
-  handleClick: PropTypes.func,
-  isVerified: PropTypes.any,
+TenderTableRow.propTypes = {
+  tenderId: PropTypes.any,
   name: PropTypes.any,
-  role: PropTypes.any,
-  selected: PropTypes.any,
-  status: PropTypes.string,
+  location: PropTypes.any,
+  date: PropTypes.any,
+  price: PropTypes.any,
+  status: PropTypes.any,
+  tenderType: PropTypes.any,
+  productType: PropTypes.any,
+  grade: PropTypes.any,
+  season: PropTypes.any,
+  total: PropTypes.any,
+  sold: PropTypes.any,
+  balance: PropTypes.any,
 };

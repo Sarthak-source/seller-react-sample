@@ -1,17 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { UserView } from 'src/sections/user/view';
+import { DashboardView } from 'src/sections/dashboard';
 
 // ----------------------------------------------------------------------
 
-export default function UserPage() {
+export default function DashboardPage() {
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> Dashboard | Sutra </title>
       </Helmet>
 
-      <UserView />
+      <DashboardView />
     </>
   );
 }

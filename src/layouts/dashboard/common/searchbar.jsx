@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import Slide from '@mui/material/Slide';
 import Input from '@mui/material/Input';
+import Slide from '@mui/material/Slide';
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
@@ -55,7 +55,7 @@ export default function Searchbar() {
       <div>
         {!open && (
           <IconButton onClick={handleOpen}>
-            <Iconify icon="eva:search-fill" />
+            <Iconify icon="eva:search-fill" color='primary.main'/>
           </IconButton>
         )}
 

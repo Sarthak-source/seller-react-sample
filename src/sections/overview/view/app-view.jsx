@@ -8,8 +8,8 @@ import Iconify from 'src/components/iconify';
 
 import AppTasks from '../app-tasks';
 import AppNewsUpdate from '../app-news-update';
-import AppOrderTimeline from '../app-order-timeline';
 import AppCurrentVisits from '../app-current-visits';
+import AppOrderTimeline from '../app-order-timeline';
 import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
 import AppTrafficBySite from '../app-traffic-by-site';

@@ -12,10 +12,13 @@ import Header from './header';
 export default function DashboardLayout({ children }) {
   const [openNav, setOpenNav] = useState(false);
 
+  const handleOpenNav = () => {
+    setOpenNav(prevOpenNav => !prevOpenNav);
+  };
+
   return (
     <>
-      <Header onOpenNav={() => setOpenNav(true)} />
-
+      <Header onOpenNav={handleOpenNav} openNav={openNav} />
       <Box
         sx={{
           minHeight: 1,
@@ -24,7 +27,6 @@ export default function DashboardLayout({ children }) {
         }}
       >
         <Nav openNav={openNav} onCloseNav={() => setOpenNav(false)} />
-
         <Main>{children}</Main>
       </Box>
     </>

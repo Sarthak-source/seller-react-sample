@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 
-import Tooltip from '@mui/material/Tooltip';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 
@@ -11,7 +11,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableToolbar({ numSelected, filterName, onFilterName }) {
+export default function TableToolbar({ numSelected, filterName, onFilterName, label }) {
   return (
     <Toolbar
       sx={{
@@ -33,11 +33,12 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
         <OutlinedInput
           value={filterName}
           onChange={onFilterName}
-          placeholder="Search user..."
+          placeholder={label}
           startAdornment={
             <InputAdornment position="start">
               <Iconify
                 icon="eva:search-fill"
+                color='primary.main'
                 sx={{ color: 'text.disabled', width: 20, height: 20 }}
               />
             </InputAdornment>
@@ -54,7 +55,7 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
       ) : (
         <Tooltip title="Filter list">
           <IconButton>
-            <Iconify icon="ic:round-filter-list" />
+            <Iconify icon="ic:round-filter-list" color='primary.main'/>
           </IconButton>
         </Tooltip>
       )}
@@ -62,8 +63,9 @@ export default function UserTableToolbar({ numSelected, filterName, onFilterName
   );
 }
 
-UserTableToolbar.propTypes = {
+TableToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
+  label: PropTypes.string,
 };

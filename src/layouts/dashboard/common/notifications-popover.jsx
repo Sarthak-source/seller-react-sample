@@ -6,13 +6,13 @@ import { faker } from '@faker-js/faker';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import Badge from '@mui/material/Badge';
-import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
 import Popover from '@mui/material/Popover';
-import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -101,7 +101,7 @@ export default function NotificationsPopover() {
     <>
       <IconButton color={open ? 'primary' : 'default'} onClick={handleOpen}>
         <Badge badgeContent={totalUnRead} color="error">
-          <Iconify width={24} icon="solar:bell-bing-bold-duotone" />
+          <Iconify width={24} icon="solar:bell-bing-bold-duotone" color='primary.main'/>
         </Badge>
       </IconButton>
 

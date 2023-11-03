@@ -21,18 +21,16 @@ import NotificationsPopover from './common/notifications-popover';
 
 // ----------------------------------------------------------------------
 
-export default function Header({ onOpenNav }) {
+export default function Header({ onOpenNav, openNav }) {
   const theme = useTheme();
 
   const lgUp = useResponsive('up', 'lg');
 
   const renderContent = (
     <>
-      {!lgUp && (
-        <IconButton onClick={onOpenNav} sx={{ mr: 1 }}>
-          <Iconify icon="eva:menu-2-fill" />
-        </IconButton>
-      )}
+      <IconButton onClick={onOpenNav} sx={{ mr: 1 }}>
+        <Iconify icon="eva:menu-2-fill" color='primary.main' />
+      </IconButton>
 
       <Searchbar />
 
@@ -59,7 +57,7 @@ export default function Header({ onOpenNav }) {
           duration: theme.transitions.duration.shorter,
         }),
         ...(lgUp && {
-          width: `calc(100% - ${NAV.WIDTH + 1}px)`,
+          width: openNav ? `calc(100% - ${NAV.WIDTH}px)` : "100%",
           height: HEADER.H_DESKTOP,
         }),
       }}
@@ -78,4 +76,5 @@ export default function Header({ onOpenNav }) {
 
 Header.propTypes = {
   onOpenNav: PropTypes.func,
+  openNav: PropTypes.bool,
 };
