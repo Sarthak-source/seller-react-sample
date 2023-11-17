@@ -1,6 +1,6 @@
 
 import { format, parseISO } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import { useRouter } from 'src/routes/hooks';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
 import TableEmptyRows from '../table-empty-rows';
 import SharedTableHead from '../table-head';
@@ -28,7 +29,10 @@ import TenderTableRow from './tender-table-row/tender-table-row';
 
 
 export default function TenderView() {
+    const router = useRouter();
+
     const [page, setPage] = useState(1);
+    const [pagination, setPagination] = useState(1);
     const [activeStep, setActiveStep] = useState(0);
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
@@ -36,32 +40,57 @@ export default function TenderView() {
     const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [tenderData, setTenderData] = useState([]);
-    const steps = ['All', 'Pending Approval', 'Live', 'Rejected', 'Closed', 'Completed'];
+    const [totalDataCount, setTotalDataCount] = useState(0);
+    const steps = useMemo(() => ['All', 'Pending Approval', 'Live', 'Rejected', 'Closed', 'Completed'], []);
+    const querySteps = useMemo(() => ['', 'Added', 'Active', 'Rejected', 'Close', 'Completed'], []);
+    const totalPages = Math.ceil(totalDataCount / rowsPerPage);
 
+    const handleOpenTender = () => {
+        router.replace('/home/tender-create'); 
+      };
 
-
+    const headerRow = [
+        { id: 'tenderId', label: 'Tender no' },
+        { id: 'name', label: 'Mill name' },
+        { id: 'location', label: 'Location' },
+        { id: 'date', label: 'Date' },
+        { id: 'price', label: 'Price/Unit' },
+        { id: 'status', label: 'Status' },
+        { id: 'tenderType', label: 'Tender type' },
+        { id: 'productType', label: 'Product' },
+        { id: 'grade', label: 'Grade' },
+        { id: 'season', label: 'Season' },
+        { id: 'total', label: 'Total' },
+        { id: 'sold', label: 'Sold' },
+        { id: 'balance', label: 'Balance', align: 'center' },
+        { id: '' },
+    ]
     const handleStepClick = (index) => {
         console.log(activeStep);
+        setPage(1)
+        setTenderData([]);
         setActiveStep(index);
     };
 
-
-    console.log(tenderData);
-
-    const fetchTenderData = async (tenderPage, status) => {
-        try {
-            const data = await NetworkRepository.sellerTender(tenderPage, status);
-            setTenderData(prevData => [...prevData, ...data.results]); // Add new data to existing data
-        } catch (error) {
-            console.error('Error fetching tender data:', error);
-        }
-    };
-
-
-
     useEffect(() => {
-        fetchTenderData(page, '');
-    }, [page]);
+        const fetchTenderData = async (tenderPage, status) => {
+            try {
+                const data = await NetworkRepository.sellerTender(pagination, status);
+                setTotalDataCount(data.count);
+                console.log('pagination', pagination, 'tenderPage', tenderPage)
+
+                if (tenderPage > pagination) {
+                    setPagination(tenderPage)
+                }
+                setTenderData(prevData => [...prevData, ...data.results]);
+
+            } catch (error) {
+                console.error('Error fetching tender data:', error);
+            }
+        };
+
+        fetchTenderData(page, querySteps[activeStep]);
+    }, [page, activeStep, querySteps, pagination]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -72,15 +101,12 @@ export default function TenderView() {
     };
 
     const handleChangePage = (event, newPage) => {
-        console.log('handleChangePage', newPage)
         setPage(newPage);
     };
 
     const handleChangeRowsPerPage = (event) => {
-
-
         const newRowsPerPage = parseInt(event.target.value, 10);
-        if (newRowsPerPage === 15 || newRowsPerPage === 30 || newRowsPerPage === 45) {
+        if (newRowsPerPage === 25 || newRowsPerPage === 50 || newRowsPerPage === 100) {
             setRowsPerPage(newRowsPerPage);
         }
     };
@@ -100,14 +126,71 @@ export default function TenderView() {
 
     const notFound = !dataFiltered.length && !!filterName;
 
+    const generateLocation = (location, stateName) => `${location}, ${stateName.charAt(0).toUpperCase() + stateName.substring(1).toLowerCase()}`;
+    const formatPrice = (price, unit) => `₹ ${price} ${unit}`;
+    const getPropertyValue = (properties, index, property, defaultValue) =>
+        properties.length > index ? properties[index][property] : defaultValue;
+
+
+
+    const dataFormated = dataFiltered.map(row => ({
+        key: row.id,
+        tenderId: row.id,
+        name: row.mill.name,
+        location: generateLocation(row.mill.location, row.mill.state.name),
+        date: format(parseISO(row.date), 'MM/dd/yyyy'),
+        price: formatPrice(row.price, row.product.product_type.unit),
+        status: row.status,
+        tenderType: row.tender_type,
+        productType: row.product.product_type.product_type,
+        grade: getPropertyValue(row.product.properties, 0, 'label', 'Not given'),
+        season: getPropertyValue(row.product.properties, 0, 'value', 'Not given'),
+        total: row.qty,
+        sold: row.approved_qty,
+        balance: row.available_qty,
+    }));
+
+    const handleExportCSV = () => {
+        const dataToExport = [
+            headerRow.map((row) =>
+                row.label
+            ),
+            ...dataFormated.map((row) => [
+                row.tenderId,
+                row.name,
+                row.location.replace(/,/g, '-'),
+                row.date,
+                row.price,
+                row.status,
+                row.tenderType,
+                row.productType,
+                row.grade,
+                row.season,
+                row.total,
+                row.sold,
+                row.balance,
+            ]),
+        ];
+
+        const csvContent =
+            `data:text/csv;charset=utf-8,${dataToExport.map((row) => row.join(',')).join('\n')}`;
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'tender_data.csv');
+        document.body.appendChild(link);
+        link.click();
+    };
 
     return (
         <>
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                 <Typography variant="h4">Tenders</Typography>
-                <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+                <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenTender}>
                     Add tenders
                 </Button>
+
             </Stack>
             <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
                 <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
@@ -125,7 +208,8 @@ export default function TenderView() {
 
             <Card>
                 <TableToolbar
-                    numSelected={selected.length}
+                    numSelected={0}
+                    onDownload={handleExportCSV}
                     filterName={filterName}
                     onFilterName={handleFilterByName}
                     label='Search tenders..'
@@ -140,51 +224,33 @@ export default function TenderView() {
                                 rowCount={dataFiltered.length}
                                 numSelected={selected.length}
                                 onRequestSort={handleSort}
-
-                                headLabel={[
-                                    { id: 'tenderId', label: 'Tender no' },
-                                    { id: 'name', label: 'Mill name' },
-                                    { id: 'location', label: 'Location' },
-                                    { id: 'date', label: 'Date' },
-                                    { id: 'price', label: 'Price/Unit' },
-                                    { id: 'status', label: 'Status' },
-                                    { id: 'tenderType', label: 'Tender type' },
-                                    { id: 'productType', label: 'Product' },
-                                    { id: 'grade', label: 'Grade' },
-                                    { id: 'season', label: 'Season' },
-                                    { id: 'total', label: 'Total' },
-                                    { id: 'sold', label: 'Sold' },
-                                    { id: 'balance', label: 'Balance', align: 'center' },
-                                    { id: '' },
-                                ]}
+                                headLabel={headerRow}
                             />
                             <TableBody>
-                                {dataFiltered
-                                    .slice((page-1) * rowsPerPage, (page) * rowsPerPage + rowsPerPage)
+                                {dataFormated
+                                    .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                     .map((row) => (
-
                                         <TenderTableRow
                                             key={row.id}
-                                            tenderId={row.id}
-                                            name={row.mill.name}
-                                            location={`${row.mill.location},\n${row.mill.state.name.charAt(0).toUpperCase() + row.mill.state.name.substring(1).toLowerCase()}`}
-                                            date={format(parseISO(row.date), 'MM/dd/yyyy')}
-                                            price={`₹ ${row.price} ${row.product.product_type.unit}`}
+                                            tenderId={row.tenderId}
+                                            name={row.name}
+                                            location={row.location}
+                                            date={row.date}
+                                            price={row.price}
                                             status={row.status}
-                                            tenderType={row.tender_type}
-                                            productType={row.product.product_type.product_type}
-                                            grade={row.product.properties.length > 0 ? row.product.properties[0].label : 'Not given'}
-                                            season={row.product.properties.length > 0 ? row.product.properties[0].value : 'Not given'}
-
-                                            total={row.qty}
-                                            sold={row.approved_qty}
-                                            balance={row.available_qty}
+                                            tenderType={row.tenderType}
+                                            productType={row.productType}
+                                            grade={row.grade}
+                                            season={row.season}
+                                            total={row.total}
+                                            sold={row.sold}
+                                            balance={row.balance}
                                         />
                                     ))}
 
                                 <TableEmptyRows
                                     height={77}
-                                    emptyRows={emptyRows(page , rowsPerPage/15, dataFiltered.length)}
+                                    emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
                                 />
 
                                 {notFound && <TableNoData query={filterName} />}
@@ -199,7 +265,8 @@ export default function TenderView() {
                     count={dataFiltered.length}
                     rowsPerPage={rowsPerPage}
                     onPageChange={handleChangePage}
-                    
+                    nextIconButtonProps={{ disabled: page >= totalPages }}
+                    backIconButtonProps={{ disabled: !(page > 1) }}
                     rowsPerPageOptions={[15, 30, 45]}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />

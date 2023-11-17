@@ -1,75 +1,83 @@
-import { useState } from 'react';
-
+import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import LoadingButton from '@mui/lab/LoadingButton';
+
 import { alpha, useTheme } from '@mui/material/styles';
-import InputAdornment from '@mui/material/InputAdornment';
-
-import { useRouter } from 'src/routes/hooks';
-
-import { bgGradient } from 'src/theme/css';
-
+import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import NetworkRepository from 'src/app-utils/network_repository';
 import Logo from 'src/components/logo';
-import Iconify from 'src/components/iconify';
-
-// ----------------------------------------------------------------------
+import { bgGradient } from 'src/theme/css';
+import OTPComponent from './component/otp-component';
 
 export default function LoginView() {
   const theme = useTheme();
+  const [showOpt, setShowOtp] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState('');
 
-  const router = useRouter();
+  const handlePhoneNumberChange = (event) => {
+    setPhoneNumber(event.target.value);
+  };
 
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleClick = () => {
-    router.push('/dashboard');
+  const sendOTP = async () => {
+    try {
+      if (phoneNumber.trim() === '' || phoneNumber.length < 10) {
+        alert('Please enter a valid phone number.');
+        return;
+      }
+      await NetworkRepository.userLogin(phoneNumber);
+      setShowOtp(false);
+    } catch (error) {
+      alert(error.toString());
+    }
   };
 
   const renderForm = (
     <>
-      <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
-
-        <TextField
-          name="password"
-          label="Password"
-          type={showPassword ? 'text' : 'password'}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
+      <Stack spacing={3} pb={1} pt={1}>
+        {!showOpt &&
+          <Typography variant="body2" sx={{ pt: 5 }}>
+            OTP has been sent to {phoneNumber}
+          </Typography>}
       </Stack>
-
-      <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-        <Link variant="subtitle2" underline="hover">
-          Forgot password?
-        </Link>
+      <Stack spacing={3} pb={showOpt && 5} pt={showOpt && 5}>
+        {showOpt ? <TextField
+          name="phone"
+          label="Phone number"
+          onChange={handlePhoneNumberChange}
+          inputProps={{ maxLength: 10 }} /> :
+          <OTPComponent phoneNumber={phoneNumber} />}
       </Stack>
-
-      <LoadingButton
+      {showOpt ? (<Typography variant="body2" sx={{ mb: 5 }}>
+        Don’t have an account?
+        <RouterLink to="/sign-up" style={{ textDecoration: 'none' }}>  {/* Use RouterLink from react-router-dom */}
+          <Link variant="subtitle2" sx={{ ml: 0.5 }}>
+            Get started
+          </Link>
+        </RouterLink>
+      </Typography>) : (
+        <Typography variant="body2" sx={{ mb: 5 }} >
+          OTP sent
+          <RouterLink to="/sign-up" style={{ textDecoration: 'none' }}>  {/* Use RouterLink from react-router-dom */}
+            <Link variant="subtitle2" sx={{ ml: 0.5 }}>
+              Get started
+            </Link>
+          </RouterLink>
+        </Typography>
+      )}
+      {showOpt && <LoadingButton
         fullWidth
         size="large"
         type="submit"
         variant="contained"
-        color="inherit"
-        onClick={handleClick}
+        onClick={sendOTP}
       >
         Login
-      </LoadingButton>
+      </LoadingButton>}
     </>
   );
 
@@ -99,53 +107,7 @@ export default function LoginView() {
             maxWidth: 420,
           }}
         >
-          <Typography variant="h4">Sign in to Minimal</Typography>
-
-          <Typography variant="body2" sx={{ mt: 2, mb: 5 }}>
-            Don’t have an account?
-            <Link variant="subtitle2" sx={{ ml: 0.5 }}>
-              Get started
-            </Link>
-          </Typography>
-
-          <Stack direction="row" spacing={2}>
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:google-fill" color="#DF3E30" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:facebook-fill" color="#1877F2" />
-            </Button>
-
-            <Button
-              fullWidth
-              size="large"
-              color="inherit"
-              variant="outlined"
-              sx={{ borderColor: alpha(theme.palette.grey[500], 0.16) }}
-            >
-              <Iconify icon="eva:twitter-fill" color="#1C9CEA" />
-            </Button>
-          </Stack>
-
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              OR
-            </Typography>
-          </Divider>
-
+          <Typography variant="h4">Sign in to Sutra</Typography>
           {renderForm}
         </Card>
       </Stack>

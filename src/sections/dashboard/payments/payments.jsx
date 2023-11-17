@@ -1,6 +1,11 @@
 
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { format, parseISO } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -29,38 +34,78 @@ import PaymentsTableRow from './payment-table-row/payment-table-row';
 
 export default function PaymentsView() {
     const [page, setPage] = useState(1);
+    const [pagination, setPagination] = useState(1);
+
     const [activeStep, setActiveStep] = useState(0);
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
     const [filterName, setFilterName] = useState('');
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const steps = ['All', 'Verified', 'Returned', 'Cancelled'];
+    const [rowsPerPage, setRowsPerPage] = useState(15);
     const [paymentsData, setPaymentsData] = useState([]);
+    const steps = useMemo(() => ['All', 'Verified', 'Returned', 'Cancelled'], []);
+    const querySteps = useMemo(() => ['', 'Verified', 'Returned', 'Cancel'], []);
+    const [totalDataCount, setTotalDataCount] = useState(0);
 
+    const [isDateOpen, setIsDateOpen] = useState(false); // Initialize isOpen state
+    const [selectedDate, setSelectedDate] = useState('');
+    const totalPages = Math.ceil(totalDataCount / rowsPerPage);
+
+    const headerRow = [
+        { id: 'paymentsId', label: 'Payments ID' },
+        { id: 'amount', label: 'Amount' },
+        { id: 'status', label: 'Status' },
+        { id: 'millName', label: 'Mill Name' },
+        { id: 'tradeName', label: 'Trader Name' },
+        { id: 'date', label: 'Date' },
+        { id: 'refNo', label: 'Referce no' },
+        { id: '' },
+    ]
 
     const handleStepClick = (index) => {
         console.log(activeStep);
+        setPage(1)
+        setPaymentsData([]);
         setActiveStep(index);
     };
 
+    const handleDateChange = (date) => {
+        setPaymentsData([]);
+        const formattedDate = date.toDate().toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+        setSelectedDate(formattedDate);
+    };
+
+    const openDate = () => {
+        setIsDateOpen(!isDateOpen); // Toggle the value of isDateOpen
+    }
 
     console.log(paymentsData);
 
-    const fetchPaymentsData = async (paymentsPage, status) => {
-        try {
-            const data = await NetworkRepository.getPayments('', paymentsPage, status);
-            console.log('here', data.results)
-            setPaymentsData(data.results);
-        } catch (error) {
-            console.error('Error fetching payments data:', error);
-        }
-    };
-
 
     useEffect(() => {
-        fetchPaymentsData(page, '');
-    }, [page]);
+        const fetchPaymentsData = async (paymentsPage, status) => {
+            try {
+
+
+
+                const data = await NetworkRepository.getPayments(selectedDate, paymentsPage, status);
+                setTotalDataCount(data.count);
+
+                console.log('here', data.results)
+                if (paymentsPage > pagination) {
+                    setPagination(paymentsPage)
+                }
+                setPaymentsData(prevData => [...prevData, ...data.results]);
+            } catch (error) {
+                console.error('Error fetching payments data:', error);
+            }
+        };
+        fetchPaymentsData(page, querySteps[activeStep]);
+    }, [page, activeStep, querySteps, pagination, selectedDate]);
 
 
     const handleSort = (event, id) => {
@@ -76,7 +121,7 @@ export default function PaymentsView() {
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setPage(0);
+
         const newRowsPerPage = parseInt(event.target.value, 10);
         if (newRowsPerPage === 25 || newRowsPerPage === 50 || newRowsPerPage === 100) {
             setRowsPerPage(newRowsPerPage);
@@ -84,7 +129,7 @@ export default function PaymentsView() {
     };
 
     const handleFilterByName = (event) => {
-        setPage(0);
+        setPage(1);
         setFilterName(event.target.value);
     };
 
@@ -95,15 +140,68 @@ export default function PaymentsView() {
         filterName,
     });
 
+    const dataFormatted = dataFiltered.map(row => ({
+        paymentsId: row.id,
+        amount: row.amount,
+        status: row.status,
+        millName: row.mill.name,
+        tradeName: row.trader.name,
+        date: format(parseISO(row.payment_date), 'MM/dd/yyyy'),
+        refNo: row.ref_no,
+    }));
+
+    // ...
+
+    const handleExportCSV = () => {
+        const dataToExport = [
+            headerRow.map((row) => row.label),
+            ...dataFormatted.map((row) => [
+                row.paymentsId,
+                row.amount,
+                row.status,
+                row.millName,
+                row.tradeName,
+                row.date,
+                row.refNo,
+            ]),
+        ];
+
+        const csvContent = `data:text/csv;charset=utf-8,${dataToExport.map((row) => row.join(',')).join('\n')}`;
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'payments_data.csv');
+        document.body.appendChild(link);
+        link.click();
+    };
+
+
     const notFound = !dataFiltered.length && !!filterName;
+
+    console.log('selectedDate', 'jhjhjh', selectedDate)
 
     return (
         <>
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                 <Typography variant="h4">Payments</Typography>
-                <Button variant="contained" startIcon={<Iconify icon="eva:calendar-fill" />}>
-                    Find payments
-                </Button>
+
+                {isDateOpen ?
+                    (
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer components={['DatePicker']}>
+                                <DatePicker open onClose={openDate} value={selectedDate} label="Select date" onChange={handleDateChange} />
+                            </DemoContainer>
+                        </LocalizationProvider>
+                    ) : (
+                        <Button variant="contained"
+                            onChange={handleDateChange}
+                            onClick={openDate}
+                            startIcon={<Iconify icon="eva:calendar-fill" />}>
+                            {selectedDate === '' ? 'Find payments' : selectedDate}
+                        </Button>
+                    )
+                }
             </Stack>
             <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
                 <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
@@ -124,6 +222,7 @@ export default function PaymentsView() {
                 <TableToolbar
                     numSelected={selected.length}
                     filterName={filterName}
+                    onDownload={handleExportCSV}
                     onFilterName={handleFilterByName}
                     label='Search payments..'
                 />
@@ -138,36 +237,27 @@ export default function PaymentsView() {
                                 numSelected={selected.length}
                                 onRequestSort={handleSort}
 
-                                headLabel={[
-                                    { id: 'paymentsId', label: 'Payments ID' },
-                                    { id: 'amount', label: 'Amount' },
-                                    { id: 'status', label: 'Status' },
-                                    { id: 'millName', label: 'Mill Name' },
-                                    { id: 'tradeName', label: 'Trader Name' },
-                                    { id: 'date', label: 'Date' },
-                                    { id: 'refNo', label: 'Referce no' },
-                                    { id: '' },
-                                ]}
+                                headLabel={headerRow}
                             />
                             <TableBody>
-                                {dataFiltered
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                {dataFormatted
+                                    .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                     .map((row) => (
                                         <PaymentsTableRow
                                             key={row.id}
-                                            paymentsId={row.id}
+                                            paymentsId={row.paymentsId}
                                             amount={row.amount}
                                             status={row.status}
-                                            millName={row.mill.name}
-                                            tradeName={row.trader.name}
-                                            date={format(parseISO(row.payment_date), 'MM/dd/yyyy')}
-                                            refNo={row.ref_no}
+                                            millName={row.millName}
+                                            tradeName={row.tradeName}
+                                            date={row.date}
+                                            refNo={row.refNo}
                                         />
                                     ))}
 
                                 <TableEmptyRows
                                     height={77}
-                                    emptyRows={emptyRows(page, rowsPerPage, paymentsData.length)}
+                                    emptyRows={emptyRows(page, rowsPerPage / 15, paymentsData.length)}
                                 />
 
                                 {notFound && <TableNoData query={filterName} />}
@@ -182,7 +272,9 @@ export default function PaymentsView() {
                     count={paymentsData.length}
                     rowsPerPage={rowsPerPage}
                     onPageChange={handleChangePage}
-                    rowsPerPageOptions={[25, 50, 100]}
+                    nextIconButtonProps={{ disabled: page >= totalPages }}
+                    backIconButtonProps={{ disabled: !(page > 1) }}
+                    rowsPerPageOptions={[15, 30, 45]}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Card>

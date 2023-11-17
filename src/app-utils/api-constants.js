@@ -70,5 +70,5 @@ const ApiAppConstants = {
     gatePass: 'gatepass/',
 };
 
-export { ApiAppConstants, auth };
+export { ApiAppConstants, auth, ip };
 

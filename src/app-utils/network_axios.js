@@ -1,7 +1,9 @@
 import axios from 'axios';
+import { ApiAppConstants } from './api-constants';
 
-const NetworkaxiosOptions = {
-    endPointUrl: null,
+
+const NetworkAxiosOptions = {
+    endPointUrl: ApiAppConstants.apiEndPoint,
     cacheOptions: null,
 
     async getHeaders () {
@@ -52,6 +54,11 @@ const NetworkaxiosOptions = {
         }
     },
 
+    async initialize() {
+        // This method initializes the axiosOptions
+        await this.setDynamicHeader(ApiAppConstants.apiEndPoint);
+    },
+
     async getAxiosHttpMethod ({ url, header }) {
         console.log(url);
         try {
@@ -77,6 +84,7 @@ const NetworkaxiosOptions = {
 
     async postAxiosHttpMethod ({ url, data, header }) {
         try {
+            console.log('hereeweee',`${this.endPointUrl}${url}`)
             const response = await this.axiosOptions.post(`${this.endPointUrl}${url}`, data, { headers: header || this.cacheOptions });
             return response.data;
         } catch (error) {
@@ -174,4 +182,4 @@ const NetworkaxiosOptions = {
 
 };
 
-export default NetworkaxiosOptions;
+export default NetworkAxiosOptions;

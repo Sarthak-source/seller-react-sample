@@ -1,17 +1,15 @@
 import { useState } from 'react';
 
+import Container from '@mui/material/Container';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import Container from '@mui/material/Container';
 
-import OrdersView from './orders/orders';
-import TenderView from './tender/tender';
-import PaymentsView from './payments/payments';
 import DispatchesView from './dispatches/dispatches';
+import OrdersView from './orders/orders';
+import PaymentsView from './payments/payments';
+import TenderView from './tender/tender';
 
 // ----------------------------------------------------------------------
-
-
 
 export default function DashboardView() {
   const [tab, setTab] = useState(0);

@@ -9,7 +9,8 @@ import TableRow from '@mui/material/TableRow';
 
 import Iconify from 'src/components/iconify';
 
-export default function DispatchTableRow({
+export default function DoOrderTableRow({
+    doNo,
     orderNo,
     invoiceNo,
     millName,
@@ -39,6 +40,7 @@ export default function DispatchTableRow({
 
                 <TableCell>{orderNo}</TableCell>
                 <TableCell>{invoiceNo}</TableCell>
+                 <TableCell>{doNo}</TableCell>
                 <TableCell>{millName}</TableCell>
                 <TableCell>{name}</TableCell>
                 <TableCell>{date}</TableCell>
@@ -78,7 +80,8 @@ export default function DispatchTableRow({
     );
 }
 
-DispatchTableRow.propTypes = {
+DoOrderTableRow.propTypes = {
+    doNo: PropTypes.string,
     orderNo: PropTypes.string,
     invoiceNo: PropTypes.string,
     millName: PropTypes.string,

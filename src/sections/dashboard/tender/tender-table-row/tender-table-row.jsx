@@ -1,17 +1,20 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
-import Stack from '@mui/material/Stack';
+
 import Avatar from '@mui/material/Avatar';
-import Popover from '@mui/material/Popover';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Popover from '@mui/material/Popover';
+import Stack from '@mui/material/Stack';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+import Label from 'src/components/label';
+
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +33,13 @@ export default function TenderTableRow({
   sold,
   balance,
 }) {
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(null);
+
+  const handleOpenDetails = () => {
+    navigate(`/home/tender-details/${tenderId}`); // Use navigate to go to the details page
+  };
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -47,10 +56,10 @@ export default function TenderTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell> */}
 
-        <TableCell>{tenderId}</TableCell>
+        <TableCell onClick={handleOpenDetails}>{tenderId}</TableCell>
         <TableCell component="th" scope="row" padding="normal" >
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={name} src='avatarUrl'/>
+            <Avatar alt={name} src='avatarUrl' />
             <Typography variant="subtitle2" noWrap>
               {name}
             </Typography>

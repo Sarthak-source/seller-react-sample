@@ -1,20 +1,20 @@
 import { faker } from '@faker-js/faker';
 
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Unstable_Grid2';
 
 import Iconify from 'src/components/iconify';
 
-import AppTasks from '../app-tasks';
-import AppNewsUpdate from '../app-news-update';
+import AppConversionRates from '../app-conversion-rates';
+import AppCurrentSubject from '../app-current-subject';
 import AppCurrentVisits from '../app-current-visits';
+import AppNewsUpdate from '../app-news-update';
 import AppOrderTimeline from '../app-order-timeline';
+import AppTasks from '../app-tasks';
+import AppTrafficBySite from '../app-traffic-by-site';
 import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
-import AppTrafficBySite from '../app-traffic-by-site';
-import AppCurrentSubject from '../app-current-subject';
-import AppConversionRates from '../app-conversion-rates';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ export default function AppView() {
         Hi, Welcome back 👋
       </Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={5}>
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
             title="Weekly Sales"

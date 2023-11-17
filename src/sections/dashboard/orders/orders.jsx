@@ -210,8 +210,8 @@ export default function OrdersView() {
                                             tenderType={
                                                 row.tender_head.tender_type}
                                             productType={row.tender_head.product.product_type.product_type}
-                                            grade={row.tender_head.product.properties.length > 0 ? row.tender_head.product.properties[0].value : 'Not given'}
-                                            season={row.tender_head.product.properties.length > 0 ? row.tender_head.product.properties[1].value : 'Not given'}
+                                            grade={row.tender_head.product.properties.length > 0 ? row.tender_head.product.properties[0].label : 'Not given'}
+                                            season={row.tender_head.product.properties.length > 0 ? row.tender_head.product.properties[0].value : 'Not given'}
                                             sale={formatQty(row.qty)}
                                             loading={`${formatQuantity(row, 'yet_to_load', row.yet_to_load)} ${row.tender_head.product.product_type.unit}`}
                                             dispatched={`${formatQuantity(row, 'dispatched_qty', row.yet_to_load)} ${row.tender_head.product.product_type.unit}`}
@@ -236,6 +236,8 @@ export default function OrdersView() {
                     component="div"
                     count={ordersData.length}
                     rowsPerPage={rowsPerPage}
+                    nextIconButtonProps={{ disabled: true }} // Disable forward button
+                    backIconButtonProps={{ disabled: true }}
                     onPageChange={handleChangePage}
                     rowsPerPageOptions={[25, 50, 100]}
                     onRowsPerPageChange={handleChangeRowsPerPage}
