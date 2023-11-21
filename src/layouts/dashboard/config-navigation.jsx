@@ -33,9 +33,14 @@ const navConfig = [
     icon: icon('ic_lock'),
   },
   {
-    title: 'Not found',
-    path: '/404',
-    icon: icon('ic_disabled'),
+    title: 'traders',
+    path: '/home/traders',
+    icon: icon('ic_trading'),
+  },
+  {
+    title: 'profile',
+    path: '/home/profile',
+    icon: icon('ic_user'),
   },
   {
     title: 'Not found',

@@ -1,20 +1,17 @@
 import {
     Box,
     Card,
-    Paper,
     Table,
     TableBody,
     TableCell,
     TableContainer,
+    TableHead,
     TableRow,
     Typography
 } from '@mui/material';
-
-
-
 import PropTypes from 'prop-types';
 
-export default function HeaderCard({ data }) {
+const HeaderCard = ({ data }) => {
     const exName = data.visibility.map(visibility => `, ${visibility}`).join('');
 
     const statusColors = {
@@ -36,7 +33,6 @@ export default function HeaderCard({ data }) {
     return (
         <Card
             style={{
-               
                 boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
             }}
         >
@@ -82,47 +78,55 @@ export default function HeaderCard({ data }) {
                 </Box>
             </Box>
 
-            <Box
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    padding: '6px 10px',
-                }}
-            >
-                <Typography variant="subtitle1">
-                    {data.product.product_type.product_type}
-                </Typography>
-                <Typography variant="subtitle1">
-                    {data.product.code}
-                </Typography>
-
-                <Typography variant="subtitle1">
-                    {data.sold}
-                </Typography>
-                <Typography variant="subtitle1">
-                    {parseFloat(data.qty).toFixed(2)} {data.product.product_type.unit}
-                </Typography>
-            </Box>
-
-
-            <Box style={{ padding: '6px 10px' }}>
-
-                <TableContainer component={Paper}>
-                    <Table>
-
-                        <TableBody>
-                            {data.product.properties.map((property, index) => (
+            <TableContainer>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>
+                                Product Type
+                            </TableCell>
+                            <TableCell>
+                               Product Code
+                            </TableCell>
+                            <TableCell>
+                                Sold
+                            </TableCell>
+                            <TableCell>
+                                Quantity
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell>
+                                
+                                    {data.product.product_type.product_type}
+                               
+                            </TableCell>
+                            <TableCell>
+                                {data.product.code}
+                            </TableCell>
+                            <TableCell>
+                                {data.sold === null ? 'None' : data.sold}
+                            </TableCell>
+                            <TableCell>
+                                
+                                    {parseFloat(data.qty).toFixed(2)} {data.product.product_type.unit}
+                                
+                            </TableCell>
+                        </TableRow>
+                        {data.product.properties.map((property, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{property.label}</TableCell>
                                     <TableCell>{property.value}</TableCell>
                                 </TableRow>
                             ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Box>
+                        {/* Add more rows if needed */}
+                    </TableBody>
+                </Table>
+            </TableContainer>
 
-            {/* Insert your table here */}
+            
 
             <Box
                 style={{
@@ -144,6 +148,7 @@ export default function HeaderCard({ data }) {
                         {data.seller}
                     </Typography>
                 </Box>
+
                 {data.is_exclusive && (
                     <Box
                         style={{
@@ -152,7 +157,7 @@ export default function HeaderCard({ data }) {
                         }}
                     >
                         <Typography variant="caption" color="textSecondary">
-                            Exclusive to :
+                            Exclusive to:
                         </Typography>
                         <Typography style={{ textAlign: 'end' }}>
                             {exName.substring(2).replaceAll(', ', '\n')}
@@ -166,8 +171,10 @@ export default function HeaderCard({ data }) {
             </Box>
         </Card>
     );
-}
+};
 
 HeaderCard.propTypes = {
     data: PropTypes.any,
 };
+
+export default HeaderCard;

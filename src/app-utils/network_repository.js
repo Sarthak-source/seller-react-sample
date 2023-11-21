@@ -1,13 +1,27 @@
 import { toast } from 'react-toastify';
 
+import store from '../redux/configure-store';
 import { ApiAppConstants, auth } from './api-constants';
 import NetworkAxios from './network_axios';
 
-const sellerId = localStorage.getItem('sellerID') ?? "85";
+
+function selectedUser() {
+  const state = store.getState();
+  if (state.user && state.user.selectedUser) {
+    console.log('current user', state.user.selectedUser.id);
+    return state.user.selectedUser.id;
+  }
+  console.error('User or selectedUser not found in state');
+  return null;
+}
+
+
+selectedUser()
+
+const sellerId = selectedUser() ?? "85";
 const selectedMillId = localStorage.getItem('selectedMillId') ?? '';
 
 const NetworkRepository = {
-
   userSignup: async (name, password, number) => {
     try {
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
@@ -87,6 +101,7 @@ const NetworkRepository = {
 
   sellerTender: async (page, status) => {
     try {
+      console.log('sellerId',sellerId)
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.sellerTender}?seller=${sellerId}&status=${status}&page=${page}&mill_pk=${localStorage.getItem('selectedMillId') || ''}`,
         header: { authorization: auth }
@@ -109,7 +124,7 @@ const NetworkRepository = {
   },
 
 
-  getPayments: async (date, page , status ) => {
+  getPayments: async (date, page, status) => {
     try {
       let paymentsUrl = `${ApiAppConstants.payments}?seller=${sellerId}&mill_pk=${selectedMillId ?? ''}&page=${page}&status=${status}`;
 
@@ -259,7 +274,26 @@ const NetworkRepository = {
       console.error('Error:', error);
       throw error.toString();
     }
+  },
+
+  sellerTraders: async () => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.sellerTraders}?seller=${sellerId}`,
+        header: { authorization: auth },
+      });
+
+      console.log('Seller Tender Response:', apiResponse);
+
+      return apiResponse;
+    } catch (e) {
+      console.error('Error:', e);
+
+      const er = e;
+      return er.detail.toString();
+    }
   }
+
 }
 
 

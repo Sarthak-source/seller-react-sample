@@ -1,4 +1,4 @@
-import { Box, Card, Divider, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
+import { Box, Card, Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
@@ -31,31 +31,59 @@ export default function OrderCard({ data }) {
           <Typography variant="subtitle1">Order No. {data.id}</Typography>
           <Box mt={1}>
             <Typography variant="h6">{data.mill.name}</Typography>
-            <Typography variant="subtitle2" color="textSecondary">{`${data.mill.location} (${data.mill.state.name})`}</Typography>
+            <Typography variant="subtitle3" color="textSecondary">{`${data.mill.location} (${data.mill.state.name})`}</Typography>
           </Box>
         </Box>
         <Divider />
-        <Box  pt={1}>
-          <Box style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    padding: '6px 10px',
-                }}>
-            <Typography variant="subtitle1">{data.product.product_type.product_type}</Typography>
-            <Typography variant="subtitle1">{data.product.code}</Typography>
-            <Typography variant="subtitle1">{data.sold}</Typography>
-            <Typography variant="subtitle1">{`${parseFloat(data.qty).toFixed(2)} ${data.product.product_type.unit}`}</Typography>
-          </Box>
-          <Table>
-            <TableBody sx={{p:0}}>
-              {data.product.properties.map((property, index) => (
-                <TableRow key={index}>
-                  <TableCell>{property.label}</TableCell>
-                  <TableCell>{property.value}</TableCell>
+        <Box>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    Product Type
+                  </TableCell>
+                  <TableCell>
+                    Product Code
+                  </TableCell>
+                  <TableCell>
+                    Sold
+                  </TableCell>
+                  <TableCell>
+                    Quantity
+                  </TableCell>
+                  {data.product.properties.map((property, index) => (
+                    <TableCell>{property.label}</TableCell>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>
+
+                    {data.product.product_type.product_type}
+
+                  </TableCell>
+                  <TableCell>
+                    {data.product.code}
+                  </TableCell>
+                  <TableCell>
+                    {data.sold === null ? data.sold : 'None' }
+                  </TableCell>
+                  <TableCell>
+
+                    {parseFloat(data.qty).toFixed(2)} {data.product.product_type.unit}
+
+                  </TableCell>
+                  {data.product.properties.map((property, index) => (
+                    <TableCell>{property.value}</TableCell>
+                  ))}
+                </TableRow>
+
+                {/* Add more rows if needed */}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       </Card>
     </Link>

@@ -1,13 +1,16 @@
 import { Stack, TextField } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
+import { selectUser } from 'src/redux/actions/user-actions';
 import { useRouter } from 'src/routes/hooks';
-
 
 
 export default function OTPComponent({ phoneNumber }) {
   const router = useRouter();
+  const dispatch = useDispatch();
+
 
   const [otp, setOtp] = useState(['', '', '', '']);
 
@@ -31,7 +34,9 @@ export default function OTPComponent({ phoneNumber }) {
           console.log('Result:', result.type);
         if (result.type === 'success') {
           const seller = await NetworkRepository.checkSeller(phoneNumber);
-          console.log('Navigating to /dashboard',seller.detail)
+
+          console.log('Navigating to /dashboard',seller)
+          dispatch(selectUser(seller))
           
           if (seller.detail==='No seller found') {
             router.replace('/sign-up');
@@ -49,10 +54,8 @@ export default function OTPComponent({ phoneNumber }) {
 
     if(concatenatedOtp.length===4){
       verifyLoginAsync(concatenatedOtp); 
-    }
-
-   
-  }, [otp, router, phoneNumber]);
+    } 
+  }, [otp, router, phoneNumber,dispatch]);
 
   return (
     <Stack spacing={5} pb={5} pt={5} direction="row">

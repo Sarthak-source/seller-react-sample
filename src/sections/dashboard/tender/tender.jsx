@@ -26,6 +26,7 @@ import TableNoData from '../table-no-data';
 import TableToolbar from '../table-toolbar';
 import { applyFilter, emptyRows, getComparator } from '../utils';
 import TenderTableRow from './tender-table-row/tender-table-row';
+import { useTenderTableFormat } from './use-tender-table-formate';
 
 
 export default function TenderView() {
@@ -44,27 +45,13 @@ export default function TenderView() {
     const steps = useMemo(() => ['All', 'Pending Approval', 'Live', 'Rejected', 'Closed', 'Completed'], []);
     const querySteps = useMemo(() => ['', 'Added', 'Active', 'Rejected', 'Close', 'Completed'], []);
     const totalPages = Math.ceil(totalDataCount / rowsPerPage);
+    const { generateLocation, formatPrice, getPropertyValue, tenderHeaderRow } = useTenderTableFormat();
 
     const handleOpenTender = () => {
-        router.replace('/home/tender-create'); 
-      };
+        router.replace('/home/tender-create');
+    };
 
-    const headerRow = [
-        { id: 'tenderId', label: 'Tender no' },
-        { id: 'name', label: 'Mill name' },
-        { id: 'location', label: 'Location' },
-        { id: 'date', label: 'Date' },
-        { id: 'price', label: 'Price/Unit' },
-        { id: 'status', label: 'Status' },
-        { id: 'tenderType', label: 'Tender type' },
-        { id: 'productType', label: 'Product' },
-        { id: 'grade', label: 'Grade' },
-        { id: 'season', label: 'Season' },
-        { id: 'total', label: 'Total' },
-        { id: 'sold', label: 'Sold' },
-        { id: 'balance', label: 'Balance', align: 'center' },
-        { id: '' },
-    ]
+
     const handleStepClick = (index) => {
         console.log(activeStep);
         setPage(1)
@@ -126,13 +113,6 @@ export default function TenderView() {
 
     const notFound = !dataFiltered.length && !!filterName;
 
-    const generateLocation = (location, stateName) => `${location}, ${stateName.charAt(0).toUpperCase() + stateName.substring(1).toLowerCase()}`;
-    const formatPrice = (price, unit) => `₹ ${price} ${unit}`;
-    const getPropertyValue = (properties, index, property, defaultValue) =>
-        properties.length > index ? properties[index][property] : defaultValue;
-
-
-
     const dataFormated = dataFiltered.map(row => ({
         key: row.id,
         tenderId: row.id,
@@ -152,7 +132,7 @@ export default function TenderView() {
 
     const handleExportCSV = () => {
         const dataToExport = [
-            headerRow.map((row) =>
+            tenderHeaderRow.map((row) =>
                 row.label
             ),
             ...dataFormated.map((row) => [
@@ -224,7 +204,7 @@ export default function TenderView() {
                                 rowCount={dataFiltered.length}
                                 numSelected={selected.length}
                                 onRequestSort={handleSort}
-                                headLabel={headerRow}
+                                headLabel={tenderHeaderRow}
                             />
                             <TableBody>
                                 {dataFormated

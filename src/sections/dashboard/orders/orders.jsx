@@ -23,6 +23,7 @@ import TableNoData from '../table-no-data';
 import TableToolbar from '../table-toolbar';
 import { applyFilter, emptyRows, getComparator } from '../utils';
 import OrderTableRow from './order-table-row/order-table-row';
+import { useOrderTableFormate } from './use-order-table-formate';
 
 export default function OrdersView() {
     const [page, setPage] = useState(1);
@@ -34,7 +35,7 @@ export default function OrdersView() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const steps = ['All', 'Bids', 'Accepted', 'Completed', 'Rejected'];
     const [ordersData, setOrdersData] = useState([]);
-
+    const { getStatusText, formatQty, formatQuantity,orderHeaderRow } = useOrderTableFormate();
 
     const handleStepClick = (index) => {
         console.log(activeStep);
@@ -73,7 +74,7 @@ export default function OrdersView() {
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setPage(0);
+        setPage(1);
         const newRowsPerPage = parseInt(event.target.value, 10);
         if (newRowsPerPage === 25 || newRowsPerPage === 50 || newRowsPerPage === 100) {
             setRowsPerPage(newRowsPerPage);
@@ -81,7 +82,7 @@ export default function OrdersView() {
     };
 
     const handleFilterByName = (event) => {
-        setPage(0);
+        setPage(1);
         setFilterName(event.target.value);
     };
 
@@ -94,55 +95,13 @@ export default function OrdersView() {
 
     const notFound = !dataFiltered.length && !!filterName;
 
-    function getStatusText(status) {
-        let statusText;
 
-        if (status === "close") {
-            statusText = "Closed";
-        } else if (status === "cancel") {
-            statusText = "Canceled";
-        } else if (status === "rejected") {
-            statusText = "Rejected";
-        } else if (status === "Approved") {
-            statusText = "Bid Accepted";
-        } else if (status === "booked") {
-            statusText = "Bid Received";
-        } else if (status === "doIssued") {
-            statusText = "Completed";
-        } else {
-            statusText = `${status}`;
-        }
-
-        return statusText;
-    }
-
-    function formatQty(qty) {
-        const qtyString = qty;
-        const qtyParts = qtyString.split(".");
-
-        if (qtyParts[1] === "00" || qtyParts[1] === "0") {
-            return parseFloat(qtyString).toFixed(0);
-        }
-        return qtyString;
-    }
-
-    function formatQuantity(data, key, parts) {
-        const qtyString = data[key].toString();
-        const qtyParts = qtyString.split(".");
-
-        if (parts.length === 2 && (qtyParts[1] === "00" || qtyParts[1] === "0")) {
-            return parseFloat(qtyString).toFixed(0);
-        }
-
-        return qtyString;
-    }
 
 
     return (
         <>
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                 <Typography variant="h4">Orders</Typography>
-
             </Stack>
             <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
                 <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
@@ -176,24 +135,7 @@ export default function OrdersView() {
                                 rowCount={ordersData.length}
                                 numSelected={selected.length}
                                 onRequestSort={handleSort}
-
-                                headLabel={[
-                                    { id: 'ordersId', label: 'Orders no' },
-                                    { id: 'millName', label: 'Mill name' },
-                                    { id: 'traderName', label: 'Trader Name' },
-                                    { id: 'date', label: 'Date' },
-                                    { id: 'status', label: 'Status' },
-                                    { id: 'price', label: 'Price/Unit' },
-                                    { id: 'tenderType', label: 'Tender type' },
-                                    { id: 'productType', label: 'Product' },
-                                    { id: 'grade', label: 'Grade' },
-                                    { id: 'season', label: 'Season' },
-                                    { id: 'sale', label: 'Sale' },
-                                    { id: 'loading', label: 'Loading' },
-                                    { id: 'dispatched', label: 'Dispatched' },
-                                    { id: 'balance', label: 'Balance', align: 'center' },
-                                    { id: '' },
-                                ]}
+                                headLabel={orderHeaderRow}
                             />
                             <TableBody>
                                 {dataFiltered
@@ -216,7 +158,6 @@ export default function OrdersView() {
                                             loading={`${formatQuantity(row, 'yet_to_load', row.yet_to_load)} ${row.tender_head.product.product_type.unit}`}
                                             dispatched={`${formatQuantity(row, 'dispatched_qty', row.yet_to_load)} ${row.tender_head.product.product_type.unit}`}
                                             balance={`${formatQuantity(row, 'available_qty', row.yet_to_load)} ${row.tender_head.product.product_type.unit}`}
-
                                         />
                                     ))}
 
