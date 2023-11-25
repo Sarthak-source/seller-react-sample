@@ -16,7 +16,6 @@ export default function DashboardView() {
 
   return (
     <Container maxWidth="xl">
-
       <Tabs
         value={tab}
         onChange={(event, newValue) => setTab(newValue)}

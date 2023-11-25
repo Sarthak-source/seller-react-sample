@@ -11,7 +11,6 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    Divider,
     List,
     ListItem,
     Stack,
@@ -29,9 +28,6 @@ export default function ProfileView() {
     const selectedUser = useSelector((state) => state.user.selectedUser);
     const { handleSubmit, control } = useForm();
 
-
-    console.log('usereieie', localStorage.getItem('user'));
-
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -47,7 +43,7 @@ export default function ProfileView() {
             case 2:
                 return '-  Inputer';
             case 3:
-                return '-  StoreHouse';
+                return '-  Store House';
             case 4:
                 return '-  Quality check';
             default:
@@ -59,7 +55,7 @@ export default function ProfileView() {
         // Handle form submission
     };
 
-    console.log('selectedUser.seller', selectedUser)
+
 
     return (
         <Container maxWidth="xl">
@@ -68,17 +64,15 @@ export default function ProfileView() {
                     sx={{
                         p: 5,
                         width: 1,
-                        maxWidth: 420,
+                        maxWidth: 490,
                     }}
                 >
-                    <Box display="flex" flexDirection="column" alignItems="start">
-
+                    <Box display="flex" flexDirection="column" alignItems="center">
                         <Box
                             component="img"
                             src="/assets/logo.png"
-                            sx={{ width: 60, height: 60, cursor: 'pointer', borderRadius: 20 }}
+                            sx={{ width: 100, height: 100, cursor: 'pointer', borderRadius: 20 }}
                         />
-
                         <Box marginTop={1}>
                             <Typography sx={{ pt: 1, pb: 1, pl: 1, fontWeight: 'bold', fontSize: 20, }}>
                                 Mills
@@ -89,24 +83,18 @@ export default function ProfileView() {
                                         <Card key={index} sx={{ width: '335px', mb: 2 }}>
                                             <Box p={2}>
                                                 <Box display="flex" flexDirection="column" alignItems="start">
-
                                                     <Accordion >
                                                         <AccordionSummary
                                                             expandIcon={<Iconify icon="mingcute:down-fill" />}
-
                                                             aria-controls={`panel-${index}-content`}
                                                             id={`panel-${index}-header`}
-
                                                         >
                                                             <Typography sx={{ fontWeight: 'bold' }}>{item.name.toString()}</Typography>
                                                         </AccordionSummary>
                                                         <AccordionDetails>
                                                             <Typography >{item.address.toString()}</Typography>
-
-
                                                         </AccordionDetails>
                                                     </Accordion>
-
                                                 </Box>
                                             </Box>
                                         </Card>
@@ -116,45 +104,43 @@ export default function ProfileView() {
                                 )}
                             </List>
                         </Box>
-
-                        <Typography sx={{ pb: 1, pl: 1, fontWeight: 'bold', fontSize: 20, }}>
+                        <Box>
+                            <Typography sx={{ pb: 1, pl: 1, fontWeight: 'bold', fontSize: 20 }}>
                                 Details
                             </Typography>
-
-                        <Card sx={{ pt: 2, pr: 2, pl: 2, pb: 2, width: '335px', }}>
-                            <Typography sx={{ pt: 1, fontSize: 14, fontWeight: 'bold', }}>
-                                Name
-                            </Typography>
-                            <TextField
-                                name="name"
-                                label={selectedUser.name}
-                                disabled
-                                fullWidth
-                                sx={{ mt: 1 }}
-                            />
-                            <Typography sx={{ pt: 2, fontSize: 14, fontWeight: 'bold', }}>
-                                Contact
-                            </Typography>
-                            <TextField
-                                name="phone"
-                                label={selectedUser.phone_number}
-                                disabled
-                                fullWidth
-                                sx={{ mt: 1 }}
-                            />
-                            <Typography sx={{ pt: 2, fontSize: 14, fontWeight: 'bold', }}>
-                                GST number
-                            </Typography>
-                            <TextField
-                                name="gst"
-                                label={selectedUser.mills[0].gstin}
-                                disabled
-                                fullWidth
-                                sx={{ mt: 1, mb: 2 }}
-                            />
-                        </Card>
-
-
+                            <Card sx={{ pt: 2, pr: 2, pl: 2, pb: 2, width: '335px', }}>
+                                <Typography sx={{ pt: 1, fontSize: 14, fontWeight: 'bold', }}>
+                                    Name
+                                </Typography>
+                                <TextField
+                                    name="name"
+                                    label={selectedUser.name}
+                                    disabled
+                                    fullWidth
+                                    sx={{ mt: 1 }}
+                                />
+                                <Typography sx={{ pt: 2, fontSize: 14, fontWeight: 'bold', }}>
+                                    Contact
+                                </Typography>
+                                <TextField
+                                    name="phone"
+                                    label={selectedUser.phone_number}
+                                    disabled
+                                    fullWidth
+                                    sx={{ mt: 1 }}
+                                />
+                                <Typography sx={{ pt: 2, fontSize: 14, fontWeight: 'bold', }}>
+                                    GST number
+                                </Typography>
+                                <TextField
+                                    name="gst"
+                                    label={selectedUser.mills[0].gstin}
+                                    disabled
+                                    fullWidth
+                                    sx={{ mt: 1, mb: 2 }}
+                                />
+                            </Card>
+                        </Box>
                         <Box marginTop={2} marginBottom={2} >
                             <Typography sx={{ pb: 1, pl: 1, fontWeight: 'bold', fontSize: 20, }}>
                                 Roles
@@ -162,13 +148,14 @@ export default function ProfileView() {
                             <Card sx={{ pr: 18, pl: 2, pt: 2, pb: 2, width: '335px' }} >
                                 <List>
                                     {selectedUser && selectedUser.mills ? (selectedUser.seller_role.map((role, roleInd) => (
-                                        <Box key={roleInd}>
-                                            <ListItem dense>
-                                                <Typography>
-                                                    {getRoleName(role)}
-                                                </Typography>
-                                            </ListItem>
-                                            {roleInd < selectedUser.seller_role.length - 1 && <Divider />}
+                                        <Box key={roleInd} sx={{ pb: 2 }}>
+                                            <Card sx={{ pl: 1, pr: 4, pb: 2, pt: 2, width: '305px' }}>
+                                                <ListItem dense >
+                                                    <Typography>
+                                                        {getRoleName(role)}
+                                                    </Typography>
+                                                </ListItem>
+                                            </Card>
                                         </Box>
                                     ))) : <Typography>Loading or no data available</Typography>}
                                 </List>

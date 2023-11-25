@@ -1,6 +1,5 @@
 
-import { useEffect, useState } from 'react';
-
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
@@ -9,11 +8,12 @@ import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import Typography from '@mui/material/Typography';
-
-import Iconify from 'src/components/iconify';
-
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
+import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
+import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { useRouter } from 'src/routes/hooks';
 import TableEmptyRows from '../dashboard/table-empty-rows';
 import SharedTableHead from '../dashboard/table-head';
@@ -34,6 +34,9 @@ export default function TraderView() {
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [traderData, setTraderData] = useState([]);
     const { traderHeaderRow } = useTraderTableFormat();
+    const [loading, setLoading] = useState(true);
+    const searchTerm = useSelector((state) => state.search.searchTerm);
+    useEffect(() => { }, [searchTerm])
 
     const handleOpenTrader = () => {
         router.replace('/home/trader-create');
@@ -45,12 +48,12 @@ export default function TraderView() {
                 const data = await NetworkRepository.sellerTraders();
                 console.log('Seller traders', data);
                 setTraderData(data);
-
             } catch (error) {
                 console.error('Error fetching Trader data:', error);
+            } finally {
+                setLoading(false); // Set loading to false when data is fetched (whether successful or not)
             }
         };
-
         fetchTraderData();
     }, []);
 
@@ -62,14 +65,15 @@ export default function TraderView() {
         }
     };
 
-    const handleFilterByName = (event) => {
-        setPage(1);
-        setFilterName(event.target.value);
-    };
-
+    const traderSearch = traderData.filter((item) =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.phone_number.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.email.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.billing_gstin && item.billing_gstin.gstin.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+    );
 
     const dataFiltered = applyFilter({
-        inputData: traderData,
+        inputData: traderSearch,
         comparator: getComparator(order, orderBy),
         filterName,
     });
@@ -84,12 +88,12 @@ export default function TraderView() {
                     Add Traders
                 </Button>
             </Stack>
-            <Card>
+
+            {!loading ? (<Card>
                 <TableToolbar
                     numSelected={0}
-
+                    showIcons={false}
                     filterName={filterName}
-                    onFilterName={handleFilterByName}
                     label='Search name or Phone no..'
                 />
                 <Scrollbar>
@@ -126,7 +130,11 @@ export default function TraderView() {
                         </Table>
                     </TableContainer>
                 </Scrollbar>
-            </Card>
+            </Card>) : (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                    <SkeletonLoader />
+                </Box>
+            )}
         </Container>
     );
 }

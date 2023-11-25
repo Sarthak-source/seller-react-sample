@@ -1,13 +1,15 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
-
+import { Avatar, Stack, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Popover from '@mui/material/Popover';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 
+import { ApiAppConstants, ip } from 'src/app-utils/api-constants';
 import Iconify from 'src/components/iconify';
+import { useDispatchTableFuctions } from './use-dispatch-table-fuctions';
 
 export default function DoOrderTableRow({
     doNo,
@@ -33,15 +35,23 @@ export default function DoOrderTableRow({
         setOpen(null);
     };
 
+    const { handlePrint } = useDispatchTableFuctions();
+    const pdfUrl = `http://${ip}/${ApiAppConstants.getDoDoc}${doNo}`;
+
     return (
         <>
             <TableRow hover tabIndex={-1} role="checkbox">
-
-
                 <TableCell>{orderNo}</TableCell>
                 <TableCell>{invoiceNo}</TableCell>
-                 <TableCell>{doNo}</TableCell>
-                <TableCell>{millName}</TableCell>
+                <TableCell>{doNo}</TableCell>
+                <TableCell component="th" scope="row" padding="normal" >
+                    <Stack direction="row" alignItems="center" spacing={2}>
+                        <Avatar alt={millName} src='avatarUrl' />
+                        <Typography variant="subtitle2" noWrap>
+                            {millName}
+                        </Typography>
+                    </Stack>
+                </TableCell>
                 <TableCell>{name}</TableCell>
                 <TableCell>{date}</TableCell>
                 <TableCell>{vehicleNumber}</TableCell>
@@ -66,14 +76,13 @@ export default function DoOrderTableRow({
                     sx: { width: 140 },
                 }}
             >
-                <MenuItem onClick={handleCloseMenu}>
-                    <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-                    Edit
+                <MenuItem onClick={() => handlePrint(pdfUrl)}>
+                    <Iconify icon="lets-icons:print" sx={{ mr: 2 }} />
+                    Print
                 </MenuItem>
-
                 <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
-                    <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-                    Delete
+                    <Iconify icon="fluent:calendar-cancel-24-regular" sx={{ mr: 2 }} />
+                    Cancel
                 </MenuItem>
             </Popover>
         </>

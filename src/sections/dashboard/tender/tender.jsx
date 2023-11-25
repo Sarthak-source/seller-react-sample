@@ -18,6 +18,8 @@ import Typography from '@mui/material/Typography';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
+import { useSelector } from 'react-redux';
+import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { useRouter } from 'src/routes/hooks';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
 import TableEmptyRows from '../table-empty-rows';
@@ -31,7 +33,6 @@ import { useTenderTableFormat } from './use-tender-table-formate';
 
 export default function TenderView() {
     const router = useRouter();
-
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState(1);
     const [activeStep, setActiveStep] = useState(0);
@@ -46,10 +47,21 @@ export default function TenderView() {
     const querySteps = useMemo(() => ['', 'Added', 'Active', 'Rejected', 'Close', 'Completed'], []);
     const totalPages = Math.ceil(totalDataCount / rowsPerPage);
     const { generateLocation, formatPrice, getPropertyValue, tenderHeaderRow } = useTenderTableFormat();
+    const [loading, setLoading] = useState(true);
+    const selectedMill = useSelector((state) => state.mill.selectedMill);
+    const searchTerm = useSelector((state) => state.search.searchTerm);
 
     const handleOpenTender = () => {
         router.replace('/home/tender-create');
     };
+
+    useEffect(() => { }, [searchTerm])
+
+    useEffect(() => {
+        setPage(1)
+        setTenderData([])
+    }, [selectedMill])
+
 
 
     const handleStepClick = (index) => {
@@ -60,9 +72,11 @@ export default function TenderView() {
     };
 
     useEffect(() => {
-        const fetchTenderData = async (tenderPage, status) => {
+        const fetchTenderData = async (tenderPage, status, millId) => {
             try {
-                const data = await NetworkRepository.sellerTender(pagination, status);
+                setLoading(true);
+                console.log('tenderMillId', millId)
+                const data = await NetworkRepository.sellerTender(pagination, status, millId);
                 setTotalDataCount(data.count);
                 console.log('pagination', pagination, 'tenderPage', tenderPage)
 
@@ -70,14 +84,14 @@ export default function TenderView() {
                     setPagination(tenderPage)
                 }
                 setTenderData(prevData => [...prevData, ...data.results]);
-
             } catch (error) {
                 console.error('Error fetching tender data:', error);
+            } finally {
+                setLoading(false);
             }
         };
-
-        fetchTenderData(page, querySteps[activeStep]);
-    }, [page, activeStep, querySteps, pagination]);
+        fetchTenderData(page, querySteps[activeStep], selectedMill.id);
+    }, [page, activeStep, querySteps, pagination, selectedMill]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -98,15 +112,14 @@ export default function TenderView() {
         }
     };
 
-
-    const handleFilterByName = (event) => {
-        setPage(1);
-        setFilterName(event.target.value);
-    };
-
+    const tenderSearch =
+        tenderData.filter((item) =>
+            item.mill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.id.toString().toLowerCase().includes(searchTerm.toLowerCase())
+        );
 
     const dataFiltered = applyFilter({
-        inputData: tenderData,
+        inputData: tenderSearch,
         comparator: getComparator(order, orderBy),
         filterName,
     });
@@ -186,71 +199,71 @@ export default function TenderView() {
                 </Stepper>
             </Box>
 
-            <Card>
-                <TableToolbar
-                    numSelected={0}
-                    onDownload={handleExportCSV}
-                    filterName={filterName}
-                    onFilterName={handleFilterByName}
-                    label='Search tenders..'
-                />
+            {!loading ? (
+                <Card>
+                    <TableToolbar
+                        numSelected={0}
+                        onDownload={handleExportCSV}
+                        label='Search tenders..'
+                    />
 
-                <Scrollbar>
-                    <TableContainer sx={{ overflow: 'unset' }}>
-                        <Table sx={{ minWidth: 800 }}>
-                            <SharedTableHead
-                                order={order}
-                                orderBy={orderBy}
-                                rowCount={dataFiltered.length}
-                                numSelected={selected.length}
-                                onRequestSort={handleSort}
-                                headLabel={tenderHeaderRow}
-                            />
-                            <TableBody>
-                                {dataFormated
-                                    .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
-                                    .map((row) => (
-                                        <TenderTableRow
-                                            key={row.id}
-                                            tenderId={row.tenderId}
-                                            name={row.name}
-                                            location={row.location}
-                                            date={row.date}
-                                            price={row.price}
-                                            status={row.status}
-                                            tenderType={row.tenderType}
-                                            productType={row.productType}
-                                            grade={row.grade}
-                                            season={row.season}
-                                            total={row.total}
-                                            sold={row.sold}
-                                            balance={row.balance}
-                                        />
-                                    ))}
-
-                                <TableEmptyRows
-                                    height={77}
-                                    emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
+                    <Scrollbar>
+                        <TableContainer sx={{ overflow: 'unset' }}>
+                            <Table sx={{ minWidth: 800 }}>
+                                <SharedTableHead
+                                    order={order}
+                                    orderBy={orderBy}
+                                    rowCount={dataFiltered.length}
+                                    numSelected={selected.length}
+                                    onRequestSort={handleSort}
+                                    headLabel={tenderHeaderRow}
                                 />
-
-                                {notFound && <TableNoData query={filterName} />}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Scrollbar>
-
-                <TablePagination
-                    page={page}
-                    component="div"
-                    count={dataFiltered.length}
-                    rowsPerPage={rowsPerPage}
-                    onPageChange={handleChangePage}
-                    nextIconButtonProps={{ disabled: page >= totalPages }}
-                    backIconButtonProps={{ disabled: !(page > 1) }}
-                    rowsPerPageOptions={[15, 30, 45]}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            </Card>
+                                <TableBody>
+                                    {dataFormated
+                                        .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
+                                        .map((row) => (
+                                            <TenderTableRow
+                                                key={row.id}
+                                                tenderId={row.tenderId}
+                                                name={row.name}
+                                                location={row.location}
+                                                date={row.date}
+                                                price={row.price}
+                                                status={row.status}
+                                                tenderType={row.tenderType}
+                                                productType={row.productType}
+                                                grade={row.grade}
+                                                season={row.season}
+                                                total={row.total}
+                                                sold={row.sold}
+                                                balance={row.balance}
+                                            />
+                                        ))}
+                                    <TableEmptyRows
+                                        height={77}
+                                        emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
+                                    />
+                                    {notFound && <TableNoData query={filterName} />}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Scrollbar>
+                    <TablePagination
+                        page={page}
+                        component="div"
+                        count={dataFiltered.length}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={handleChangePage}
+                        nextIconButtonProps={{ disabled: page >= totalPages }}
+                        backIconButtonProps={{ disabled: !(page > 1) }}
+                        rowsPerPageOptions={[15, 30, 45]}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Card>) : (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                    <SkeletonLoader />
+                </Box>
+            )}
         </>
     );
 }

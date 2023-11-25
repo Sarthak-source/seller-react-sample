@@ -68,6 +68,8 @@ const ApiAppConstants = {
     scanDOdest: 'scan_DO_dest/',
     doUnload: 'deliveryOrderUpdateStatus/',
     gatePass: 'gatepass/',
+    getDoDoc:'get_doc/do/',
+    getInvoiceDoc:'/get_doc/invoice/'
 };
 
 export { ApiAppConstants, auth, ip };

@@ -10,7 +10,6 @@ export default function DashboardPage() {
       <Helmet>
         <title> Dashboard | Sutra </title>
       </Helmet>
-
       <DashboardView />
     </>
   );

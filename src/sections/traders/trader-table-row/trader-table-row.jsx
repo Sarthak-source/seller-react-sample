@@ -62,6 +62,18 @@ export default function TraderTableRow({
     }
   };
 
+  const handleCall = (number) => {
+    window.location.href = `tel:${number}`;
+  };
+
+    const handleSendEmail = (mail) => {
+      const subject = 'Email subject';
+      const body = 'Email body';
+      const mailtoLink = `mailto:${mail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoLink;
+    };
+  
+
   
 
   return (
@@ -76,8 +88,8 @@ export default function TraderTableRow({
           </Stack>
         </TableCell>
         <TableCell>{gstno}</TableCell>
-        <TableCell>{phoneNumber}</TableCell>
-        <TableCell>{email}</TableCell>
+        <TableCell onClick={()=>handleCall(phoneNumber)}>{phoneNumber}</TableCell>
+        <TableCell onClick={()=>handleSendEmail(email)}>{email}</TableCell>
         <TableCell>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
         </TableCell>
@@ -117,7 +129,7 @@ export default function TraderTableRow({
                   <ListItemAvatar>
                     <Avatar alt={mill.name} src={mill.institution} />
                   </ListItemAvatar>
-                  <ListItemText primary={mill.name} secondary={mill.gstin} />
+                  <ListItemText primaryTypographyProps={{fontWeight:"bold"}} primary={mill.name} secondary={mill.gstin} sx={{pr:12}}/>
                   <Iconify icon="iconamoon:location-duotone" />
                 </ListItem>
                 <Divider />

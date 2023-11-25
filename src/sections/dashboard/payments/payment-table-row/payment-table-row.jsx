@@ -1,14 +1,14 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
-import Popover from '@mui/material/Popover';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Popover from '@mui/material/Popover';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
+import Label from 'src/components/label';
 
 export default function PaymentsTableRow({
     paymentsId,
@@ -36,6 +36,7 @@ export default function PaymentsTableRow({
         <TableRow hover tabIndex={-1} role="checkbox">
           <TableCell>{paymentsId}</TableCell>
           <TableCell>{amount}</TableCell>
+          <TableCell>{refNo}</TableCell>
           <TableCell>
             <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
           </TableCell>
@@ -43,7 +44,7 @@ export default function PaymentsTableRow({
           <TableCell>{tradeName}</TableCell>
           {/* <TableCell>{remitter}</TableCell> */}
           <TableCell>{date}</TableCell>
-          <TableCell>{refNo}</TableCell>
+          
           <TableCell align="right">
             <IconButton onClick={handleOpenMenu}>
               <Iconify icon="eva:more-vertical-fill" />

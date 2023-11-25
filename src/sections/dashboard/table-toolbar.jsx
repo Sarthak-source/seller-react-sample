@@ -11,18 +11,59 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
 import { Stack } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
 import Iconify from 'src/components/iconify';
+import { selectMill } from 'src/redux/actions/mill-action';
+import { setSearchTerm } from 'src/redux/actions/search-action';
 
 // ----------------------------------------------------------------------
 
-export default function TableToolbar({ numSelected, filterName, onFilterName, label,onDownload }) {
+export default function TableToolbar({ numSelected, onFilterName, label, onDownload, showIcons = true }) {
   const [open, setOpen] = useState(null);
+  const dispatch = useDispatch();
+  const selectedUser = useSelector((state) => state.user.selectedUser);
+  const selectedMill = useSelector((state) => state.mill.selectedMill);
+  const searchTerm = useSelector((state) => state.search.searchTerm);
+
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
   };
 
-  const handleCloseMenu = () => {
+  const handleCloseMenu = (mill) => {
+    dispatch(selectMill(mill));
     setOpen(null);
+  };
+
+  const handleSearch = (event) => {
+    dispatch(setSearchTerm(event.target.value));
+  };
+
+  console.log('selectedUser', selectedUser);
+  console.log('selectedMill', selectedMill);
+
+  const renderMillMenuItems = () => {
+    if (!selectedUser || !selectedUser.mills) {
+      return null;
+    }
+
+    return selectedUser.mills.map((mill, index) => (
+      <MenuItem
+        key={index}
+        onClick={() => handleCloseMenu(mill)}
+        sx={{
+          height: 40,
+          backgroundColor: mill.id === selectedMill.id ? 'primary.main' : 'initial',
+          color: mill.id === selectedMill.id ? 'white' : 'initial',
+          opacity: 0.8,
+          '&:hover': {
+            backgroundColor: 'primary.main',
+            color: 'white',
+          },
+        }}
+      >
+        {mill.name}
+      </MenuItem>
+    ));
   };
 
   return (
@@ -44,8 +85,8 @@ export default function TableToolbar({ numSelected, filterName, onFilterName, la
         </Typography>
       ) : (
         <OutlinedInput
-          value={filterName}
-          onChange={onFilterName}
+          value={searchTerm}
+          onChange={handleSearch}
           placeholder={label}
           startAdornment={
             <InputAdornment position="start">
@@ -59,50 +100,53 @@ export default function TableToolbar({ numSelected, filterName, onFilterName, la
         />
       )}
 
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <Iconify icon="eva:trash-2-fill" />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Stack direction="row" spacing={1}>
-          <Tooltip title="Download">
-          <IconButton onClick={onDownload}>
-            <Iconify icon="material-symbols:download" color='primary.main' />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Filter list">
-          <IconButton onClick={handleOpenMenu}>
-            <Iconify icon="ic:round-filter-list" color='primary.main'/>
-          </IconButton>
-        </Tooltip>
-        </Stack>
-        
-        
+      {showIcons && (
+        numSelected > 0 ? (
+          <Tooltip title="Delete">
+            <IconButton>
+              <Iconify icon="eva:trash-2-fill" />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Stack direction="row" spacing={1}>
+            <Tooltip title="Download">
+              <IconButton onClick={onDownload}>
+                <Iconify icon="material-symbols:download" color='primary.main' />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Filter list">
+              <IconButton onClick={handleOpenMenu}>
+                {selectedMill !== '' ? (
+                  <Iconify icon="iconoir:filter-list-circle" color="primary.main" />
+                ) : (
+                  <Iconify icon="ic:round-filter-list" color="primary.main" />
+                )}
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        )
       )}
+
       <Popover
         open={!!open}
         anchorEl={open}
-        onClose={handleCloseMenu}
+        onClose={() => handleCloseMenu(selectedMill)}
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-       
       >
-        <MenuItem onClick={handleCloseMenu}>
-         
+        <MenuItem sx={{
+          height: 40,
+          backgroundColor: selectedMill === '' ? 'primary.main' : 'initial',
+          color: selectedMill === '' ? 'white' : 'initial',
+          opacity: 0.8,
+          '&:hover': {
+            backgroundColor: 'primary.main',
+            color: 'white',
+          },
+        }} onClick={() => handleCloseMenu('')}>
           All
         </MenuItem>
-
-        <MenuItem onClick={handleCloseMenu} >
-         
-        Test Mill Private Limited
-        </MenuItem>
-
-        <MenuItem onClick={handleCloseMenu} >
-         
-        Test Mill Private Limited (Unit-1)
-        </MenuItem>
+        {renderMillMenuItems()}
       </Popover>
     </Toolbar>
   );
@@ -110,8 +154,8 @@ export default function TableToolbar({ numSelected, filterName, onFilterName, la
 
 TableToolbar.propTypes = {
   numSelected: PropTypes.number,
-  filterName: PropTypes.string,
   onFilterName: PropTypes.func,
-  onDownload:PropTypes.func,
+  onDownload: PropTypes.func,
   label: PropTypes.string,
+  showIcons: PropTypes.bool,
 };

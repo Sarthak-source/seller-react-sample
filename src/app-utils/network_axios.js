@@ -5,8 +5,9 @@ import { ApiAppConstants } from './api-constants';
 const NetworkAxiosOptions = {
     endPointUrl: ApiAppConstants.apiEndPoint,
     cacheOptions: null,
+    axiosOptions: axios.create(JSON.parse(localStorage.getItem('cacheOptions'))),
 
-    async getHeaders () {
+    async getHeaders() {
         const token = localStorage.getItem('token');
         console.log(`Token :- ${token}`);
         if (token !== null) {
@@ -16,32 +17,36 @@ const NetworkAxiosOptions = {
                 'Accept': 'application/json',
                 'authorization': token,
             };
-        } 
-            return {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            };
-        
+        }
+        return {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        };
+
     },
 
-    async setDynamicHeader (endPoint) {
-        this.endPointUrl = `${endPoint}`;
+    async setDynamicHeader() {
         const options = {
             receiveTimeout: 15000,
             connectTimeout: 15000,
         };
 
-        this.cacheOptions = null; // Set your cache options if needed
-
         const token = await this.getHeaders();
         options.headers = token;
+        console.log('options', options)
+        const optionJson = JSON.stringify(options);
 
-
+        localStorage.setItem('cacheOptions', optionJson)
         this.axiosOptions = axios.create(options);
 
-        // Add any interceptors if needed
+        console.log('axiosOptions', this.axiosOptions)
+
+        if (!this.axiosOptions.interceptors) {
+            console.error("Interceptors are not defined");
+            return;
+        }
+
         if (process.env.NODE_ENV === 'development') {
-            // Add Chucker interceptor for debugging
             this.axiosOptions.interceptors.request.use((request) => {
                 console.log('Starting Request', request);
                 return request;
@@ -54,12 +59,7 @@ const NetworkAxiosOptions = {
         }
     },
 
-    async initialize() {
-        // This method initializes the axiosOptions
-        await this.setDynamicHeader(ApiAppConstants.apiEndPoint);
-    },
-
-    async getAxiosHttpMethod ({ url, header }) {
+    async getAxiosHttpMethod({ url, header }) {
         console.log(url);
         try {
             const response = await this.axiosOptions.get(`${this.endPointUrl}${url}`, { headers: header || this.cacheOptions });
@@ -71,7 +71,7 @@ const NetworkAxiosOptions = {
     },
 
 
-    async putAxiosHttpMethod ({ url, data, header }) {
+    async putAxiosHttpMethod({ url, data, header }) {
         try {
             const response = await this.axiosOptions.put(`${this.endPointUrl}${url}`, data, { headers: header || this.cacheOptions });
             return response.data;
@@ -81,10 +81,9 @@ const NetworkAxiosOptions = {
         }
     },
 
-
-    async postAxiosHttpMethod ({ url, data, header }) {
+    async postAxiosHttpMethod({ url, data, header }) {
         try {
-            console.log('hereeweee',`${this.endPointUrl}${url}`)
+            console.log('hereeweee', `${this.endPointUrl}${url}`)
             const response = await this.axiosOptions.post(`${this.endPointUrl}${url}`, data, { headers: header || this.cacheOptions });
             return response.data;
         } catch (error) {
@@ -93,7 +92,7 @@ const NetworkAxiosOptions = {
         }
     },
 
-    async deleteAxiosHttpMethod ({ url, data }) {
+    async deleteAxiosHttpMethod({ url, data }) {
         try {
             const response = await this.axiosOptions.delete(`${this.endPointUrl}${url}`, { data, headers: this.cacheOptions });
             return response.data;
@@ -104,7 +103,7 @@ const NetworkAxiosOptions = {
     },
 
 
-    async multipleConcurrentAxiosHttpMethod ({ getUrl, postUrl, postData }) {
+    async multipleConcurrentAxiosHttpMethod({ getUrl, postUrl, postData }) {
         try {
             const getPromise = this.axiosOptions.get(`${this.endPointUrl}${getUrl}`, { headers: this.cacheOptions });
             const postPromise = this.axiosOptions.post(`${this.endPointUrl}${postUrl}`, postData, { headers: this.cacheOptions });
@@ -123,7 +122,7 @@ const NetworkAxiosOptions = {
         }
     },
 
-    async sendingFormDataAxiosHttpMethod ({ url, data }) {
+    async sendingFormDataAxiosHttpMethod({ url, data }) {
         try {
             const response = await this.axiosOptions.post(`${this.endPointUrl}${url}`, data, { headers: this.cacheOptions });
 
@@ -139,7 +138,7 @@ const NetworkAxiosOptions = {
     },
 
 
-    async _handleError (error, message) {
+    async _handleError(error, message) {
         let errorDescription = "";
 
         try {

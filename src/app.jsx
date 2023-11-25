@@ -18,13 +18,18 @@ import store from './redux/configure-store';
 export default function App()  {
   useScrollToTop();
   useEffect(() => {
-    // Use an async function inside useEffect to perform asynchronous operations
     const initializeAsync = async () => {
-      await NetworkAxiosOptions.initialize();
+        try {
+            await NetworkAxiosOptions.setDynamicHeader();
+            console.log('Axios options initialized successfully');
+        } catch (error) {
+            console.error('Error initializing Axios options:', error);
+            
+        }
     };
 
     initializeAsync();
-  }, []);
+}, []);
 
   return (
     <Provider store={store}>

@@ -1,15 +1,15 @@
 import { useState } from 'react';
 
-import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import Popover from '@mui/material/Popover';
-import { alpha } from '@mui/material/styles';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
+import { alpha } from '@mui/material/styles';
 
-import { account } from 'src/_mock/account';
+import { useSelector } from 'react-redux';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +32,10 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const selectedUser = useSelector((state) => state.user.selectedUser);
+
+
+
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -56,15 +60,15 @@ export default function AccountPopover() {
         }}
       >
         <Avatar
-          src={account.photoURL}
-          alt={account.displayName}
+          src='/assets/logo.png'
+          alt={selectedUser.name}
           sx={{
             width: 36,
             height: 36,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {account.displayName.charAt(0).toUpperCase()}
+          {selectedUser.name.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
@@ -85,11 +89,12 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {selectedUser.name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
+            {selectedUser.phone_number}
           </Typography>
+          
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />

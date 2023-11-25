@@ -1,14 +1,22 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
-import Popover from '@mui/material/Popover';
-import MenuItem from '@mui/material/MenuItem';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
+import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 
-import Label from 'src/components/label';
+import MenuItem from '@mui/material/MenuItem';
+import Popover from '@mui/material/Popover';
+import Stack from '@mui/material/Stack';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+
+import { useDispatch } from 'react-redux';
+
+import { useNavigate } from 'react-router-dom';
 import Iconify from 'src/components/iconify';
+import Label from 'src/components/label';
+import { selectOrder } from 'src/redux/actions/order-actions';
 
 export default function OrdersTableRow({
     ordersId,
@@ -24,10 +32,13 @@ export default function OrdersTableRow({
     sale,
     loading,
     dispatched,
-    balance
+    balance,
+    order,
 }) {
     const [open, setOpen] = useState(null);
-
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    
     const handleOpenMenu = (event) => {
         setOpen(event.currentTarget);
     };
@@ -36,11 +47,23 @@ export default function OrdersTableRow({
         setOpen(null);
     };
 
+    const handleOpenDetails = (orderSelected) => {
+        dispatch(selectOrder(orderSelected))
+        navigate(`/home/order-details/${ordersId}`); // Use navigate to go to the details page
+      };
+
     return (
         <>
             <TableRow hover tabIndex={-1} role="checkbox">
-                <TableCell>{ordersId}</TableCell>
-                <TableCell>{millName}</TableCell>
+                <TableCell onClick={()=>handleOpenDetails(order)}>{ordersId}</TableCell>
+                <TableCell component="th" scope="row" padding="normal" >
+                    <Stack direction="row" alignItems="center" spacing={2}>
+                        <Avatar alt={millName} src='avatarUrl' />
+                        <Typography variant="subtitle2" noWrap>
+                            {millName}
+                        </Typography>
+                    </Stack>
+                </TableCell>
                 <TableCell>{traderName}</TableCell>
                 <TableCell>{date}</TableCell>
                 <TableCell>
@@ -86,7 +109,7 @@ export default function OrdersTableRow({
 }
 
 OrdersTableRow.propTypes = {
-    ordersId: PropTypes.string,
+    ordersId: PropTypes.number,
     millName: PropTypes.string,
     traderName: PropTypes.string,
     date: PropTypes.string,
@@ -100,4 +123,5 @@ OrdersTableRow.propTypes = {
     loading: PropTypes.string,
     dispatched: PropTypes.string,
     balance: PropTypes.string,
+    order:PropTypes.string,
 };

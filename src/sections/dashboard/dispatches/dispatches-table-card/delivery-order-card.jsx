@@ -1,12 +1,17 @@
 
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
+
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import { format, parseISO } from 'date-fns';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+
 import Scrollbar from 'src/components/scrollbar';
+import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import NetworkRepository from '../../../../app-utils/network_repository'; // Adjust the path
 import TableEmptyRows from '../../table-empty-rows';
 import SharedTableHead from '../../table-head';
@@ -15,9 +20,10 @@ import DoOrderTableRow from '../dispatches-table-row/delivery-order-table-row';
 
 import TableToolbar from '../../table-toolbar';
 import { applyFilter, emptyRows, getComparator } from '../../utils';
+import { useDispatchesTableFormat } from '../use-dispatches-table-formate';
 
 export default function DeliveryOrderCard(
-    
+
 ) {
     const [page, setPage] = useState(1);
     const [order, setOrder] = useState('asc');
@@ -26,25 +32,37 @@ export default function DeliveryOrderCard(
     const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [dispatchesData, setDispatchesData] = useState([]);
+    const { deliveryOrderHeaderRow } = useDispatchesTableFormat();
+    const [loading, setLoading] = useState(true);
+    const selectedMill = useSelector((state) => state.mill.selectedMill);
+    const searchTerm = useSelector((state) => state.search.searchTerm);
 
+    useEffect(() => {
+        setDispatchesData([])
+    }, [searchTerm])
 
-    const fetchDispatchesData = async (dispatchesPage, text, step) => {
+    useEffect(() => {
+        setPage(1)
+        setDispatchesData([])
+    }, [selectedMill])
+
+    const fetchDispatchesData = async (dispatchesPage, text, millId) => {
 
         try {
-            const data = await NetworkRepository.deliveryOrders(dispatchesPage, text);
+            setLoading(true);
+            const data = await NetworkRepository.deliveryOrders(dispatchesPage, text, millId);
             console.log('here', data.results)
             setDispatchesData(prevData => [...prevData, ...data.results]);
         } catch (error) {
             console.error('Error fetching Dispatches data:', error);
+        } finally {
+            setLoading(false); // Set loading to false when data is fetched (whether successful or not)
         }
     };
 
-
     useEffect(() => {
-        fetchDispatchesData(page, '',);
-    }, [page]);
-
-
+        fetchDispatchesData(page, searchTerm, selectedMill.id);
+    }, [page, selectedMill, searchTerm]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -78,87 +96,78 @@ export default function DeliveryOrderCard(
         filterName,
     });
 
+    console.log('derlivery', dataFiltered)
+
     const notFound = !dataFiltered.length && !!filterName;
     return (
         <>
-            <Card>
-                <TableToolbar
-                    numSelected={selected.length}
-                    filterName={filterName}
-                    onFilterName={handleFilterByName}
-                    label='Search dispatches..'
-                />
+            {!loading ? (
+                <Card>
+                    <TableToolbar
+                        numSelected={selected.length}
+                        filterName={filterName}
+                        onFilterName={handleFilterByName}
+                        label='Search dispatches..'
+                    />
 
-                <Scrollbar>
-                    <TableContainer sx={{ overflow: 'unset' }}>
-                        <Table sx={{ minWidth: 800 }}>
-                            <SharedTableHead
-                                order={order}
-                                orderBy={orderBy}
-                                rowCount={dispatchesData.length}
-                                numSelected={selected.length}
-                                onRequestSort={handleSort}
-
-                                headLabel={[
-                                    { id: 'orderNo', label: 'Order No' },
-                                    { id: 'invoiceNo', label: 'Invoice No' },
-                                    { id: 'doNo', label: 'Do No' },
-                                    { id: 'name', label: 'Mill name' },
-                                    { id: 'trader', label: 'Trader' },
-                                    { id: 'date', label: 'Date' },
-                                    { id: 'vehicleNumber', label: 'Vehicle Number' },
-                                    { id: 'quantity', label: 'Quantity' },
-                                    { id: 'billedTo', label: 'Billed To' },
-                                    { id: 'ShipTo', label: 'Shipped To' },
-                                    { id: 'rate', label: 'Rate' },
-                                    { id: 'grade', label: 'Grade' },
-                                    { id: '' },
-                                ]}
-                            />
-                            <TableBody>
-                                {dataFiltered
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row) => (
-
-                                        <DoOrderTableRow
-                                            orderNo={row.loading_instruction[0].order_head.id}
-                                            invoiceNo={row.loading_instruction[0].lr_number}
-                                            doNo={row.do_num}
-                                            millName={row.mill.name}
-                                            name={row.trader}
-                                           
-                                            date={row.loading_instruction[0].date?format(parseISO(row.loading_instruction[0].date),'MM/dd/yyyy'):'Not given'}
-                                            vehicleNumber={row.veicle_num!==null?row.veicle_num:'   Not given'}
-                                            quantity={row.qty}
-                                            billedTo={`${row.loading_instruction[0].billing_address.name}-${row.billing_gstin}-${row.loading_instruction[0].billing_address.address}`}
-                                            shipTo={`${row.loading_instruction[0].address.name}-${row.address_gstin}-${row.loading_instruction[0].address.address}`}
-                                            rate={row.loading_instruction[0].qty}
-                                            grade={row.loading_instruction[0].order_head.price}
-
-                                        />
-                                    ))}
-
-                                <TableEmptyRows
-                                    height={77}
-                                    emptyRows={emptyRows(page, rowsPerPage, dataFiltered.length)}
+                    <Scrollbar>
+                        <TableContainer sx={{ overflow: 'unset' }}>
+                            <Table sx={{ minWidth: 800 }}>
+                                <SharedTableHead
+                                    order={order}
+                                    orderBy={orderBy}
+                                    rowCount={dispatchesData.length}
+                                    numSelected={selected.length}
+                                    onRequestSort={handleSort}
+                                    headLabel={deliveryOrderHeaderRow}
                                 />
+                                <TableBody>
+                                    {dataFiltered
+                                        .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
+                                        .map((row) => (
 
-                                {notFound && <TableNoData query={filterName} />}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Scrollbar>
+                                            <DoOrderTableRow
+                                                orderNo={row.loading_instruction[0].order_head.id}
+                                                invoiceNo={row.loading_instruction[0].lr_number}
+                                                doNo={row.do_num}
+                                                millName={row.mill.name}
+                                                name={row.trader}
+                                                date={row.loading_instruction[0].date ? format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy') : 'Not given'}
+                                                vehicleNumber={row.vehicle_num !== null ? row.vehicle_num : '   Not given'}
+                                                quantity={row.qty}
+                                                billedTo={`${row.loading_instruction[0].billing_address.name}\n${row.billing_gstin}\n${row.loading_instruction[0].billing_address.address}`}
+                                                shipTo={`${row.loading_instruction[0].address.name}\n${row.address_gstin}\n${row.loading_instruction[0].address.address}`}
+                                                rate={row.loading_instruction[0].qty}
+                                                grade={row.loading_instruction[0].order_head.price}
 
-                <TablePagination
-                    page={page}
-                    component="div"
-                    count={dataFiltered.length}
-                    rowsPerPage={rowsPerPage}
-                    onPageChange={handleChangePage}
-                    rowsPerPageOptions={[15, 30, 45]}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            </Card>
+                                            />
+                                        ))}
+
+                                    <TableEmptyRows
+                                        height={77}
+                                        emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
+                                    />
+
+                                    {notFound && <TableNoData query={filterName} />}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Scrollbar>
+
+                    <TablePagination
+                        page={page}
+                        component="div"
+                        count={dataFiltered.length}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={handleChangePage}
+                        rowsPerPageOptions={[15, 30, 45]}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Card>) : (
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                    <SkeletonLoader />
+                </Box>
+            )}
         </>
     );
 }

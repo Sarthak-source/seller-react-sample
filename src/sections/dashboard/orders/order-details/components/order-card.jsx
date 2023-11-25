@@ -12,9 +12,6 @@ export default function OrderCard({ data }) {
     return value.toString();
   }
 
-  console.log('OrderCard', data)
-
-
   return (
     <Link to={`/home/order-details/${data.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
 
@@ -28,10 +25,10 @@ export default function OrderCard({ data }) {
           padding: '10px',
 
         }}>
-          <Typography variant="subtitle1">Order No. {data.id}</Typography>
+          <Typography variant="subtitle1" >Order No. {data.id}</Typography>
           <Box mt={1}>
-            <Typography variant="h6">{data.mill.name}</Typography>
-            <Typography variant="subtitle3" color="textSecondary">{`${data.mill.location} (${data.mill.state.name})`}</Typography>
+            <Typography variant="h6" color="primary.main">{data.mill.name}</Typography>
+            <Typography variant="subtitle1"  color="textSecondary" mt={1}>{`${data.mill.location} (${data.mill.state.name})`}</Typography>
           </Box>
         </Box>
         <Divider />

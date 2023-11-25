@@ -4,9 +4,9 @@ import store from '../redux/configure-store';
 import { ApiAppConstants, auth } from './api-constants';
 import NetworkAxios from './network_axios';
 
+const state = store.getState();
 
 function selectedUser() {
-  const state = store.getState();
   if (state.user && state.user.selectedUser) {
     console.log('current user', state.user.selectedUser.id);
     return state.user.selectedUser.id;
@@ -16,10 +16,8 @@ function selectedUser() {
 }
 
 
-selectedUser()
-
 const sellerId = selectedUser() ?? "85";
-const selectedMillId = localStorage.getItem('selectedMillId') ?? '';
+
 
 const NetworkRepository = {
   userSignup: async (name, password, number) => {
@@ -99,37 +97,33 @@ const NetworkRepository = {
   },
 
 
-  sellerTender: async (page, status) => {
+  sellerTender: async (page, status, millId) => {
     try {
-      console.log('sellerId',sellerId)
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.sellerTender}?seller=${sellerId}&status=${status}&page=${page}&mill_pk=${localStorage.getItem('selectedMillId') || ''}`,
+        url: `${ApiAppConstants.sellerTender}?seller=${sellerId}&status=${status}&page=${page}&mill_pk=${millId || ''}`,
         header: { authorization: auth }
       });
 
       console.log('Seller Tender Response:', apiResponse);
 
       if (apiResponse.error_description !== null) {
-        // Assuming you're using a toast notification library
         toast.success(apiResponse.error_description);
       }
       return apiResponse;
     } catch (error) {
       console.error('Error:', error);
-
-      // Assuming you're using a toast notification library
       toast.error(error.detail);
       throw error.toString();
     }
   },
 
 
-  getPayments: async (date, page, status) => {
+  getPayments: async (date, page, status, millId) => {
     try {
-      let paymentsUrl = `${ApiAppConstants.payments}?seller=${sellerId}&mill_pk=${selectedMillId ?? ''}&page=${page}&status=${status}`;
+      let paymentsUrl = `${ApiAppConstants.payments}?seller=${sellerId}&mill_pk=${millId ?? ''}&page=${page}&status=${status}`;
 
       if (date !== '') {
-        paymentsUrl = `${ApiAppConstants.payments}?seller=${sellerId}&mill_pk=${selectedMillId ?? ''}&page=${page}&date=${date}&status=${status}`;
+        paymentsUrl = `${ApiAppConstants.payments}?seller=${sellerId}&mill_pk=${millId ?? ''}&page=${page}&date=${date}&status=${status}`;
       }
 
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
@@ -146,9 +140,9 @@ const NetworkRepository = {
     }
   },
 
-  allOrders: async (status, page) => {
+  allOrders: async (status, page, millId) => {
     try {
-      const ordersUrl = `${ApiAppConstants.orderListView}?seller=${sellerId}&status=${status}&page=${page}&mill_pk=${selectedMillId || ''}`;
+      const ordersUrl = `${ApiAppConstants.orderListView}?seller=${sellerId}&status=${status}&page=${page}&mill_pk=${millId || ''}`;
 
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: ordersUrl,
@@ -164,10 +158,28 @@ const NetworkRepository = {
     }
   },
 
-  deliveryOrders: async (page, text) => {
+
+  invoicesVehicleDetails: async (order) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: text !== '' ? `${ApiAppConstants.deliveryOrders}?seller=${sellerId}&characters=${text}` : `${ApiAppConstants.deliveryOrders}?seller=${sellerId}&page=${page}&mill_pk=${selectedMillId || ''}`,
+        url: `${ApiAppConstants.invoices}?seller=${sellerId}&page=1&order=${order}`,
+        header: { authorization: auth },
+      });
+
+      console.log('invoicesVehicleDetails', apiResponse.data);
+
+      return apiResponse;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error.toString();
+    }
+  },
+
+  deliveryOrders: async (page, text, millId) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: text !== '' ? `${ApiAppConstants.deliveryOrders}?seller=${sellerId}&characters=${text}`
+          : `${ApiAppConstants.deliveryOrders}?seller=${sellerId}&page=${page}&mill_pk=${millId || ''}`,
 
         header: { authorization: auth },
       });
@@ -181,10 +193,11 @@ const NetworkRepository = {
     }
   },
 
-  book: async (page, text, status) => {
+  book: async (page, text, status, millId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: text !== '' ? `${ApiAppConstants.loadingInstructions}?seller=${sellerId}&characters=${text}` : `${ApiAppConstants.loadingInstructions}?seller=${sellerId}&page=${page}&mill_pk=${selectedMillId || ''}&status=${status}`,
+        url: text !== '' ? `${ApiAppConstants.loadingInstructions}?seller=${sellerId}&characters=${text}` :
+          `${ApiAppConstants.loadingInstructions}?seller=${sellerId}&page=${page}&mill_pk=${millId || ''}&status=${status}`,
 
         header: { authorization: auth },
       });
@@ -198,11 +211,11 @@ const NetworkRepository = {
     }
   },
 
-  invoicesReport: async (page, text, status) => {
+  invoicesReport: async (page, text, status, millId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: text !== '' ? `${ApiAppConstants.invoices}?seller=${sellerId}&characters=${text}` : `${ApiAppConstants.invoices}?seller=${sellerId}&page=${page}&mill_pk=${selectedMillId || ''}&status=${status}`,
-
+        url: text !== '' ? `${ApiAppConstants.invoices}?seller=${sellerId}&characters=${text}` :
+          `${ApiAppConstants.invoices}?seller=${sellerId}&page=${page}&mill_pk=${millId || ''}&status=${status}`,
         header: { authorization: auth },
       });
 
@@ -219,17 +232,17 @@ const NetworkRepository = {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.order}/${orderID}`,
-        headers: { authorization: auth }
+        header: { authorization: auth },
       });
 
       const orderSeller = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.orderSeller}?order=${orderID}`,
-        headers: { authorization: auth }
+        header: { authorization: auth },
       });
 
       // Assuming NetworkAxios returns JSON responses
-      const order = apiResponse.body;
-      const seller = orderSeller.body;
+      const order = apiResponse;
+      const seller = orderSeller;
 
       console.log('Order Summary Response:', orderSeller);
 

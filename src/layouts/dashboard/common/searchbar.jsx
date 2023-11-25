@@ -1,16 +1,13 @@
-import { useState } from 'react';
-
-import Input from '@mui/material/Input';
-import Slide from '@mui/material/Slide';
 import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
-
-import { bgBlur } from 'src/theme/css';
-
+import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
+import InputAdornment from '@mui/material/InputAdornment';
+import Slide from '@mui/material/Slide';
+import { styled } from '@mui/material/styles';
+import { useState } from 'react';
 import Iconify from 'src/components/iconify';
+import { bgBlur } from 'src/theme/css';
 
 // ----------------------------------------------------------------------
 
@@ -55,7 +52,7 @@ export default function Searchbar() {
       <div>
         {!open && (
           <IconButton onClick={handleOpen}>
-            <Iconify icon="eva:search-fill" color='primary.main'/>
+            <Iconify icon="eva:search-fill" color='primary.main' />
           </IconButton>
         )}
 
