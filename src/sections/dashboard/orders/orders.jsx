@@ -10,7 +10,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
 import { format, parseISO } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
@@ -35,7 +35,8 @@ export default function OrdersView() {
     const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [totalDataCount, setTotalDataCount] = useState(0);
-    const steps = ['All', 'Bids', 'Accepted', 'Completed', 'Rejected'];
+    const steps = useMemo(() => ['All', 'Bids', 'Accepted', 'Completed', 'Rejected'], []);
+    const querySteps = useMemo(() => ['All', 'Approved', 'Booked', 'DOIssued', 'Rejected',], []);
     const [ordersData, setOrdersData] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -74,8 +75,8 @@ export default function OrdersView() {
                 setLoading(false); // Set loading to false when data is fetched (whether successful or not)
             }
         };
-        fetchOrdersData(page, '', selectedMill.id);
-    }, [page, pagination, selectedMill]);
+        fetchOrdersData(page, querySteps[activeStep], selectedMill.id);
+    }, [page, pagination, querySteps, selectedMill, activeStep]);
 
 
     const handleSort = (event, id) => {
@@ -99,12 +100,10 @@ export default function OrdersView() {
     };
 
     const tenderSearch =
-    ordersData.filter((item) =>
-        item.tender_head.mill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.id.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    
+        ordersData.filter((item) =>
+            item.tender_head.mill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.id.toString().toLowerCase().includes(searchTerm.toLowerCase())
+        );
 
     const dataFiltered = applyFilter({
         inputData: tenderSearch,
@@ -178,7 +177,6 @@ export default function OrdersView() {
                                 onClick={() => handleStepClick(index)}
                             >
                                 <Box sx={{ width: 1, transform: 'scale(0.85)' }}>{label}</Box>
-
                             </StepLabel>
                         </Step>
                     ))}
@@ -232,7 +230,7 @@ export default function OrdersView() {
                                         emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
                                     />
 
-                                    {notFound && <TableNoData query={filterName} />}
+                                    {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>
                             </Table>
                         </TableContainer>
