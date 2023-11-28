@@ -35,8 +35,8 @@ export default function OrderDetails() {
                 setLoading(false);
             }
         };
-        fetchOrderData(selectedOrder.id);
-    }, [selectedOrder]);
+        fetchOrderData(data);
+    }, [data]);
 
     console.log(orderSummary)
 
