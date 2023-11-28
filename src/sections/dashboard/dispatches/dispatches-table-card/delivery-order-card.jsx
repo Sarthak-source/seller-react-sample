@@ -101,73 +101,67 @@ export default function DeliveryOrderCard(
     const notFound = !dataFiltered.length;
     return (
         <>
-            {!loading ? (
-                <Card>
-                    <TableToolbar
-                        numSelected={selected.length}
-                        filterName={filterName}
-                        onFilterName={handleFilterByName}
-                        label='Search dispatches..'
-                    />
 
-                    <Scrollbar>
-                        <TableContainer sx={{ overflow: 'unset' }}>
-                            <Table sx={{ minWidth: 800 }}>
-                                <SharedTableHead
-                                    order={order}
-                                    orderBy={orderBy}
-                                    rowCount={dispatchesData.length}
-                                    numSelected={selected.length}
-                                    onRequestSort={handleSort}
-                                    headLabel={deliveryOrderHeaderRow}
+            <Card>
+                <TableToolbar
+                    numSelected={selected.length}
+                    filterName={filterName}
+                    onFilterName={handleFilterByName}
+                    label='Search dispatches..'
+                />
+                <Scrollbar>
+                    <TableContainer sx={{ overflow: 'unset' }}>
+                        <Table sx={{ minWidth: 800 }}>
+                            <SharedTableHead
+                                order={order}
+                                orderBy={orderBy}
+                                rowCount={dispatchesData.length}
+                                numSelected={selected.length}
+                                onRequestSort={handleSort}
+                                headLabel={deliveryOrderHeaderRow}
+                            />
+                            {!loading ? (<TableBody>
+                                {dataFiltered
+                                    .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
+                                    .map((row) => (
+                                        <DoOrderTableRow
+                                            orderNo={row.loading_instruction[0].order_head.id}
+                                            invoiceNo={row.loading_instruction[0].lr_number}
+                                            doNo={row.do_num}
+                                            millName={row.mill.name}
+                                            name={row.trader}
+                                            date={row.loading_instruction[0].date ? format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy') : 'Not given'}
+                                            vehicleNumber={row.vehicle_num !== null ? row.vehicle_num : '   Not given'}
+                                            quantity={row.qty}
+                                            billedTo={`${row.loading_instruction[0].billing_address.name}\n${row.billing_gstin}\n${row.loading_instruction[0].billing_address.address}`}
+                                            shipTo={`${row.loading_instruction[0].address.name}\n${row.address_gstin}\n${row.loading_instruction[0].address.address}`}
+                                            rate={row.loading_instruction[0].qty}
+                                            grade={row.loading_instruction[0].order_head.price}
+                                        />
+                                    ))}
+                                <TableEmptyRows
+                                    height={77}
+                                    emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
                                 />
-                                <TableBody>
-                                    {dataFiltered
-                                        .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
-                                        .map((row) => (
-
-                                            <DoOrderTableRow
-                                                orderNo={row.loading_instruction[0].order_head.id}
-                                                invoiceNo={row.loading_instruction[0].lr_number}
-                                                doNo={row.do_num}
-                                                millName={row.mill.name}
-                                                name={row.trader}
-                                                date={row.loading_instruction[0].date ? format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy') : 'Not given'}
-                                                vehicleNumber={row.vehicle_num !== null ? row.vehicle_num : '   Not given'}
-                                                quantity={row.qty}
-                                                billedTo={`${row.loading_instruction[0].billing_address.name}\n${row.billing_gstin}\n${row.loading_instruction[0].billing_address.address}`}
-                                                shipTo={`${row.loading_instruction[0].address.name}\n${row.address_gstin}\n${row.loading_instruction[0].address.address}`}
-                                                rate={row.loading_instruction[0].qty}
-                                                grade={row.loading_instruction[0].order_head.price}
-
-                                            />
-                                        ))}
-
-                                    <TableEmptyRows
-                                        height={77}
-                                        emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
-                                    />
-
-                                    {notFound && <TableNoData query={filterName} />}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Scrollbar>
-
-                    <TablePagination
-                        page={page}
-                        component="div"
-                        count={dataFiltered.length}
-                        rowsPerPage={rowsPerPage}
-                        onPageChange={handleChangePage}
-                        rowsPerPageOptions={[15, 30, 45]}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Card>) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-                    <SkeletonLoader />
-                </Box>
-            )}
+                                {notFound && <TableNoData query={filterName} />}
+                            </TableBody>) : (
+                                <Box sx={{ display: 'flex', justifyContent: 'center', marginLeft: 2, alignItems: 'center', height: '250px', transform: 'scaleX(90)' }}>
+                                    <SkeletonLoader />
+                                </Box>
+                            )}
+                        </Table>
+                    </TableContainer>
+                </Scrollbar>
+                <TablePagination
+                    page={page}
+                    component="div"
+                    count={dataFiltered.length}
+                    rowsPerPage={rowsPerPage}
+                    onPageChange={handleChangePage}
+                    rowsPerPageOptions={[15, 30, 45]}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            </Card>
         </>
     );
 }

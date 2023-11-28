@@ -1,10 +1,11 @@
-import { Button, Stack, Typography } from '@mui/material';
+import { Fab, Stack, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import Iconify from 'src/components/iconify';
 
 
 export default function ProductWiseReportView() {
@@ -38,27 +39,29 @@ export default function ProductWiseReportView() {
     />
   );
 
-  console.log('selectedUser.mills',selectedUser.mills)
+  console.log('selectedUser.mills', selectedUser.mills)
 
-  const FullScreen = ({title}) => (
-    <Button onClick={toggleFullScreen} variant="outlined" color="primary">
-      {title}
-    </Button>
+  const FullScreen = ({ icon }) => (
+    <Fab onClick={toggleFullScreen} color="primary" sx={{ mt: 2, position: 'fixed', top: "85%", right: 16 }}>
+      {icon}
+    </Fab>
   );
 
   FullScreen.propTypes = {
-    title: PropTypes.string.isRequired,
+    icon: PropTypes.element.isRequired,
   };
 
   return (
     <>
       {isFullScreen ? (
         <Card sx={{ p: 2, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}>
-          <FullScreen title='Exit Full Screen' />
+          {selectedOption && selectedProduct && <FullScreen title='Exit Full Screen' icon={<Iconify icon="bi:fullscreen-exit" />} />}
           {selectedOption && selectedProduct && <IframeBody />}
         </Card>
       ) : (
         <Card sx={{ p: 2 }}>
+          {selectedOption && selectedProduct && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
+
           <Stack direction="row">
             <Stack>
               <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold">
@@ -100,7 +103,8 @@ export default function ProductWiseReportView() {
                     .find((mill) => mill.id === selectedOption)
                     ?.products.map((product) => (
                       <MenuItem key={product.id} value={product.id}>
-                        {product.product_type.product_type.code} {product.product_type.code}
+                        {product.product_type.product_type} {`(${product.code})`}
+
                       </MenuItem>
                     ))}
                 </Select>
@@ -108,7 +112,6 @@ export default function ProductWiseReportView() {
             </Stack>
           </Stack>
           {selectedOption && selectedProduct && <IframeBody />}
-          {selectedOption && selectedProduct && <FullScreen title='Go to full Screen' />}
         </Card>
       )}
     </>

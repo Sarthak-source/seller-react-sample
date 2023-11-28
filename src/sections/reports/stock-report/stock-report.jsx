@@ -1,7 +1,9 @@
-import { Button, Card, MenuItem, Select, Typography } from '@mui/material';
+import { Card, Fab, MenuItem, Select, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import Iconify from 'src/components/iconify';
+
 
 export default function StockReportView() {
   const [selectedOption, setSelectedOption] = useState('');
@@ -30,21 +32,21 @@ export default function StockReportView() {
     />
   );
 
-  const FullScreen = ({ title }) => (
-    <Button onClick={toggleFullScreen} variant="outlined" color="primary">
-      {title}
-    </Button>
+  const FullScreen = ({ icon }) => (
+    <Fab onClick={toggleFullScreen} color="primary" sx={{ mt: 2, position: 'fixed', top: "85%", right: 16 }}>
+      {icon}
+    </Fab>
   );
 
   FullScreen.propTypes = {
-    title: PropTypes.string.isRequired,
+    icon: PropTypes.string.isRequired,
   };
 
   return (
     <>
       {isFullScreen ? (
         <Card sx={{ p: 2, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}>
-          <FullScreen title='Exit Full Screen' />
+          {selectedOption && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
           {selectedOption && <IframeBody />}
         </Card>
       ) : (
@@ -70,7 +72,7 @@ export default function StockReportView() {
           </Select>
 
           {selectedOption && <IframeBody />}
-          {selectedOption && <FullScreen title='Go to full Screen' />}
+          {selectedOption && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
         </Card>
       )}
     </>

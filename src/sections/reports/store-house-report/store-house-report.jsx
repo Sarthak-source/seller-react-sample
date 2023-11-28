@@ -1,13 +1,13 @@
-import { Button, Card, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Card, Fab, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import Iconify from 'src/components/iconify';
 
 import { DatePicker } from '@mui/x-date-pickers';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-
 
 export default function StoreHouseReportView() {
   const [selectedOption, setSelectedOption] = useState('');
@@ -20,15 +20,11 @@ export default function StoreHouseReportView() {
     setSelectedOption(event.target.value);
   };
 
-
-
   const handleFromDateChange = (date) => {
-
     setFromDate(date);
   };
 
   const handleToDateChange = (date) => {
-
     setToDate(date);
   };
 
@@ -57,22 +53,22 @@ export default function StoreHouseReportView() {
     />
   );
 
-  const FullScreen = ({ title }) => (
-    <Button onClick={toggleFullScreen} variant="outlined" color="primary">
-      {title}
-    </Button>
+  const FullScreen = ({ icon }) => (
+    <Fab onClick={toggleFullScreen} color="primary" sx={{ mt: 2, position: 'fixed', top: "85%", right: 16 }}>
+      {icon}
+    </Fab>
   );
 
   FullScreen.propTypes = {
-    title: PropTypes.string.isRequired,
+    icon: PropTypes.string.isRequired,
   };
 
   return (
     <>
       {isFullScreen ? (
         <Card sx={{ p: 2, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}>
-          <FullScreen title='Exit Full Screen' />
-          {selectedOption &&fromDate&&toDate&& <IframeBody />}
+          {selectedOption && fromDate && toDate && <FullScreen icon={<Iconify icon="bi:fullscreen-exit" />} />}
+          {selectedOption && fromDate && toDate && <IframeBody />}
         </Card>
       ) : (
         <Card sx={{ p: 2 }}>
@@ -125,8 +121,8 @@ export default function StoreHouseReportView() {
               </LocalizationProvider>
             </Stack>
           </Stack>
-          {selectedOption &&fromDate&&toDate && <IframeBody />}
-          {selectedOption &&fromDate&&toDate&& <FullScreen title='Go to Full Screen' />}
+          {selectedOption && fromDate && toDate && <IframeBody />}
+          {selectedOption && fromDate && toDate && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
         </Card>
       )}
     </>

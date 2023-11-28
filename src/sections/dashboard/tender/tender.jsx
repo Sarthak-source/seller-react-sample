@@ -208,7 +208,6 @@ export default function TenderView() {
                         onDownload={handleExportCSV}
                         label='Search tenders..'
                     />
-
                     <Scrollbar>
                         <TableContainer sx={{ overflow: 'unset' }}>
                             <Table sx={{ minWidth: 800 }}>
