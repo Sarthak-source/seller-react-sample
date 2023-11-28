@@ -15,6 +15,7 @@ export const TenderDetails = lazy(() => import('src/sections/dashboard/tender/te
 export const OrderDetails = lazy(() => import('src/sections/dashboard/orders/order-details/order-details'));
 export const TraderDetails = lazy(() => import('src/pages/traders'));
 export const ProfileDetails = lazy(() => import('src/pages/profile'));
+export const ReportDetails = lazy(() => import('src/pages/reports'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -30,6 +31,7 @@ export default function Router() {
     { path: 'tender-create', element: <TenderCreate /> },
     { path: 'traders', element: <TraderDetails /> },
     { path: 'profile', element: <ProfileDetails /> },
+    { path: 'reports', element: <ReportDetails /> },
   ];
   const routes = useRoutes([
     {

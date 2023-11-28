@@ -4,6 +4,8 @@ const testip = '192.46.215.236';
 
 const prod = '139.162.12.150';
 
+const local= '192.168.1.14:8000';
+
 const ip = localStorage.getItem('isTestEnvironment') === 'true'
     ? testip
     : prod;
@@ -72,5 +74,5 @@ const ApiAppConstants = {
     getInvoiceDoc:'/get_doc/invoice/'
 };
 
-export { ApiAppConstants, auth, ip };
+export { ApiAppConstants, auth, ip, testip };
 

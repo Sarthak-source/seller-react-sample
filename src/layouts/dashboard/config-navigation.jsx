@@ -22,6 +22,11 @@ const navConfig = [
     path: '/home/profile',
     icon: icon('ic_user'),
   },
+  {
+    title: 'reports',
+    path: '/home/reports',
+    icon: icon('ic_report'),
+  },
   // {
   //   title: 'Not found',
   //   path: '/404',
