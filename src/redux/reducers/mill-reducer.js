@@ -1,7 +1,7 @@
 import * as actionTypes from '../action-types/action-types';
 
 const storedMill = localStorage.getItem('mill');
-const storedSelectedMill = storedMill ? JSON.parse(storedMill) : null;
+const storedSelectedMill = storedMill ? JSON.parse(storedMill) : '';
 
 const initialState = {
     selectedMill: storedSelectedMill,

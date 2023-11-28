@@ -83,7 +83,7 @@ const NetworkAxiosOptions = {
 
     async postAxiosHttpMethod({ url, data, header }) {
         try {
-            console.log('hereeweee', `${this.endPointUrl}${url}`)
+            console.log('postAxiosHttpMethod', `${this.endPointUrl}${url}`)
             const response = await this.axiosOptions.post(`${this.endPointUrl}${url}`, data, { headers: header || this.cacheOptions });
             return response.data;
         } catch (error) {

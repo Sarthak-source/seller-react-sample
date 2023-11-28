@@ -55,6 +55,8 @@ export default function TenderView() {
         router.replace('/home/tender-create');
     };
 
+    console.log('tenderData',tenderData)
+
     useEffect(() => { }, [searchTerm])
 
     useEffect(() => {
