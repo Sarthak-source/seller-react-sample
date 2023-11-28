@@ -102,7 +102,7 @@ export default function LoadingsInstructionCard(
         filterName,
     });
 
-    const notFound = !dataFiltered.length && !!filterName;
+    const notFound = !dataFiltered.length;
     return (
         <>
            

@@ -126,7 +126,7 @@ export default function TenderView() {
         filterName,
     });
 
-    const notFound = !dataFiltered.length && !!filterName;
+    const notFound = !dataFiltered.length;
 
     const dataFormated = dataFiltered.map(row => ({
         key: row.id,

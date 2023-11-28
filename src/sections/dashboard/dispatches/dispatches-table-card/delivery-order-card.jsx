@@ -98,7 +98,7 @@ export default function DeliveryOrderCard(
 
     console.log('derlivery', dataFiltered)
 
-    const notFound = !dataFiltered.length && !!filterName;
+    const notFound = !dataFiltered.length;
     return (
         <>
             {!loading ? (

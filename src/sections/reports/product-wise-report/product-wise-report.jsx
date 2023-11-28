@@ -38,6 +38,8 @@ export default function ProductWiseReportView() {
     />
   );
 
+  console.log('selectedUser.mills',selectedUser.mills)
+
   const FullScreen = ({title}) => (
     <Button onClick={toggleFullScreen} variant="outlined" color="primary">
       {title}
@@ -98,7 +100,7 @@ export default function ProductWiseReportView() {
                     .find((mill) => mill.id === selectedOption)
                     ?.products.map((product) => (
                       <MenuItem key={product.id} value={product.id}>
-                        {product.product_type.product_type} {/* Use the appropriate property */}
+                        {product.product_type.product_type.code} {product.product_type.code}
                       </MenuItem>
                     ))}
                 </Select>

@@ -94,7 +94,7 @@ export default function InoviceCard(
 
     console.log('ivoice', dataFiltered)
 
-    const notFound = !dataFiltered.length && !!filterName;
+    const notFound = !dataFiltered.length;
     return (
         <>
             {!loading ? (

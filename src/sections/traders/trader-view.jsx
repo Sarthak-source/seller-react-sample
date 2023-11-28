@@ -78,7 +78,7 @@ export default function TraderView() {
         filterName,
     });
 
-    const notFound = !dataFiltered.length && !!filterName;
+    const notFound = !dataFiltered.length;
 
     return (
         <Container maxWidth="xl">
