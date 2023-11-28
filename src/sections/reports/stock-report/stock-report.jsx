@@ -30,7 +30,7 @@ export default function StockReportView() {
     />
   );
 
-  const FullScreen = ({title}) => (
+  const FullScreen = ({ title }) => (
     <Button onClick={toggleFullScreen} variant="outlined" color="primary">
       {title}
     </Button>

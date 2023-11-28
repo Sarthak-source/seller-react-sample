@@ -27,15 +27,7 @@ export default defineConfig({
     ],
   },
   server: {
-    port: 80,
-    proxy: {
-      // Proxy setup example
-      '/api': {
-        target: 'http://192.46.215.236',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
+    port: 3030,
   },
   preview: {
     port: 3030,
