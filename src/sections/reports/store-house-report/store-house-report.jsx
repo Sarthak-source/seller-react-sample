@@ -2,16 +2,18 @@ import { Card, Fab, MenuItem, Select, Stack, Typography } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import dayjs from 'dayjs';
 import Iconify from 'src/components/iconify';
 
 import { DatePicker } from '@mui/x-date-pickers';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import RenderHtmlFromLink from '../render-html';
 
 export default function StoreHouseReportView() {
   const [selectedOption, setSelectedOption] = useState('');
-  const [fromDate, setFromDate] = useState('');
+  const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const selectedUser = useSelector((state) => state.user.selectedUser);
@@ -28,30 +30,21 @@ export default function StoreHouseReportView() {
     setToDate(date);
   };
 
-  const formateDate = (date) => date.toDate().toLocaleDateString('en-IN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-
+  const formateDate = (date) => {
+    console.log('Received date:', date);
+  
+    
+      const formattedDate = dayjs(date).format('YYYY-MM-DD');
+      console.log('Formatted date:', formattedDate);
+      return formattedDate;
+    
+  };
+  
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
   };
 
-  const IframeBody = () => (
-    <iframe
-      src={`http://192.46.215.236/reports/store_reports_rg1/?mill_pk=${encodeURIComponent(selectedOption)}
-      &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate((toDate)))}`}
-      title="Order Dashboard"
-      style={{
-        height: '100vh',
-        width: '100%',
-        border: 'none',
-        marginTop: '20px',
-      }}
-    />
-  );
 
   const FullScreen = ({ icon }) => (
     <Fab onClick={toggleFullScreen} color="primary" sx={{ mt: 2, position: 'fixed', top: "85%", right: 16 }}>
@@ -68,11 +61,13 @@ export default function StoreHouseReportView() {
       {isFullScreen ? (
         <Card sx={{ p: 2, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}>
           {selectedOption && fromDate && toDate && <FullScreen icon={<Iconify icon="bi:fullscreen-exit" />} />}
-          {selectedOption && fromDate && toDate && <IframeBody />}
+          {selectedOption && fromDate && toDate && <RenderHtmlFromLink
+            link={`http://192.46.215.236/reports/storeHouse_reports/?mill_pk=${encodeURIComponent(selectedOption)}
+                   &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate(toDate))}`} />}
         </Card>
       ) : (
         <Card sx={{ p: 2 }}>
-          <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={2} overflow>
             <Stack>
               <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold">
                 Select mill
@@ -121,7 +116,9 @@ export default function StoreHouseReportView() {
               </LocalizationProvider>
             </Stack>
           </Stack>
-          {selectedOption && fromDate && toDate && <IframeBody />}
+          {selectedOption && fromDate && toDate && <RenderHtmlFromLink
+            link={`http://192.46.215.236/reports/storeHouse_reports/?mill_pk=${encodeURIComponent(selectedOption)}
+                 &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate(toDate))}`} />}
           {selectedOption && fromDate && toDate && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
         </Card>
       )}

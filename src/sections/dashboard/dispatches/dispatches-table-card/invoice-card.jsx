@@ -26,7 +26,6 @@ export default function InoviceCard(
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
-    const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [dispatchesData, setDispatchesData] = useState([]);
     const { loadingInstructionHeaderRow } = useDispatchesTableFormat();
@@ -80,16 +79,12 @@ export default function InoviceCard(
         }
     };
 
-    const handleFilterByName = (event) => {
-        setPage(1);
-        setFilterName(event.target.value);
-    };
-
+   
 
     const dataFiltered = applyFilter({
         inputData: dispatchesData,
         comparator: getComparator(order, orderBy),
-        filterName,
+       
     });
 
     console.log('ivoice', dataFiltered)
@@ -101,8 +96,7 @@ export default function InoviceCard(
                 <Card>
                     <TableToolbar
                         numSelected={selected.length}
-                        filterName={filterName}
-                        onFilterName={handleFilterByName}
+                      
                         label='Search dispatches..'
                     />
                     <Scrollbar>
@@ -139,7 +133,7 @@ export default function InoviceCard(
                                         height={77}
                                         emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
                                     />
-                                    {notFound && <TableNoData query={filterName} />}
+                                    {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>
                             </Table>
                         </TableContainer>

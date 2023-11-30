@@ -29,7 +29,6 @@ export default function DeliveryOrderCard(
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
-    const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [dispatchesData, setDispatchesData] = useState([]);
     const { deliveryOrderHeaderRow } = useDispatchesTableFormat();
@@ -84,16 +83,13 @@ export default function DeliveryOrderCard(
         }
     };
 
-    const handleFilterByName = (event) => {
-        setPage(1);
-        setFilterName(event.target.value);
-    };
+
 
 
     const dataFiltered = applyFilter({
         inputData: dispatchesData,
         comparator: getComparator(order, orderBy),
-        filterName,
+
     });
 
     console.log('derlivery', dataFiltered)
@@ -105,8 +101,6 @@ export default function DeliveryOrderCard(
             <Card>
                 <TableToolbar
                     numSelected={selected.length}
-                    filterName={filterName}
-                    onFilterName={handleFilterByName}
                     label='Search dispatches..'
                 />
                 <Scrollbar>
@@ -143,7 +137,7 @@ export default function DeliveryOrderCard(
                                     height={77}
                                     emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
                                 />
-                                {notFound && <TableNoData query={filterName} />}
+                                {notFound && <TableNoData query={searchTerm} />}
                             </TableBody>) : (
                                 <Box sx={{ display: 'flex', justifyContent: 'center', marginLeft: 2, alignItems: 'center', height: '250px', transform: 'scaleX(90)' }}>
                                     <SkeletonLoader />

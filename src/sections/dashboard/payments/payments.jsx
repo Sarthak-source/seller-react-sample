@@ -37,7 +37,6 @@ export default function PaymentsView() {
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
-    const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [paymentsData, setPaymentsData] = useState([]);
     const steps = useMemo(() => ['All', 'Verified', 'Returned', 'Cancelled'], []);
@@ -136,7 +135,7 @@ export default function PaymentsView() {
     const dataFiltered = applyFilter({
         inputData: tenderSearch,
         comparator: getComparator(order, orderBy),
-        filterName,
+
     });
 
     const dataFormatted = dataFiltered.map(row => ({
@@ -174,7 +173,7 @@ export default function PaymentsView() {
     };
 
 
-    const notFound = !dataFiltered.length ;
+    const notFound = !dataFiltered.length;
 
     return (
         <>
@@ -219,7 +218,7 @@ export default function PaymentsView() {
                 <Card>
                     <TableToolbar
                         numSelected={selected.length}
-                        filterName={filterName}
+
                         onDownload={handleExportCSV}
                         label='Search payments..'
                     />
@@ -253,7 +252,7 @@ export default function PaymentsView() {
                                         height={77}
                                         emptyRows={emptyRows(page, rowsPerPage / 15, paymentsData.length)}
                                     />
-                                    {notFound && <TableNoData query={filterName} />}
+                                    {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>
                             </Table>
                         </TableContainer>

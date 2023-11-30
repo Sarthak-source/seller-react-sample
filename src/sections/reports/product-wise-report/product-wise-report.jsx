@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Iconify from 'src/components/iconify';
+import RenderHtmlFromLink from '../render-html';
 
 
 export default function ProductWiseReportView() {
@@ -26,18 +27,7 @@ export default function ProductWiseReportView() {
     setIsFullScreen(!isFullScreen);
   };
 
-  const IframeBody = () => (
-    <iframe
-      src={`http://192.46.215.236/reports/product_reports/?mill_pk=${encodeURIComponent(selectedOption)}&product_pk=${encodeURIComponent(selectedProduct)}`}
-      title="Order Dashboard"
-      style={{
-        height: '100vh',
-        width: '100%',
-        border: 'none',
-        marginTop: '20px',
-      }}
-    />
-  );
+  const link = `http://192.46.215.236/reports/product_reports/?mill_pk=${encodeURIComponent(selectedOption)}&product_pk=${encodeURIComponent(selectedProduct)}`;
 
   console.log('selectedUser.mills', selectedUser.mills)
 
@@ -56,7 +46,7 @@ export default function ProductWiseReportView() {
       {isFullScreen ? (
         <Card sx={{ p: 2, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}>
           {selectedOption && selectedProduct && <FullScreen title='Exit Full Screen' icon={<Iconify icon="bi:fullscreen-exit" />} />}
-          {selectedOption && selectedProduct && <IframeBody />}
+          {selectedOption && selectedProduct && <RenderHtmlFromLink link={link} />}
         </Card>
       ) : (
         <Card sx={{ p: 2 }}>
@@ -111,7 +101,7 @@ export default function ProductWiseReportView() {
               )}
             </Stack>
           </Stack>
-          {selectedOption && selectedProduct && <IframeBody />}
+          {selectedOption && selectedProduct && <RenderHtmlFromLink link={link} />}
         </Card>
       )}
     </>

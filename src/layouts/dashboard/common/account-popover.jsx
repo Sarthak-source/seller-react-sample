@@ -9,7 +9,9 @@ import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import { alpha } from '@mui/material/styles';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUser } from 'src/redux/actions/user-actions';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +35,8 @@ const MENU_OPTIONS = [
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const selectedUser = useSelector((state) => state.user.selectedUser);
-
+  const dispatch = useDispatch();
+  const router = useRouter();
 
 
 
@@ -43,6 +46,11 @@ export default function AccountPopover() {
 
   const handleClose = () => {
     setOpen(null);
+  };
+
+  const handleLogOut = () => {
+    dispatch(selectUser(null))
+    router.replace('/');
   };
 
   return (
@@ -94,7 +102,7 @@ export default function AccountPopover() {
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
             {selectedUser.phone_number}
           </Typography>
-          
+
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
@@ -110,7 +118,7 @@ export default function AccountPopover() {
         <MenuItem
           disableRipple
           disableTouchRipple
-          onClick={handleClose}
+          onClick={handleLogOut}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
           Logout

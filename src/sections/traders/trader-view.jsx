@@ -30,7 +30,6 @@ export default function TraderView() {
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
-    const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [traderData, setTraderData] = useState([]);
     const { traderHeaderRow } = useTraderTableFormat();
@@ -75,7 +74,6 @@ export default function TraderView() {
     const dataFiltered = applyFilter({
         inputData: traderSearch,
         comparator: getComparator(order, orderBy),
-        filterName,
     });
 
     const notFound = !dataFiltered.length;
@@ -93,7 +91,7 @@ export default function TraderView() {
                 <TableToolbar
                     numSelected={0}
                     showIcons={false}
-                    filterName={filterName}
+                   
                     label='Search name or Phone no..'
                 />
                 <Scrollbar>
@@ -125,7 +123,7 @@ export default function TraderView() {
                                     height={77}
                                     emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
                                 />
-                                {notFound && <TableNoData query={filterName} />}
+                                {notFound && <TableNoData query={searchTerm} />}
                             </TableBody>
                         </Table>
                     </TableContainer>

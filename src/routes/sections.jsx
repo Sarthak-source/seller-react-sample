@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import { useSelector } from 'react-redux';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 import DashboardLayout from 'src/layouts/dashboard';
 import { DashboardView } from 'src/sections/dashboard';
@@ -21,9 +22,11 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 // ----------------------------------------------------------------------
 
 export default function Router() {
-  const children = [ 
-    {  element: <DashboardView /> , index: true},
-    { path: 'dashboard',element: <IndexPage />, },
+  const selectedUser = useSelector((state) => state.user.selectedUser);
+
+  const children = [
+    { element: <DashboardView />, index: true },
+    { path: 'dashboard', element: <IndexPage />, },
     { path: 'products', element: <ProductsPage /> },
     { path: 'blog', element: <BlogPage /> },
     { path: 'tender-details/:id', element: <TenderDetails /> },
@@ -35,14 +38,20 @@ export default function Router() {
   ];
   const routes = useRoutes([
     {
-      element: (
+      element: selectedUser ? (
+        <DashboardLayout>
+          <Suspense>
+            <Outlet />
+          </Suspense>
+        </DashboardLayout>
+      ) : (
         <LoginPage>
           <Suspense>
             <Outlet />
           </Suspense>
         </LoginPage>
       ),
-      children
+      children,
     },
     {
       path: 'sign-up',

@@ -18,7 +18,7 @@ import { setSearchTerm } from 'src/redux/actions/search-action';
 
 // ----------------------------------------------------------------------
 
-export default function TableToolbar({ numSelected, onFilterName, label, onDownload, showIcons = true }) {
+export default function TableToolbar({ numSelected, label, onDownload, showIcons = true }) {
   const [open, setOpen] = useState(null);
   const dispatch = useDispatch();
   const selectedUser = useSelector((state) => state.user.selectedUser);
@@ -154,7 +154,6 @@ export default function TableToolbar({ numSelected, onFilterName, label, onDownl
 
 TableToolbar.propTypes = {
   numSelected: PropTypes.number,
-  onFilterName: PropTypes.func,
   onDownload: PropTypes.func,
   label: PropTypes.string,
   showIcons: PropTypes.bool,

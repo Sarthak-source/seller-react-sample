@@ -5,14 +5,16 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import Iconify from 'src/components/iconify';
 
 import { DatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import RenderHtmlFromLink from '../render-html';
 
 
 export default function StoreHouseRD1ReportView() {
   const [selectedOption, setSelectedOption] = useState('');
-  const [fromDate, setFromDate] = useState('');
+  const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const selectedUser = useSelector((state) => state.user.selectedUser);
@@ -21,42 +23,29 @@ export default function StoreHouseRD1ReportView() {
     setSelectedOption(event.target.value);
   };
 
-
-
   const handleFromDateChange = (date) => {
-
     setFromDate(date);
   };
 
   const handleToDateChange = (date) => {
-
     setToDate(date);
   };
 
-  const formateDate = (date) => date.toDate().toLocaleDateString('en-IN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
+  const formateDate = (date) => {
+    console.log('Received date:', date);
+  
+    
+      const formattedDate = dayjs(date).format('YYYY-MM-DD');
+      console.log('Formatted date:', formattedDate);
+      return formattedDate;
+   
+  };
+  
 
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
   };
-
-  const IframeBody = () => (
-    <iframe
-      src={`http://192.46.215.236/reports/storeHouse_reports/?mill_pk=${encodeURIComponent(selectedOption)}
-      &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate((toDate)))}`}
-      title="Order Dashboard"
-      style={{
-        height: '100vh',
-        width: '100%',
-        border: 'none',
-        marginTop: '20px',
-      }}
-    />
-  );
 
   const FullScreen = ({ icon }) => (
     <Fab onClick={toggleFullScreen} color="primary" sx={{ mt: 2, position: 'fixed', top: "85%", right: 16 }}>
@@ -72,7 +61,10 @@ export default function StoreHouseRD1ReportView() {
     <>
       {isFullScreen ? (
         <Card sx={{ p: 2, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}>
- {selectedOption &&fromDate&&toDate&& <FullScreen  icon={<Iconify icon="bi:fullscreen-exit" />} />}          {selectedOption && fromDate && toDate && <IframeBody />}
+          {selectedOption && fromDate && toDate && <FullScreen icon={<Iconify icon="bi:fullscreen-exit" />} />}
+          {selectedOption && fromDate && toDate && <RenderHtmlFromLink
+            link={`http://192.46.215.236/reports/store_reports_rg1/?mill_pk=${encodeURIComponent(selectedOption)}
+                 &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate((toDate)))}`} />}
         </Card>
       ) : (
         <Card sx={{ p: 2 }}>
@@ -125,8 +117,10 @@ export default function StoreHouseRD1ReportView() {
               </LocalizationProvider>
             </Stack>
           </Stack>
-          {selectedOption && fromDate && toDate && <IframeBody />}
-          {selectedOption &&fromDate&&toDate&& <FullScreen  icon={<Iconify icon="bi:fullscreen" />} />}
+          {selectedOption && fromDate && toDate && <RenderHtmlFromLink
+            link={`http://192.46.215.236/reports/store_reports_rg1/?mill_pk=${encodeURIComponent(selectedOption)}
+                &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate((toDate)))}`} />}
+          {selectedOption && fromDate && toDate && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
         </Card>
       )}
     </>

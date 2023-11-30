@@ -1,7 +1,4 @@
 
-import { format, parseISO } from 'date-fns';
-import { useEffect, useMemo, useState } from 'react';
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -14,11 +11,11 @@ import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
-
+import { format, parseISO } from 'date-fns';
+import { useEffect, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
-
-import { useSelector } from 'react-redux';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { useRouter } from 'src/routes/hooks';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
@@ -39,7 +36,6 @@ export default function TenderView() {
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
-    const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [tenderData, setTenderData] = useState([]);
     const [totalDataCount, setTotalDataCount] = useState(0);
@@ -63,8 +59,6 @@ export default function TenderView() {
         setPage(1)
         setTenderData([])
     }, [selectedMill])
-
-
 
     const handleStepClick = (index) => {
         console.log(activeStep);
@@ -122,8 +116,7 @@ export default function TenderView() {
 
     const dataFiltered = applyFilter({
         inputData: tenderSearch,
-        comparator: getComparator(order, orderBy),
-        filterName,
+        comparator: getComparator(order, orderBy),    
     });
 
     const notFound = !dataFiltered.length;
@@ -185,7 +178,6 @@ export default function TenderView() {
                 <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenTender}>
                     Add tenders
                 </Button>
-
             </Stack>
             <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
                 <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
@@ -244,7 +236,7 @@ export default function TenderView() {
                                         height={77}
                                         emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
                                     />
-                                    {notFound && <TableNoData query={filterName} />}
+                                    {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>
                             </Table>
                         </TableContainer>

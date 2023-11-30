@@ -32,7 +32,6 @@ export default function OrdersView() {
 
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
-    const [filterName, setFilterName] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [totalDataCount, setTotalDataCount] = useState(0);
     const steps = useMemo(() => ['All', 'Bids', 'Accepted', 'Completed', 'Rejected'], []);
@@ -108,10 +107,10 @@ export default function OrdersView() {
     const dataFiltered = applyFilter({
         inputData: tenderSearch,
         comparator: getComparator(order, orderBy),
-        filterName,
+
     });
 
-    const notFound = !dataFiltered.length && !!filterName;
+    const notFound = !dataFiltered.length;
 
 
     const dataFormated = dataFiltered.map(row => ({
