@@ -9,6 +9,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ip } from 'src/app-utils/api-constants';
 import RenderHtmlFromLink from '../render-html';
 
 export default function StoreHouseReportView() {
@@ -62,14 +63,14 @@ export default function StoreHouseReportView() {
         <Card sx={{ p: 2, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}>
           {selectedOption && fromDate && toDate && <FullScreen icon={<Iconify icon="bi:fullscreen-exit" />} />}
           {selectedOption && fromDate && toDate && <RenderHtmlFromLink
-            link={`http://192.46.215.236/reports/storeHouse_reports/?mill_pk=${encodeURIComponent(selectedOption)}
+            link={`http://${ip}/reports/storeHouse_reports/?mill_pk=${encodeURIComponent(selectedOption)}
                    &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate(toDate))}`} />}
         </Card>
       ) : (
         <Card sx={{ p: 2 }}>
           <Stack direction="row" spacing={2} overflow>
             <Stack>
-              <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold">
+              <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
                 Select mill
               </Typography>
               <Select
@@ -90,7 +91,7 @@ export default function StoreHouseReportView() {
               </Select>
             </Stack>
             <Stack>
-              <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold">
+              <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
                 From Date
               </Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -103,7 +104,7 @@ export default function StoreHouseReportView() {
               </LocalizationProvider>
             </Stack>
             <Stack>
-              <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold">
+              <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
                 To Date
               </Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -117,7 +118,7 @@ export default function StoreHouseReportView() {
             </Stack>
           </Stack>
           {selectedOption && fromDate && toDate && <RenderHtmlFromLink
-            link={`http://192.46.215.236/reports/storeHouse_reports/?mill_pk=${encodeURIComponent(selectedOption)}
+            link={`http://${ip}/reports/storeHouse_reports/?mill_pk=${encodeURIComponent(selectedOption)}
                  &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate(toDate))}`} />}
           {selectedOption && fromDate && toDate && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
         </Card>

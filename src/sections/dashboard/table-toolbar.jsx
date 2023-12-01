@@ -69,7 +69,7 @@ export default function TableToolbar({ numSelected, label, onDownload, showIcons
   return (
     <Toolbar
       sx={{
-        height: 96,
+        height: 86,
         display: 'flex',
         justifyContent: 'space-between',
         p: (theme) => theme.spacing(0, 1, 0, 3),

@@ -7,11 +7,11 @@ const prod = '139.162.12.150';
 const local= '192.168.1.14:8000';
 
 const ip = localStorage.getItem('isTestEnvironment') === 'true'
-    ? testip
-    : prod;
+    ? prod
+    : testip;
 
 const ApiAppConstants = {
-    apiEndPoint: `http://${testip}/api/`,
+    apiEndPoint: `http://${ip}/api/`,
     signup: 'app_user/',
     otp: 'sendLoginOTP/',
     resendOTP: 'resendLogiOTP/',

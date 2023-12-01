@@ -58,8 +58,8 @@ export default function AccountPopover() {
       <IconButton
         onClick={handleOpen}
         sx={{
-          width: 40,
-          height: 40,
+          width: 55,
+          height: 55,
           background: (theme) => alpha(theme.palette.grey[500], 0.08),
           ...(open && {
             background: (theme) =>
@@ -71,8 +71,8 @@ export default function AccountPopover() {
           src='/assets/logo.png'
           alt={selectedUser.name}
           sx={{
-            width: 36,
-            height: 36,
+            width: 50,
+            height: 50,
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >

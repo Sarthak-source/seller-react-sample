@@ -1,44 +1,80 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import { alpha, useTheme } from '@mui/material/styles';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Logo from 'src/components/logo';
+import { selectTempUser } from 'src/redux/actions/user-actions';
+import { useRouter } from 'src/routes/hooks';
 import { bgGradient } from 'src/theme/css';
 import OTPComponent from './component/otp-component';
 
 export default function LoginView() {
   const theme = useTheme();
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const [loadingOPT, setShowloadingOPT] = useState(false);
   const [showOpt, setShowOtp] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [checked, setChecked] = useState(localStorage.getItem('isTestEnvironment') === 'true');
+
+  console.log(localStorage.getItem('isTestEnvironment'))
 
   const handlePhoneNumberChange = (event) => {
     setPhoneNumber(event.target.value);
   };
 
+  const handleChange = () => {
+    const newChecked = !checked;
+    localStorage.setItem('isTestEnvironment', newChecked.toString());
+    setChecked(newChecked);
+    window.location.reload();
+  };
+
+
+
   const sendOTP = async () => {
+    setShowloadingOPT(true);
     try {
+
       if (phoneNumber.trim() === '' || phoneNumber.length < 10) {
         alert('Please enter a valid phone number.');
         return;
       }
-      await NetworkRepository.userLogin(phoneNumber);
-      setShowOtp(false);
+      const seller = await NetworkRepository.checkSeller(phoneNumber);
+      console.log('Navigating to /dashboard', seller)
+      if (seller === "AxiosError: Request failed with status code 404") {
+        router.replace('/sign-up');
+        alert('User not found')
+      } else {
+        dispatch(selectTempUser(seller))
+        await NetworkRepository.userLogin(phoneNumber);
+        setShowOtp(false);
+      }
     } catch (error) {
       alert(error.toString());
+    } finally {
+      setShowloadingOPT(false);
     }
-  };
+  }
+
+  const label = checked ? 'Switch to Test' : 'Switch to Prod';
+
 
   const renderForm = (
     <>
-      <Stack spacing={3} pb={1} pt={1}>
+      <Stack spacing={3} pb={1} mt={-3}>
+
         {!showOpt &&
           <Typography variant="body2" sx={{ pt: 5 }}>
             OTP has been sent to {phoneNumber}
@@ -64,7 +100,7 @@ export default function LoginView() {
           OTP sent
           <RouterLink to="/sign-up" style={{ textDecoration: 'none' }}>  {/* Use RouterLink from react-router-dom */}
             <Link variant="subtitle2" sx={{ ml: 0.5 }}>
-              Get started
+              Retry
             </Link>
           </RouterLink>
         </Typography>
@@ -75,6 +111,7 @@ export default function LoginView() {
         type="submit"
         variant="contained"
         onClick={sendOTP}
+        loading={loadingOPT}
       >
         Login
       </LoadingButton>}
@@ -102,13 +139,35 @@ export default function LoginView() {
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
         <Card
           sx={{
-            p: 5,
+            pr: 5,
+            pl: 5,
+            pb: 14,
+            pt: 5,
             width: 1,
             maxWidth: 420,
           }}
         >
-          <Typography variant="h4">Sign in to Sutra</Typography>
+          <Box
+            sx={{
+              ...bgGradient({
+                color: alpha(theme.palette.background.default, 0),
+                imgUrl: '/assets/logo-full.png',
+              }),
+              height: 0.3,
+              transform: 'scale(80%) translateX(-45px)',
+            }}
+          />
+          <Typography variant="h5" mt={1}>Sign in to Sutra</Typography>
           {renderForm}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: '16px' }}>
+            <FormControlLabel
+              control={
+                <Switch checked={checked} onChange={handleChange} />}
+              label={label}
+              labelPlacement="end" // Align label to the right of the switch
+            />
+          </Box>
+
         </Card>
       </Stack>
     </Box>

@@ -35,7 +35,7 @@ export default function OrdersView() {
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [totalDataCount, setTotalDataCount] = useState(0);
     const steps = useMemo(() => ['All', 'Bids', 'Accepted', 'Completed', 'Rejected'], []);
-    const querySteps = useMemo(() => ['All', 'Approved', 'Booked', 'DOIssued', 'Rejected',], []);
+    const querySteps = useMemo(() => ['All', 'Booked', 'Approved', 'DOIssued', 'Rejected',], []);
     const [ordersData, setOrdersData] = useState([]);
     const [loading, setLoading] = useState(true);
 

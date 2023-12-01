@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 
 import Box from '@mui/material/Box';
-import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 
 import { visuallyHidden } from './utils';
@@ -24,7 +24,7 @@ export default function SharedTableHead({
   };
 
   return (
-    <TableHead>
+    <TableHead sx={{height: 86}}>
       <TableRow>
         {/* <TableCell padding="checkbox">
           <Checkbox

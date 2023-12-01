@@ -1,16 +1,16 @@
 import { Stack, TextField } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
-import { selectUser } from 'src/redux/actions/user-actions';
+import { selectTempUser, selectUser } from 'src/redux/actions/user-actions';
 import { useRouter } from 'src/routes/hooks';
 
 
 export default function OTPComponent({ phoneNumber }) {
   const router = useRouter();
   const dispatch = useDispatch();
-
+  const selectedTempUser = useSelector((state) => state.user.selectedTempUser);
 
   const [otp, setOtp] = useState(['', '', '', '']);
 
@@ -26,25 +26,17 @@ export default function OTPComponent({ phoneNumber }) {
 
   useEffect(() => {
     const concatenatedOtp = otp.join('');
-    const verifyLoginAsync = async (otpArg) => {    
-      try {     
-        console.log('concatenatedOtp',concatenatedOtp);
-        console.log('phoneNumber',phoneNumber);
-        const result = await NetworkRepository.verifyLogin(phoneNumber, otpArg);   
-          console.log('Result:', result.type);
+    const verifyLoginAsync = async (otpArg) => {
+      try {
+        console.log('concatenatedOtp', concatenatedOtp);
+        console.log('phoneNumber', phoneNumber);
+        const result = await NetworkRepository.verifyLogin(phoneNumber, otpArg);
+        console.log('Result:', result.type);
         if (result.type === 'success') {
-          const seller = await NetworkRepository.checkSeller(phoneNumber);
-
-          console.log('Navigating to /dashboard',seller)
-          dispatch(selectUser(seller))
-          
-          if (seller.detail==='No seller found') {
-            router.replace('/sign-up');
-            alert(seller)
-          }
-          
+          dispatch(selectUser(selectedTempUser))
+          dispatch(selectTempUser({}))
           router.replace('/home');
-        } else{
+        } else {
           alert('Wrong OTP');
         }
       } catch (error) {
@@ -52,10 +44,10 @@ export default function OTPComponent({ phoneNumber }) {
       }
     };
 
-    if(concatenatedOtp.length===4){
-      verifyLoginAsync(concatenatedOtp); 
-    } 
-  }, [otp, router, phoneNumber,dispatch]);
+    if (concatenatedOtp.length === 4) {
+      verifyLoginAsync(concatenatedOtp);
+    }
+  }, [otp, router, phoneNumber, dispatch, selectedTempUser]);
 
   return (
     <Stack spacing={5} pb={5} pt={5} direction="row">

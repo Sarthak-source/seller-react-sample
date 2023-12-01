@@ -7,7 +7,7 @@ import Iconify from 'src/components/iconify';
 import RenderHtmlFromLink from '../render-html';
 
 
-export default function StockReportView() {
+export default function WarehouseReportView() {
   const [selectedOption, setSelectedOption] = useState('');
   const [isFullScreen, setIsFullScreen] = useState(false);
   const selectedUser = useSelector((state) => state.user.selectedUser);
@@ -21,7 +21,7 @@ export default function StockReportView() {
     setIsFullScreen(!isFullScreen);
   };
 
-  const link=`http://${ip}/reports/stock_reports/?mill_pk=${encodeURIComponent(selectedOption)}`
+  const link=`http://${ip}/reports/wareHouse_reports/?mill_pk=${encodeURIComponent(selectedOption)}`
 
   const FullScreen = ({ icon }) => (
     <Fab onClick={toggleFullScreen} color="primary" sx={{ mt: 2, position: 'fixed', top: "85%", right: 16 }}>

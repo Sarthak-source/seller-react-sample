@@ -1,18 +1,21 @@
-import { Fab, Stack, Typography } from '@mui/material';
-import Card from '@mui/material/Card';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import { Card, Fab, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import Iconify from 'src/components/iconify';
+
+import { DatePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ip } from 'src/app-utils/api-constants';
-import Iconify from 'src/components/iconify';
 import RenderHtmlFromLink from '../render-html';
 
 
-export default function ProductWiseReportView() {
+export default function SeasonWiseReportView() {
   const [selectedOption, setSelectedOption] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState('');
+  const [fromDate, setFromDate] = useState(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const selectedUser = useSelector((state) => state.user.selectedUser);
 
@@ -20,17 +23,23 @@ export default function ProductWiseReportView() {
     setSelectedOption(event.target.value);
   };
 
-  const handleProductChange = (event) => {
-    setSelectedProduct(event.target.value);
+  const handleFromDateChange = (date) => {
+    setFromDate(date);
+  };
+
+  const formateDate = (date) => {
+    console.log('Received date:', date);
+
+
+    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+    console.log('Formatted date:', formattedDate);
+    return formattedDate;
+
   };
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
   };
-
-  const link = `http://${ip}/reports/product_reports/?mill_pk=${encodeURIComponent(selectedOption)}&product_pk=${encodeURIComponent(selectedProduct)}`;
-
-  console.log('selectedUser.mills', selectedUser.mills)
 
   const FullScreen = ({ icon }) => (
     <Fab onClick={toggleFullScreen} color="primary" sx={{ mt: 2, position: 'fixed', top: "85%", right: 16 }}>
@@ -39,21 +48,21 @@ export default function ProductWiseReportView() {
   );
 
   FullScreen.propTypes = {
-    icon: PropTypes.element.isRequired,
+    icon: PropTypes.string.isRequired,
   };
 
   return (
     <>
       {isFullScreen ? (
         <Card sx={{ p: 2, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}>
-          {selectedOption && <FullScreen title='Exit Full Screen' icon={<Iconify icon="bi:fullscreen-exit" />} />}
-          {selectedOption && <RenderHtmlFromLink link={link} />}
+          {selectedOption && fromDate && <FullScreen icon={<Iconify icon="bi:fullscreen-exit" />} />}
+          {selectedOption && fromDate && <RenderHtmlFromLink
+            link={`http://${ip}/reports/season_reports/?mill_pk=${encodeURIComponent(selectedOption)}
+            &date=${encodeURIComponent(formateDate(fromDate))}`} />}
         </Card>
       ) : (
         <Card sx={{ p: 2 }}>
-          {selectedOption && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
-
-          <Stack direction="row">
+          <Stack direction="row" spacing={2}>
             <Stack>
               <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
                 Select mill
@@ -75,34 +84,25 @@ export default function ProductWiseReportView() {
                 ))}
               </Select>
             </Stack>
-            <Stack pl={5}>
+            <Stack>
               <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
-                Select product
+                Date
               </Typography>
-              {selectedOption && (
-                <Select
-                  value={selectedProduct}
-                  onChange={handleProductChange}
-                  displayEmpty
-                  style={{ width: '250px' }}
-                  inputProps={{ 'aria-label': 'Without label' }}
-                >
-                  <MenuItem value="" >
-                    All
-                  </MenuItem>
-                  {selectedUser.mills
-                    .find((mill) => mill.id === selectedOption)
-                    ?.products.map((product) => (
-                      <MenuItem key={product.id} value={product.id}>
-                        {product.product_type.product_type} {`(${product.code===''?'none':product.code})`}
-
-                      </MenuItem>
-                    ))}
-                </Select>
-              )}
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer sx={{ mt: -1.2 }} components={['DatePicker']}>
+                  <DatePicker
+                    value={fromDate}
+                    onChange={handleFromDateChange}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
             </Stack>
+
           </Stack>
-          {selectedOption && <RenderHtmlFromLink link={link} />}
+          {selectedOption && fromDate && <RenderHtmlFromLink
+            link={`http://${ip}/reports/season_reports/?mill_pk=${encodeURIComponent(selectedOption)}
+                &date=${encodeURIComponent(formateDate(fromDate))}`} />}
+          {selectedOption && fromDate && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
         </Card>
       )}
     </>

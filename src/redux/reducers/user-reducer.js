@@ -16,6 +16,11 @@ const userReducer = (state = initialState, action) => {
                 ...state,
                 selectedUser: action.payload,
             };
+        case actionTypes.SELECT_TEMP_USER:
+            return {
+                ...state,
+                selectedTempUser: action.payload,
+            };
         default:
             return state;
     }

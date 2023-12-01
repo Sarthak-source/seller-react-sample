@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import NetworkRepository from 'src/app-utils/network_repository';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
-import { testip } from '../../../../app-utils/api-constants';
+import { ip } from '../../../../app-utils/api-constants';
 import OrderCard from './components/order-card';
 
 
@@ -41,7 +41,7 @@ export default function OrderDetails() {
     console.log(orderSummary)
 
 
-    const url = `http://${testip}/order-dashboard/order/${data}`;
+    const url = `http://${ip}/order-dashboard/order/${data}`;
 
     if (loading) {
         return (

@@ -1,22 +1,22 @@
-import { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useEffect } from 'react';
 
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import { alpha } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
 import ListItemButton from '@mui/material/ListItemButton';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import { alpha } from '@mui/material/styles';
 
-import { usePathname } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
+import { usePathname } from 'src/routes/hooks';
 
 import { account } from 'src/_mock/account';
 
-import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
 
+import { useSelector } from 'react-redux';
 import { NAV } from './config-layout';
 import navConfig from './config-navigation';
 
@@ -24,6 +24,7 @@ import navConfig from './config-navigation';
 
 export default function Nav({ openNav, onCloseNav }) {
   const pathname = usePathname();
+  const selectedUser = useSelector((state) => state.user.selectedUser);
 
 
   useEffect(() => {
@@ -49,10 +50,8 @@ export default function Nav({ openNav, onCloseNav }) {
       <Avatar src={account.photoURL} alt="photoURL" />
 
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{account.displayName}</Typography>
-
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {account.role}
+        <Typography variant="subtitle2">
+          {selectedUser.name && selectedUser.name.charAt(0).toUpperCase() + selectedUser.name.slice(1)}
         </Typography>
       </Box>
     </Box>
@@ -78,7 +77,7 @@ export default function Nav({ openNav, onCloseNav }) {
         },
       }}
     >
-      <Logo sx={{ mt: 3, ml: 4 }} />
+      {/* <Logo sx={{ mt: 3, ml: 4 }} /> */}
 
       {renderAccount}
 
@@ -106,6 +105,12 @@ export default function Nav({ openNav, onCloseNav }) {
           },
         }}
       >
+        <img
+          src="/assets/logo-full.png"
+          alt="Logo"
+          style={{ width: '60%', height: 'auto', marginLeft: '20px', marginTop: '15px' }}
+        />
+
         {renderContent}
       </Drawer>
 
