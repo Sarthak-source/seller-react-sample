@@ -11,7 +11,6 @@ import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
-import { styled } from '@mui/system';
 import { format, parseISO } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -29,14 +28,6 @@ import { applyFilter, emptyRows, getComparator } from '../utils';
 import TenderTableRow from './tender-table-row/tender-table-row';
 import { useTenderTableFormat } from './use-tender-table-formate';
 
-
-const ExpandableContent = styled('div')({
-  overflow: 'hidden',
-  transition: 'height 0.3s ease-in-out',
-  '&:hover': {
-    height: '100px', // Set the expanded height as needed
-  },
-});
 
 
 
@@ -66,7 +57,7 @@ export default function TenderView() {
         router.replace('/home/tender-create');
     };
 
-    console.log('tenderData',tenderData)
+    console.log('tenderData', tenderData)
 
     useEffect(() => { }, [searchTerm])
 
@@ -131,7 +122,7 @@ export default function TenderView() {
 
     const dataFiltered = applyFilter({
         inputData: tenderSearch,
-        comparator: getComparator(order, orderBy),    
+        comparator: getComparator(order, orderBy),
     });
 
     const notFound = !dataFiltered.length;
@@ -194,7 +185,7 @@ export default function TenderView() {
                     Add tenders
                 </Button>
             </Stack>
-            <ExpandableContent>
+
             <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
                 <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
                     {steps.map((label, index) => (
@@ -208,7 +199,7 @@ export default function TenderView() {
                     ))}
                 </Stepper>
             </Box>
-            </ExpandableContent>
+
             {!loading ? (
                 <Card>
                     <TableToolbar
