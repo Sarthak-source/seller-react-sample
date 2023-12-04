@@ -6,6 +6,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 
+import { Typography } from '@mui/material';
 import { visuallyHidden } from './utils';
 
 // ----------------------------------------------------------------------
@@ -24,7 +25,7 @@ export default function SharedTableHead({
   };
 
   return (
-    <TableHead sx={{height: 86}}>
+    <TableHead sx={{ height: 86 }}>
       <TableRow>
         {/* <TableCell padding="checkbox">
           <Checkbox
@@ -47,7 +48,9 @@ export default function SharedTableHead({
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={onSort(headCell.id)}
             >
-              {headCell.label}
+              <Typography variant="subtitle1" fontWeight='bold' fontSize={14}>
+                {headCell.label}
+              </Typography>
               {orderBy === headCell.id ? (
                 <Box sx={{ ...visuallyHidden }}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
