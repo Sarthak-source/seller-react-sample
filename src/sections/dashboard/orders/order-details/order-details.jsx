@@ -205,6 +205,5 @@ export default function OrderDetails() {
                 />
             }
         </Container>
-
     );
 }

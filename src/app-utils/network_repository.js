@@ -305,8 +305,25 @@ const NetworkRepository = {
       const er = e;
       return er.detail.toString();
     }
-  }
+  },
 
+
+  loadingInstructionDetails: async (pk) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.loadingInstructionDetails}?pk=${pk}`,
+        header: { authorization: auth },
+      });
+
+      console.log('Seller Tender Response:', apiResponse);
+      return apiResponse;
+    } catch (e) {
+      console.error('Error:', e);
+
+      const er = e;
+      return er.detail.toString();
+    }
+  }
 }
 
 

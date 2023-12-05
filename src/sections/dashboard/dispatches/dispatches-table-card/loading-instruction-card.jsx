@@ -37,7 +37,7 @@ export default function LoadingsInstructionCard(
 
     const selectedMill = useSelector((state) => state.mill.selectedMill);
     const searchTerm = useSelector((state) => state.search.searchTerm);
-   
+
     useEffect(() => {
         setDispatchesData([])
     }, [searchTerm])
@@ -86,12 +86,12 @@ export default function LoadingsInstructionCard(
         }
     };
 
-    
+
 
     const dataFiltered = applyFilter({
         inputData: dispatchesData,
         comparator: getComparator(order, orderBy),
-       
+
     });
 
     const notFound = !dataFiltered.length;
@@ -119,13 +119,12 @@ export default function LoadingsInstructionCard(
                                         .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
                                             <DispatchTableRow
-                                                orderNo={row.loading_instruction
-                                                [0].id}
+                                                orderNo={row.id}
                                                 invoiceNo={row.loading_instruction[0].lr_number}
                                                 millName={row.mill}
                                                 name={row.trader}
                                                 date={format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy')}
-                                                vehicleNumber={row.veicle_num}
+                                                vehicleNumber={row.vehicle_num}
                                                 quantity={row.total_qty}
                                                 billedTo={`${row.loading_instruction[0].billing_address.name}\n${row.billing_gstin}\n${row.loading_instruction[0].billing_address.address}`}
                                                 shipTo={`${row.loading_instruction[0].address.name}\n${row.address_gstin}\n${row.loading_instruction[0].address.address}`}

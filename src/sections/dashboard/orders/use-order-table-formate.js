@@ -1,4 +1,4 @@
-export function useOrderTableFormate(){
+export function useOrderTableFormate() {
 
     function getStatusText(status) {
         let statusText;
@@ -21,6 +21,24 @@ export function useOrderTableFormate(){
 
         return statusText;
     }
+
+    const getStatusColor = (status) => {
+        switch (status.toLowerCase()) {
+            case 'close':
+            case 'cancel':
+            case 'rejected':
+                return 'rgb(255, 0, 0)'; // Red
+            case 'approved':
+                return 'rgb(0, 0, 255)'; // Blue
+            case 'booked':
+                return 'rgb(255, 165, 0)'; // Orange
+            case 'doissued':
+                return 'rgb(0, 128, 0)'; // Green
+            default:
+                return 'rgb(0, 128, 0)'; // Black
+        }
+    };
+
 
     function formatQty(qty) {
         const qtyString = qty;
@@ -65,6 +83,7 @@ export function useOrderTableFormate(){
         getStatusText,
         formatQty,
         formatQuantity,
+        getStatusColor,
         orderHeaderRow,
     };
 }

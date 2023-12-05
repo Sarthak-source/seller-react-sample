@@ -187,9 +187,11 @@ export default function TenderView() {
             </Stack>
 
             <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
-                <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
+                <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}
+                >
                     {steps.map((label, index) => (
-                        <Step key={`${label}${index}`}>
+                        <Step key={`${label}${index}`}
+                        >
                             <StepLabel
                                 onClick={() => handleStepClick(index)}
                             >

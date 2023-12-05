@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
+import { useTenderTableFormat } from '../use-tender-table-formate';
 
 
 // ----------------------------------------------------------------------
@@ -49,6 +50,9 @@ export default function TenderTableRow({
     setOpen(null);
   };
 
+  const { getStatusColor  } = useTenderTableFormat();
+
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox">
@@ -69,7 +73,7 @@ export default function TenderTableRow({
         <TableCell>{date}</TableCell>
         <TableCell>{price}</TableCell>
         <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+          <Label color={getStatusColor(status)}>{status}</Label>
         </TableCell>
         <TableCell>{tenderType}</TableCell>
         <TableCell>{productType}</TableCell>

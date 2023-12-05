@@ -15,6 +15,7 @@ export const ProductsPage = lazy(() => import('src/pages/products'));
 export const TenderDetails = lazy(() => import('src/sections/dashboard/tender/tender-details/tender-details'));
 export const OrderDetails = lazy(() => import('src/sections/dashboard/orders/order-details/order-details'));
 export const TraderDetails = lazy(() => import('src/pages/traders'));
+export const DispatchDetails= lazy(() => import('src/sections/dashboard/dispatches/dispatch-details/loading-instruction-details'));
 export const ProfileDetails = lazy(() => import('src/pages/profile'));
 export const ReportDetails = lazy(() => import('src/pages/reports'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
@@ -31,11 +32,13 @@ export default function Router() {
     { path: 'blog', element: <BlogPage /> },
     { path: 'tender-details/:id', element: <TenderDetails /> },
     { path: 'order-details/:data', element: <OrderDetails /> },
+    { path: 'loading-instruction-details/:id', element: <DispatchDetails /> },
     { path: 'tender-create', element: <TenderCreate /> },
     { path: 'traders', element: <TraderDetails /> },
     { path: 'profile', element: <ProfileDetails /> },
     { path: 'reports', element: <ReportDetails /> },
   ];
+
   const routes = useRoutes([
     {
       element: selectedUser ? (

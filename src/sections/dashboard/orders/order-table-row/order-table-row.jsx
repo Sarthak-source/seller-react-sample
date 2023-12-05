@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
 import { selectOrder } from 'src/redux/actions/order-actions';
+import { useOrderTableFormate } from '../use-order-table-formate';
 
 export default function OrdersTableRow({
     ordersId,
@@ -38,7 +39,7 @@ export default function OrdersTableRow({
     const [open, setOpen] = useState(null);
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    
+
     const handleOpenMenu = (event) => {
         setOpen(event.currentTarget);
     };
@@ -50,12 +51,15 @@ export default function OrdersTableRow({
     const handleOpenDetails = (orderSelected) => {
         dispatch(selectOrder(orderSelected))
         navigate(`/home/order-details/${ordersId}`); // Use navigate to go to the details page
-      };
+    };
+
+    const { getStatusColor } = useOrderTableFormate();
+
 
     return (
         <>
             <TableRow hover tabIndex={-1} role="checkbox">
-                <TableCell onClick={()=>handleOpenDetails(order)}>{ordersId}</TableCell>
+                <TableCell onClick={() => handleOpenDetails(order)}>{ordersId}</TableCell>
                 <TableCell component="th" scope="row" padding="normal" >
                     <Stack direction="row" alignItems="center" spacing={2}>
                         <Avatar alt={millName} src='avatarUrl' />
@@ -67,7 +71,7 @@ export default function OrdersTableRow({
                 <TableCell>{traderName}</TableCell>
                 <TableCell>{date}</TableCell>
                 <TableCell>
-                    <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+                    <Label color={getStatusColor(status)}>{status}</Label>
                 </TableCell>
                 <TableCell>{price}</TableCell>
                 <TableCell>{tenderType}</TableCell>
@@ -116,12 +120,12 @@ OrdersTableRow.propTypes = {
     status: PropTypes.string,
     price: PropTypes.string,
     tenderType: PropTypes.string,
-    productType:PropTypes.string,
+    productType: PropTypes.string,
     grade: PropTypes.string,
     season: PropTypes.string,
     sale: PropTypes.string,
     loading: PropTypes.string,
     dispatched: PropTypes.string,
     balance: PropTypes.string,
-    order:PropTypes.string,
+    order: PropTypes.string,
 };

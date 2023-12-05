@@ -7,9 +7,12 @@ import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
 import { ApiAppConstants, ip } from 'src/app-utils/api-constants';
 import Iconify from 'src/components/iconify';
 import { useDispatchTableFuctions } from './use-dispatch-table-fuctions';
+
+
 
 export default function DoOrderTableRow({
     doNo,
@@ -26,6 +29,8 @@ export default function DoOrderTableRow({
     grade,
 }) {
     const [open, setOpen] = useState(null);
+    const navigate = useNavigate();
+
 
     const handleOpenMenu = (event) => {
         setOpen(event.currentTarget);
@@ -38,10 +43,28 @@ export default function DoOrderTableRow({
     const { handlePrint } = useDispatchTableFuctions();
     const pdfUrl = `http://${ip}/${ApiAppConstants.getDoDoc}${doNo}`;
 
+    const handleOpenDetails = (orderSelected) => {
+
+        navigate(`/home/loading-instruction-details/${orderSelected}`); // Use navigate to go to the details page
+    };
+
     return (
         <>
-            <TableRow hover tabIndex={-1} role="checkbox">
-                <TableCell>{orderNo}</TableCell>
+            <TableRow hover tabIndex={-1} role="checkbox" >
+
+
+                <TableCell
+                    onClick={() => handleOpenDetails(orderNo)}
+                    style={{ cursor: 'pointer' }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.5)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = 'none';
+                    }}
+                >
+                    {orderNo}
+                </TableCell>
                 <TableCell>{invoiceNo}</TableCell>
                 <TableCell>{doNo}</TableCell>
                 <TableCell component="th" scope="row" padding="normal" >
