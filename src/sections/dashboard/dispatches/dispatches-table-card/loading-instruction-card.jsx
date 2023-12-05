@@ -119,7 +119,8 @@ export default function LoadingsInstructionCard(
                                         .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
                                             <DispatchTableRow
-                                                orderNo={row.id}
+                                                orderNo={row.loading_instruction
+                                                [0].id}
                                                 invoiceNo={row.loading_instruction[0].lr_number}
                                                 millName={row.mill}
                                                 name={row.trader}
