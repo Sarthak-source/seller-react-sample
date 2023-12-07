@@ -1,4 +1,4 @@
-import { Avatar, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Stack, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Popover from '@mui/material/Popover';
@@ -40,6 +40,12 @@ export default function DoOrderTableRow({
         setOpen(null);
     };
 
+    const [expanded, setExpanded] = useState(false);
+
+    const handleToggle = (val) => {
+        setExpanded(val);
+    };
+
     const { handlePrint } = useDispatchTableFuctions();
     const pdfUrl = `http://${ip}/${ApiAppConstants.getDoDoc}${doNo}`;
 
@@ -50,13 +56,17 @@ export default function DoOrderTableRow({
 
     return (
         <>
-            <TableRow hover tabIndex={-1} role="checkbox" >
+            <TableRow
+                onMouseEnter={() => handleToggle(true)}
+                onMouseLeave={() => handleToggle(false)}
+                hover tabIndex={-1} role="checkbox" >
 
 
                 <TableCell
                     onClick={() => handleOpenDetails(orderNo)}
                     style={{ cursor: 'pointer' }}
                     onMouseEnter={(e) => {
+                        e.currentTarget.style.borderRadius = '8px'; 
                         e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.5)';
                     }}
                     onMouseLeave={(e) => {
@@ -79,8 +89,29 @@ export default function DoOrderTableRow({
                 <TableCell>{date}</TableCell>
                 <TableCell>{vehicleNumber}</TableCell>
                 <TableCell>{quantity}</TableCell>
-                <TableCell>{billedTo}</TableCell>
-                <TableCell>{shipTo}</TableCell>
+                <TableCell >
+                    {expanded ? (
+                        <Box >
+                            {billedTo}
+                        </Box>
+                    ) : (
+                        <Box style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '140px' }}>
+                            {billedTo}
+                        </Box>
+                    )}
+                </TableCell>
+
+                <TableCell >
+                    {expanded ? (
+                        <Box>
+                            {shipTo}
+                        </Box>
+                    ) : (
+                        <Box style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '140px' }}>
+                            {shipTo}
+                        </Box>
+                    )}
+                </TableCell>
                 <TableCell>{rate}</TableCell>
                 <TableCell>{grade}</TableCell>
                 <TableCell align="right">

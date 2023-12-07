@@ -1,5 +1,17 @@
 export function useTraderTableFormat() {
 
+    const getStatusColor = (status) => {
+        console.log('status', status);
+        switch (status) {
+           
+            case 'Active':
+                return 'rgb(0, 128, 0)';
+                
+            default:
+                return 'rgb(255, 0, 0)';
+        }
+    };
+
 
     const traderHeaderRow = [
         { id: 'name', label: 'Trader name' },
@@ -11,6 +23,7 @@ export function useTraderTableFormat() {
     ]
 
     return {
+        getStatusColor,
         traderHeaderRow
     };
 }

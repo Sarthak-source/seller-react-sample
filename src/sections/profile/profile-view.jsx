@@ -73,37 +73,6 @@ export default function ProfileView() {
                             src="/assets/logo.png"
                             sx={{ width: 100, height: 100, cursor: 'pointer', borderRadius: 20 }}
                         />
-                        <Box marginTop={1}>
-                            <Typography sx={{ pt: 1, pb: 1, pl: 1, fontWeight: 'bold', fontSize: 20, }}>
-                                Mills
-                            </Typography>
-                            <List>
-                                {selectedUser && selectedUser.mills ? (
-                                    selectedUser.mills.map((item, index) => (
-                                        <Card key={index} sx={{ width: '335px', mb: 2 }}>
-                                            <Box p={2}>
-                                                <Box display="flex" flexDirection="column" alignItems="start">
-                                                    <Accordion >
-                                                        <AccordionSummary
-                                                            expandIcon={<Iconify icon="mingcute:down-fill" />}
-                                                            aria-controls={`panel-${index}-content`}
-                                                            id={`panel-${index}-header`}
-                                                        >
-                                                            <Typography sx={{ fontWeight: 'bold' }}>{item.name.toString()}</Typography>
-                                                        </AccordionSummary>
-                                                        <AccordionDetails>
-                                                            <Typography >{item.address.toString()}</Typography>
-                                                        </AccordionDetails>
-                                                    </Accordion>
-                                                </Box>
-                                            </Box>
-                                        </Card>
-                                    ))
-                                ) : (
-                                    <Typography>Loading or no data available</Typography>
-                                )}
-                            </List>
-                        </Box>
                         <Box>
                             <Typography sx={{ pb: 1, pl: 1, fontWeight: 'bold', fontSize: 20 }}>
                                 Details
@@ -140,6 +109,37 @@ export default function ProfileView() {
                                     sx={{ mt: 1, mb: 2 }}
                                 />
                             </Card>
+                        </Box>
+                        <Box marginTop={1}>
+                            <Typography sx={{ pt: 1, pb: 1, pl: 1, fontWeight: 'bold', fontSize: 20, }}>
+                                Mills
+                            </Typography>
+                            <List>
+                                {selectedUser && selectedUser.mills ? (
+                                    selectedUser.mills.map((item, index) => (
+                                        <Card key={index} sx={{ width: '335px', mb: 2 }}>
+                                            <Box p={2}>
+                                                <Box display="flex" flexDirection="column" alignItems="start">
+                                                    <Accordion >
+                                                        <AccordionSummary
+                                                            expandIcon={<Iconify icon="mingcute:down-fill" />}
+                                                            aria-controls={`panel-${index}-content`}
+                                                            id={`panel-${index}-header`}
+                                                        >
+                                                            <Typography sx={{ fontWeight: 'bold' }}>{item.name.toString()}</Typography>
+                                                        </AccordionSummary>
+                                                        <AccordionDetails>
+                                                            <Typography >{item.address.toString()}</Typography>
+                                                        </AccordionDetails>
+                                                    </Accordion>
+                                                </Box>
+                                            </Box>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <Typography>Loading or no data available</Typography>
+                                )}
+                            </List>
                         </Box>
                         <Box marginTop={2} marginBottom={2} >
                             <Typography sx={{ pb: 1, pl: 1, fontWeight: 'bold', fontSize: 20, }}>

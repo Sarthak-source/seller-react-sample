@@ -38,6 +38,13 @@ export default function OrdersView() {
     const querySteps = useMemo(() => ['All', 'Booked', 'Approved', 'DOIssued', 'Rejected',], []);
     const [ordersData, setOrdersData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [transformValue, setTransformValue] = useState('scale(0.85)');
+    const [isMouseOver, setIsMouseOver] = useState(true);
+
+    const handleStepSize = (isOver) => {
+        setIsMouseOver(isOver);
+        setTransformValue(!isMouseOver ? 'scale(0.85)' : 'scale(0.75)');
+    };
 
     const { getStatusText, formatQty, formatQuantity, orderHeaderRow } = useOrderTableFormate();
     const totalPages = Math.ceil(totalDataCount / rowsPerPage);
@@ -64,8 +71,9 @@ export default function OrdersView() {
                 setLoading(true);
                 const data = await NetworkRepository.allOrders(status, ordersPage, millId);
                 console.log('here', data.results)
+                setTotalDataCount(data.count);
                 if (ordersPage > pagination) {
-                    setTotalDataCount(ordersPage)
+                    setPagination(ordersPage)
                 }
                 setOrdersData(prevData => [...prevData, ...data.results]);
             } catch (error) {
@@ -168,7 +176,13 @@ export default function OrdersView() {
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                 <Typography variant="h4">Orders</Typography>
             </Stack>
-            <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
+            <Box sx={{
+                width: 1,
+                transform: transformValue
+            }}
+                onMouseEnter={() => handleStepSize(true)}
+                onMouseLeave={() => handleStepSize(false)}
+            >
                 <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>

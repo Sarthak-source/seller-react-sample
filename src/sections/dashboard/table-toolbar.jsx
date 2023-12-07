@@ -1,7 +1,7 @@
 import MenuItem from '@mui/material/MenuItem';
 import Popover from '@mui/material/Popover';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -24,6 +24,8 @@ export default function TableToolbar({ numSelected, label, onDownload, showIcons
   const selectedUser = useSelector((state) => state.user.selectedUser);
   const selectedMill = useSelector((state) => state.mill.selectedMill);
   const searchTerm = useSelector((state) => state.search.searchTerm);
+
+  useEffect(() => {dispatch(setSearchTerm(''))},[dispatch,label])
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);

@@ -52,6 +52,13 @@ export default function TenderView() {
     const [loading, setLoading] = useState(true);
     const selectedMill = useSelector((state) => state.mill.selectedMill);
     const searchTerm = useSelector((state) => state.search.searchTerm);
+    const [transformValue, setTransformValue] = useState('scale(0.85)');
+    const [isMouseOver, setIsMouseOver] = useState(true);
+
+    const handleStepSize = (isOver) => {
+        setIsMouseOver(isOver);
+        setTransformValue(!isMouseOver ? 'scale(0.85)' : 'scale(0.75)');
+    };
 
     const handleOpenTender = () => {
         router.replace('/home/tender-create');
@@ -185,8 +192,9 @@ export default function TenderView() {
                     Add tenders
                 </Button>
             </Stack>
-
-            <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
+            <Box sx={{ width: 1, transform: transformValue }}
+                onMouseEnter={() => handleStepSize(true)}
+                onMouseLeave={() => handleStepSize(false)}>
                 <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}
                 >
                     {steps.map((label, index) => (

@@ -3,6 +3,8 @@ import DOMPurify from 'dompurify';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import * as XLSX from 'xlsx';
+
 
 const RenderHtmlFromLink = ({ link }) => {
   const [htmlContent, setHtmlContent] = useState('');
@@ -68,55 +70,98 @@ const RenderHtmlFromLink = ({ link }) => {
   const downloadExcel = () => {
     const table = document.querySelector('.dataTable');
     if (table) {
-      const rows = Array.from(table.querySelectorAll('tr'));
-      const excelContent = [];
-      const mergedCells = new Set(); // Track merged cells to avoid duplication
-  
-      rows.forEach((row, rowIndex) => {
-        const excelRow = [];
-        const columns = Array.from(row.children);
-  
-        columns.forEach((column, colIndex) => {
-          const cellContent = column.outerText;
-          const rowspan = column.rowSpan || 1;
-          const colspan = column.colSpan || 1;
-  
-          console.log('rowspan colspan', rowspan, colspan);
-  
-          if (rowspan > 1 || colspan > 1) {
-            for (let i = 0; i < rowspan; i += 1) {
-              for (let j = 0; j < colspan; j += 1) {
-                const key = `${rowIndex + i}_${colIndex + j}`;
-                console.log(key);
-                if (!mergedCells.has(key)) {
-                  mergedCells.add(key);
-                  // Only add content for the first cell in the merged range
-                  if (i === 0 && j === 0) {
-                    excelRow.push(cellContent);
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.table_to_sheet(table);
+
+      // Iterate through rows and columns to merge cells based on rowspan and colspan
+      table.querySelectorAll('tr').forEach((row, rowIndex) => {
+        row.querySelectorAll('td').forEach((cell, colIndex) => {
+          const rowspan = cell.rowSpan;
+          const colspan = cell.colSpan;
+
+          // Handle rowspan
+          if (rowspan && rowspan > 1) {
+            for (let i = 1; i < rowspan; i += 1) {
+              const nextRow = row.nextElementSibling;
+              if (nextRow) {
+                const nextCell = nextRow.children[colIndex];
+                if (nextCell) {
+                  // Merge cells using xlsx library's range setting
+                  const range = {
+                    s: { r: rowIndex, c: colIndex },
+                    e: { r: rowIndex + rowspan - 1, c: colIndex },
+                  };
+                  worksheet['!merges'] = worksheet['!merges'] || [];
+                  worksheet['!merges'].push(range);
+
+                  // Apply style to center text
+                  const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: colIndex });
+
+                  if (worksheet[cellAddress]) {
+                    worksheet[cellAddress].s = worksheet[cellAddress].s || {};
+                    worksheet[cellAddress].s.alignment = {
+                      horizontal: 'center',
+                      vertical: 'center',
+                    };
+                  } else {
+                    console.error(`Cell at address ${cellAddress} does not exist in the worksheet.`);
                   }
                 }
               }
             }
-          } else {
-            excelRow.push(cellContent);
+          }
+
+          // Handle colspan
+          if (colspan && colspan > 1) {
+            for (let j = 1; j < colspan; j += 1) {
+              const nextCell = row.children[colIndex + j];
+              if (nextCell) {
+                // Merge cells using xlsx library's range setting
+                const range = {
+                  s: { r: rowIndex, c: colIndex },
+                  e: { r: rowIndex, c: colIndex + colspan - 1 },
+                };
+                worksheet['!merges'] = worksheet['!merges'] || [];
+                worksheet['!merges'].push(range);
+
+                // Apply style to center text
+                const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: colIndex + j });
+
+                // Check if the cell exists in the worksheet
+                if (worksheet[cellAddress]) {
+                  // Merge cells using xlsx library's range setting
+                  const colrange = {
+                    s: { r: rowIndex, c: colIndex },
+                    e: { r: rowIndex, c: colIndex + colspan - 1 },
+                  };
+                  worksheet['!merges'] = worksheet['!merges'] || [];
+                  worksheet['!merges'].push(colrange);
+
+                  // Apply style to center text
+                  worksheet[cellAddress].s = worksheet[cellAddress].s || {};
+                  worksheet[cellAddress].s.alignment = {
+                    horizontal: 'center',
+                    vertical: 'center',
+                  };
+                } else {
+                  console.error(`Cell at address ${cellAddress} does not exist in the worksheet.`);
+                }
+
+              }
+            }
           }
         });
-        excelContent.push(excelRow.join('\t'));
       });
-  
-      const excelData = excelContent.join('\n');
-      console.log('excelData',excelData)
-      const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  
-      const linkExcel = document.createElement('a');
-      linkExcel.href = window.URL.createObjectURL(blob);
-      linkExcel.download = 'table.xlsx';
-      linkExcel.click();
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+      // Write the workbook to a file using xlsx writeFile
+      XLSX.writeFile(workbook, 'table.xlsx');
     } else {
       console.error('No table element found with class "dataTable".');
     }
   };
-  
+
 
   return (
     <Paper elevation={3} style={{ margin: '16px 0', maxHeight: '100%', overflow: 'auto' }}>

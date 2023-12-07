@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
+import { useTraderTableFormat } from '../use-trader-table-formate';
 
 export default function TraderTableRow({
   name,
@@ -33,6 +34,7 @@ export default function TraderTableRow({
 }) {
   const [openMenu, setOpenMenu] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const { getStatusColor } = useTraderTableFormat();
 
   const handleOpenMenu = (event) => {
     setOpenMenu(event.currentTarget);
@@ -66,20 +68,25 @@ export default function TraderTableRow({
     window.location.href = `tel:${number}`;
   };
 
-    const handleSendEmail = (mail) => {
-      const subject = 'Email subject';
-      const body = 'Email body';
-      const mailtoLink = `mailto:${mail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailtoLink;
-    };
-  
-
-  
+  const handleSendEmail = (mail) => {
+    const subject = 'Email subject';
+    const body = 'Email body';
+    const mailtoLink = `mailto:${mail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
+  };
 
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox">
-        <TableCell onClick={handleOpenDialog} component="th" scope="row" padding="normal">
+        <TableCell
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderRadius = '8px';
+            e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.5)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = 'none';
+          }}
+          onClick={handleOpenDialog} component="th" scope="row" padding="normal">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src="avatarUrl" />
             <Typography variant="subtitle2" noWrap>
@@ -88,10 +95,26 @@ export default function TraderTableRow({
           </Stack>
         </TableCell>
         <TableCell>{gstno}</TableCell>
-        <TableCell onClick={()=>handleCall(phoneNumber)}>{phoneNumber}</TableCell>
-        <TableCell onClick={()=>handleSendEmail(email)}>{email}</TableCell>
+        <TableCell
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderRadius = '8px';
+            e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.5)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = 'none';
+          }}
+          onClick={() => handleCall(phoneNumber)}>{phoneNumber}</TableCell>
+        <TableCell
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderRadius = '8px';
+            e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.5)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = 'none';
+          }}
+          onClick={() => handleSendEmail(email)}>{email}</TableCell>
         <TableCell>
-          <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
+          <Label color={getStatusColor(status)}>{status}</Label>
         </TableCell>
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -125,11 +148,11 @@ export default function TraderTableRow({
           <List>
             {mills.map((mill, index) => (
               <React.Fragment key={index}>
-                <ListItem  dense onClick={handleMapDialog}>
+                <ListItem dense onClick={handleMapDialog}>
                   <ListItemAvatar>
                     <Avatar alt={mill.name} src={mill.institution} />
                   </ListItemAvatar>
-                  <ListItemText primaryTypographyProps={{fontWeight:"bold"}} primary={mill.name} secondary={mill.gstin} sx={{pr:12}}/>
+                  <ListItemText primaryTypographyProps={{ fontWeight: "bold" }} primary={mill.name} secondary={mill.gstin} sx={{ pr: 12 }} />
                   <Iconify icon="iconamoon:location-duotone" />
                 </ListItem>
                 <Divider />

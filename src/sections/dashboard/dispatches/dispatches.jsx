@@ -17,6 +17,14 @@ export default function DispatchesView() {
     const router = useRouter();
     const [activeStep, setActiveStep] = useState(0);
     const steps = useMemo(() => ['Arriving', 'At Plant', 'DO Issued', 'Loaded', 'Reported', 'Unloaded'], []);
+    const [transformValue, setTransformValue] = useState('scale(0.85)');
+    const [isMouseOver, setIsMouseOver] = useState(true);
+
+    const handleStepSize = (isOver) => {
+        setIsMouseOver(isOver);
+        setTransformValue(!isMouseOver ? 'scale(0.85)' : 'scale(0.75)');
+    };
+
     const handleStepClick = async (index) => {
         setActiveStep(index);
     };
@@ -33,7 +41,10 @@ export default function DispatchesView() {
                     Add Internal Do
                 </Button>}
             </Stack>
-            <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
+            <Box
+                onMouseEnter={() => handleStepSize(true)}
+                onMouseLeave={() => handleStepSize(false)}
+                sx={{ width: 1, transform: transformValue }}>
                 <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>

@@ -91,7 +91,6 @@ export default function TraderView() {
                 <TableToolbar
                     numSelected={0}
                     showIcons={false}
-                   
                     label='Search name or Phone no..'
                 />
                 <Scrollbar>

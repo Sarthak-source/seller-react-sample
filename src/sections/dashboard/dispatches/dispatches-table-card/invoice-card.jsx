@@ -96,7 +96,7 @@ export default function InoviceCard(
                 <Card>
                     <TableToolbar
                         numSelected={selected.length}
-                      
+                        identifier='InoviceCard'
                         label='Search dispatches..'
                     />
                     <Scrollbar>

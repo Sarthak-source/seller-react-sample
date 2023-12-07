@@ -94,6 +94,51 @@ export default function LoadingsInstructionCard(
 
     });
 
+
+    const dataFormated = dataFiltered.map(row => ({
+        orderNo: row.loading_instruction[0].id,
+        invoiceNo: row.loading_instruction[0].lr_number,
+        millName: row.mill,
+        name: row.trader,
+        date: format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy'),
+        vehicleNumber: row.veicle_num,
+        quantity: row.total_qty,
+        billedTo: `Name-${row.loading_instruction[0].billing_address.name}-GSTIN-${row.billing_gstin}-Billing address-${row.loading_instruction[0].billing_address.address}`,
+        shipTo: `${row.loading_instruction[0].address.name}\n-${row.address_gstin}-\n${row.loading_instruction[0].address.address}`,
+        rate: row.loading_instruction[0].product != null ? row.loading_instruction[0].order_head.price : 'Not given',
+        grade: row.loading_instruction[0].product != null ? row.loading_instruction[0].product.code : 'Not given'
+    }));
+
+    const handleExportCSV = () => {
+        const dataToExport = [
+            loadingInstructionHeaderRow.map((row) => row.label),
+            ...dataFormated.map((row) => [
+                row.orderNo,
+                row.invoiceNo,
+                row.millName,
+                row.name,
+                row.date,
+                row.vehicleNumber,
+                row.quantity,
+                row.billedTo,
+                row.shipTo,
+                row.rate,
+                row.grade,
+            ]),
+        ];
+
+        const csvContent = `data:text/csv;charset=utf-8,${dataToExport.map((row) => row.join(',')).join('\n')}`;
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'dispatches_data.csv');
+        document.body.appendChild(link);
+        link.click();
+    };
+
+
+
     const notFound = !dataFiltered.length;
     return (
         <>
@@ -101,6 +146,7 @@ export default function LoadingsInstructionCard(
                 <TableToolbar
                     numSelected={selected.length}
                     label='Search dispatches..'
+                    onDownload={handleExportCSV}
                 />
                 <Scrollbar>
                     <TableContainer sx={{ overflow: 'unset' }}>
@@ -108,29 +154,29 @@ export default function LoadingsInstructionCard(
                             <SharedTableHead
                                 order={order}
                                 orderBy={orderBy}
-                                rowCount={dispatchesData.length}
+                                rowCount={dataFormated.length}
                                 numSelected={selected.length}
                                 onRequestSort={handleSort}
                                 headLabel={loadingInstructionHeaderRow}
                             />
                             {!loading ? (
                                 <TableBody>
-                                    {dataFiltered
+                                    {dataFormated
                                         .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
                                             <DispatchTableRow
-                                                orderNo={row.loading_instruction
-                                                [0].id}
-                                                invoiceNo={row.loading_instruction[0].lr_number}
-                                                millName={row.mill}
-                                                name={row.trader}
-                                                date={format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy')}
-                                                vehicleNumber={row.vehicle_num}
-                                                quantity={row.total_qty}
-                                                billedTo={`${row.loading_instruction[0].billing_address.name}\n${row.billing_gstin}\n${row.loading_instruction[0].billing_address.address}`}
-                                                shipTo={`${row.loading_instruction[0].address.name}\n${row.address_gstin}\n${row.loading_instruction[0].address.address}`}
-                                                rate={row.loading_instruction[0].product != null ? row.loading_instruction[0].order_head.price : 'Not given'}
-                                                grade={row.loading_instruction[0].product != null ? row.loading_instruction[0].product.code : 'Not given'}
+                                                key={row.orderNo}  // Make sure to include a unique key for each row
+                                                orderNo={row.orderNo}
+                                                invoiceNo={row.invoiceNo}
+                                                millName={row.millName}
+                                                name={row.name}
+                                                date={row.date}
+                                                vehicleNumber={row.vehicleNumber}
+                                                quantity={row.quantity}
+                                                billedTo={row.billedTo}
+                                                shipTo={row.shipTo}
+                                                rate={row.rate}
+                                                grade={row.grade}
                                             />
                                         ))}
                                     <TableEmptyRows

@@ -50,17 +50,31 @@ export default function TenderTableRow({
     setOpen(null);
   };
 
-  const { getStatusColor  } = useTenderTableFormat();
+
+
+  const { getStatusColor } = useTenderTableFormat();
 
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox">
+      <TableRow
+
+        hover tabIndex={-1} role="checkbox">
         {/* <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell> */}
 
-        <TableCell onClick={handleOpenDetails}>{tenderId}</TableCell>
+        <TableCell
+          style={{ cursor: 'pointer' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderRadius = '8px';
+            e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.5)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = 'none';
+          }}
+          onClick={handleOpenDetails}
+        >{tenderId}</TableCell>
         <TableCell component="th" scope="row" padding="normal" >
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src='avatarUrl' />

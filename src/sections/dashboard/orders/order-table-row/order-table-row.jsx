@@ -59,7 +59,17 @@ export default function OrdersTableRow({
     return (
         <>
             <TableRow hover tabIndex={-1} role="checkbox">
-                <TableCell onClick={() => handleOpenDetails(order)}>{ordersId}</TableCell>
+                <TableCell
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.borderRadius = '8px';
+                        e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.5)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = 'none';
+                    }}
+                    onClick={() => handleOpenDetails(order)}>
+                    {ordersId}
+                </TableCell>
                 <TableCell component="th" scope="row" padding="normal" >
                     <Stack direction="row" alignItems="center" spacing={2}>
                         <Avatar alt={millName} src='avatarUrl' />

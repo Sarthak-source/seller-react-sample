@@ -46,6 +46,13 @@ export default function PaymentsView() {
     const [selectedDate, setSelectedDate] = useState('');
     const totalPages = Math.ceil(totalDataCount / rowsPerPage);
     const [loading, setLoading] = useState(true);
+    const [transformValue, setTransformValue] = useState('scale(0.85)');
+    const [isMouseOver, setIsMouseOver] = useState(true);
+
+    const handleStepSize = (isOver) => {
+        setIsMouseOver(isOver);
+        setTransformValue(!isMouseOver ? 'scale(0.85)' : 'scale(0.75)');
+    };
 
     const { paymentHeaderRow } = usePaymentTableFormate();
 
@@ -201,7 +208,10 @@ export default function PaymentsView() {
                     )
                 }
             </Stack>
-            <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
+            <Box
+                onMouseEnter={() => handleStepSize(true)}
+                onMouseLeave={() => handleStepSize(false)}
+                sx={{ width: 1, transform: transformValue }}>
                 <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
