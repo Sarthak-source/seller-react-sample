@@ -39,13 +39,9 @@ export default function LoadingsInstructionCard(
     const searchTerm = useSelector((state) => state.search.searchTerm);
 
     useEffect(() => {
-        setDispatchesData([])
-    }, [searchTerm])
-
-    useEffect(() => {
         setPage(1)
         setDispatchesData([])
-    }, [selectedMill])
+    }, [searchTerm, status, selectedMill])
 
     const fetchDispatchesData = async (dispatchesPage, text, currentStatus, millId) => {
         setLoading(true)
@@ -94,41 +90,45 @@ export default function LoadingsInstructionCard(
 
     });
 
-
     const dataFormated = dataFiltered.map(row => ({
-        orderNo: row.loading_instruction[0].id,
-        invoiceNo: row.loading_instruction[0].lr_number,
+        orderNo: row.loading_instruction[0].order_head.id,
+        lrNum: row.loading_instruction[0].lr_number,
+        lrId: row.loading_instruction[0].id,
         millName: row.mill,
         name: row.trader,
         date: format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy'),
         vehicleNumber: row.veicle_num,
         quantity: row.total_qty,
         billedTo: `Name-${row.loading_instruction[0].billing_address.name}-GSTIN-${row.billing_gstin}-Billing address-${row.loading_instruction[0].billing_address.address}`,
-        shipTo: `${row.loading_instruction[0].address.name}\n-${row.address_gstin}-\n${row.loading_instruction[0].address.address}`,
+        shipTo: `Name-${row.loading_instruction[0].address.name}-GSTIN-${row.address_gstin}-Billing address-${row.loading_instruction[0].address.address}`,
         rate: row.loading_instruction[0].product != null ? row.loading_instruction[0].order_head.price : 'Not given',
         grade: row.loading_instruction[0].product != null ? row.loading_instruction[0].product.code : 'Not given'
     }));
 
+    console.log(
+        'dataFormated', dataFormated
+    )
+
     const handleExportCSV = () => {
+
         const dataToExport = [
             loadingInstructionHeaderRow.map((row) => row.label),
             ...dataFormated.map((row) => [
                 row.orderNo,
-                row.invoiceNo,
+                row.lrNum,
                 row.millName,
                 row.name,
                 row.date,
                 row.vehicleNumber,
                 row.quantity,
-                row.billedTo,
-                row.shipTo,
+                row.billedTo.replace(/,/g, '').replace(/[\r\n]/g, ''),
+                row.shipTo.replace(/,/g, '').replace(/[\r\n]/g, ''),
                 row.rate,
                 row.grade,
             ]),
         ];
 
         const csvContent = `data:text/csv;charset=utf-8,${dataToExport.map((row) => row.join(',')).join('\n')}`;
-
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement('a');
         link.setAttribute('href', encodedUri);
@@ -165,9 +165,11 @@ export default function LoadingsInstructionCard(
                                         .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
                                             <DispatchTableRow
-                                                key={row.orderNo}  // Make sure to include a unique key for each row
+                                                type='loadingsInstruction'
+                                                key={row.orderNo}
                                                 orderNo={row.orderNo}
-                                                invoiceNo={row.invoiceNo}
+                                                lrNum={row.lrNum}
+                                                lrId={row.lrId}
                                                 millName={row.millName}
                                                 name={row.name}
                                                 date={row.date}

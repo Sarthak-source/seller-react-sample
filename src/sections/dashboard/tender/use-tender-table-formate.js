@@ -1,6 +1,8 @@
+import { fCurrency } from "src/utils/format-number";
+
 export function useTenderTableFormat() {
     const generateLocation = (location, stateName) => `${location}, ${stateName.charAt(0).toUpperCase() + stateName.substring(1).toLowerCase()}`;
-    const formatPrice = (price, unit) => `₹ ${price} ${unit}`;
+    const formatPrice = (price, unit) => `₹ ${fCurrency(price)} /${unit}`;
     const getPropertyValue = (properties, index, property, defaultValue) =>
         properties.length > index ? properties[index][property] : defaultValue;
 

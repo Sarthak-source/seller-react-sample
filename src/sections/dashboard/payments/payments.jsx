@@ -46,7 +46,7 @@ export default function PaymentsView() {
     const [selectedDate, setSelectedDate] = useState('');
     const totalPages = Math.ceil(totalDataCount / rowsPerPage);
     const [loading, setLoading] = useState(true);
-    const [transformValue, setTransformValue] = useState('scale(0.85)');
+    const [transformValue, setTransformValue] = useState('scale(0.75)');
     const [isMouseOver, setIsMouseOver] = useState(true);
 
     const handleStepSize = (isOver) => {
@@ -161,11 +161,12 @@ export default function PaymentsView() {
             ...dataFormatted.map((row) => [
                 row.paymentsId,
                 row.amount,
+                row.refNo,
                 row.status,
-                row.millName,
+                row.millName,    
                 row.tradeName,
                 row.date,
-                row.refNo,
+                
             ]),
         ];
 

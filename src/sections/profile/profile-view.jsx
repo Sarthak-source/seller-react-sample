@@ -61,6 +61,14 @@ export default function ProfileView() {
         <Container maxWidth="xl">
             <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
                 <Card
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.borderRadius = '8px';
+                        e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.borderRadius = '8px';
+                        e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
+                    }}
                     sx={{
                         p: 5,
                         width: 1,
@@ -77,11 +85,28 @@ export default function ProfileView() {
                             <Typography sx={{ pb: 1, pl: 1, fontWeight: 'bold', fontSize: 20 }}>
                                 Details
                             </Typography>
-                            <Card sx={{ pt: 2, pr: 2, pl: 2, pb: 2, width: '335px', }}>
+                            <Card
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.borderRadius = '8px';
+                                    e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.borderRadius = '8px';
+                                    e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
+                                }}
+                                sx={{ pt: 2, pr: 2, pl: 2, pb: 2, width: '335px', }}>
                                 <Typography sx={{ pt: 1, fontSize: 14, fontWeight: 'bold', }}>
                                     Name
                                 </Typography>
                                 <TextField
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.borderRadius = '8px';
+                                        e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.borderRadius = '8px';
+                                        e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
+                                    }}
                                     name="name"
                                     label={selectedUser.name}
                                     disabled
@@ -92,6 +117,14 @@ export default function ProfileView() {
                                     Contact
                                 </Typography>
                                 <TextField
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.borderRadius = '8px';
+                                        e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.borderRadius = '8px';
+                                        e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
+                                    }}
                                     name="phone"
                                     label={selectedUser.phone_number}
                                     disabled
@@ -102,6 +135,14 @@ export default function ProfileView() {
                                     GST number
                                 </Typography>
                                 <TextField
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.borderRadius = '8px';
+                                        e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.borderRadius = '8px';
+                                        e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
+                                    }}
                                     name="gst"
                                     label={selectedUser.mills[0].gstin}
                                     disabled
@@ -117,7 +158,16 @@ export default function ProfileView() {
                             <List>
                                 {selectedUser && selectedUser.mills ? (
                                     selectedUser.mills.map((item, index) => (
-                                        <Card key={index} sx={{ width: '335px', mb: 2 }}>
+                                        <Card
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.borderRadius = '8px';
+                                                e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.borderRadius = '8px';
+                                                e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
+                                            }}
+                                            key={index} sx={{ width: '335px', mb: 2 }}>
                                             <Box p={2}>
                                                 <Box display="flex" flexDirection="column" alignItems="start">
                                                     <Accordion >
@@ -145,11 +195,33 @@ export default function ProfileView() {
                             <Typography sx={{ pb: 1, pl: 1, fontWeight: 'bold', fontSize: 20, }}>
                                 Roles
                             </Typography>
-                            <Card sx={{ pr: 18, pl: 2, pt: 2, pb: 2, width: '335px' }} >
+                            <Card
+
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.borderRadius = '8px';
+                                    e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.borderRadius = '8px';
+                                    e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
+                                }}
+
+                                sx={{ pr: 18, pl: 2, pt: 2, pb: 2, width: '335px' }} >
                                 <List>
                                     {selectedUser && selectedUser.mills ? (selectedUser.seller_role.map((role, roleInd) => (
                                         <Box key={roleInd} sx={{ pb: 2 }}>
-                                            <Card sx={{ pl: 1, pr: 4, pb: 2, pt: 2, width: '305px' }}>
+                                            <Card
+
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.borderRadius = '8px';
+                                                    e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.borderRadius = '8px';
+                                                    e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
+                                                }}
+
+                                                sx={{ pl: 1, pr: 4, pb: 2, pt: 2, width: '305px' }}>
                                                 <ListItem dense >
                                                     <Typography>
                                                         {getRoleName(role)}

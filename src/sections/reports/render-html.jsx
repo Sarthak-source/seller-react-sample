@@ -10,6 +10,7 @@ const RenderHtmlFromLink = ({ link }) => {
   const [htmlContent, setHtmlContent] = useState('');
   const [loading, setLoading] = useState(true);
 
+
   const fetchHtml = async () => {
     try {
       const response = await fetch(link);
@@ -162,9 +163,17 @@ const RenderHtmlFromLink = ({ link }) => {
     }
   };
 
-
   return (
-    <Paper elevation={3} style={{ margin: '16px 0', maxHeight: '100%', overflow: 'auto' }}>
+    <Paper
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderRadius = '8px';
+        e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderRadius = '8px';
+        e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
+      }}
+      elevation={3} style={{ margin: '16px 0', maxHeight: '100%', overflow: 'auto' }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', pr: '16px', pt: '16px' }}>
         <ButtonGroup variant="outlined" aria-label="outlined button group" size='small'>
           <Button onClick={downloadExcel}>EXCEL</Button>
@@ -172,9 +181,12 @@ const RenderHtmlFromLink = ({ link }) => {
         </ButtonGroup>
       </Box>
       {!loading ? (
-        <Typography variant="body1" sx={{ px: '30px', mb: '20px' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />
+        <Typography variant="body1"
+          sx={{ px: '30px', mb: '20px' }}
+          dangerouslySetInnerHTML={{ __html: htmlContent }} />
       ) : (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+        <Box
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
           <SkeletonLoader />
         </Box>
       )}

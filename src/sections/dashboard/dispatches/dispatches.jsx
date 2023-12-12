@@ -17,7 +17,7 @@ export default function DispatchesView() {
     const router = useRouter();
     const [activeStep, setActiveStep] = useState(0);
     const steps = useMemo(() => ['Arriving', 'At Plant', 'DO Issued', 'Loaded', 'Reported', 'Unloaded'], []);
-    const [transformValue, setTransformValue] = useState('scale(0.85)');
+    const [transformValue, setTransformValue] = useState('scale(0.75)');
     const [isMouseOver, setIsMouseOver] = useState(true);
 
     const handleStepSize = (isOver) => {

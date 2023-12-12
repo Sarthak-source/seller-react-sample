@@ -18,7 +18,9 @@ import { format, parseISO } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import Label from 'src/components/label';
 import Scrollbar from 'src/components/scrollbar';
+import { primary } from 'src/theme/palette';
 import NetworkRepository from '../../../../app-utils/network_repository';
 import OrderTableRow from '../../orders/order-table-row/order-table-row';
 import { useOrderTableFormate } from '../../orders/use-order-table-formate';
@@ -43,9 +45,9 @@ export default function TenderDetails() {
         setTenderOrderData(tenderOrder);
       } catch (error) {
         console.error('Error fetching tender data:', error);
-      }finally {
+      } finally {
         setLoading(false); // Set loading to false when data is fetched (whether successful or not)
-    }
+      }
     };
     fetchDetails();
   }, [id]);
@@ -106,7 +108,7 @@ export default function TenderDetails() {
                 </Card>
               </StepContent>
             </Step>
-            <Step>
+            <Step  active expanded>
               <StepLabel>
                 <Typography variant='h6'>Orders</Typography>
               </StepLabel>
@@ -115,66 +117,93 @@ export default function TenderDetails() {
                   <Scrollbar>
                     <TableContainer sx={{ overflow: 'unset' }}>
                       <Table sx={{ minWidth: 800 }}>
-                      <TableHead>
-                            {orderHeaderRow.map((label, index) => (
-                              <TableCell key={index} sx={{ height: '40px' }}>
-                                {label.label}
-                              </TableCell>
-                            ))}
-                          </TableHead>
+                        <TableHead>
+                          {orderHeaderRow.map((label, index) => (
+                            <TableCell key={index} sx={{ height: '40px' }}>
+                              {label.label}
+                            </TableCell>
+                          ))}
+                        </TableHead>
                         <TableBody>
                           {tenderOrderData.results.map((result, index) => (
-                           
-                              <OrderTableRow
-                                key={result.id}
-                                ordersId={result.id}
-                                traderName={result.trader.name}
-                                millName={result.tender_head.mill.name}
-                                date={format(parseISO(result.date), 'MM/dd/yyyy')}
-                                price={`₹ ${result.price} ${result.tender_head.product.product_type.unit}`}
-                                status={getStatusText(result.status)}
-                                tenderType={result.tender_head.tender_type}
-                                productType={result.tender_head.product.product_type.product_type}
-                                grade={
-                                  result.tender_head.product.properties.length > 0
-                                    ? result.tender_head.product.properties[0].label
-                                    : 'Not given'
-                                }
-                                season={
-                                  result.tender_head.product.properties.length > 0
-                                    ? result.tender_head.product.properties[0].value
-                                    : 'Not given'
-                                }
-                                sale={formatQty(result.qty)}
-                                loading={`${formatQuantity(
-                                  result,
-                                  'yet_to_load',
-                                  result.yet_to_load
-                                )} ${result.tender_head.product.product_type.unit}`}
-                                dispatched={`${formatQuantity(
-                                  result,
-                                  'dispatched_qty',
-                                  result.yet_to_load
-                                )} ${result.tender_head.product.product_type.unit}`}
-                                balance={`${formatQuantity(
-                                  result,
-                                  'available_qty',
-                                  result.yet_to_load
-                                )} ${result.tender_head.product.product_type.unit}`}
-                                order={result.tender_head}
-                              />
-                            
+
+                            <OrderTableRow
+                              key={result.id}
+                              ordersId={result.id}
+                              traderName={result.trader.name}
+                              millName={result.tender_head.mill.name}
+                              date={format(parseISO(result.date), 'MM/dd/yyyy')}
+                              price={`₹ ${result.price} ${result.tender_head.product.product_type.unit}`}
+                              status={getStatusText(result.status)}
+                              tenderType={result.tender_head.tender_type}
+                              productType={result.tender_head.product.product_type.product_type}
+                              grade={
+                                result.tender_head.product.properties.length > 0
+                                  ? result.tender_head.product.properties[0].label
+                                  : 'Not given'
+                              }
+                              season={
+                                result.tender_head.product.properties.length > 0
+                                  ? result.tender_head.product.properties[0].value
+                                  : 'Not given'
+                              }
+                              sale={formatQty(result.qty)}
+                              loading={`${formatQuantity(
+                                result,
+                                'yet_to_load',
+                                result.yet_to_load
+                              )} ${result.tender_head.product.product_type.unit}`}
+                              dispatched={`${formatQuantity(
+                                result,
+                                'dispatched_qty',
+                                result.yet_to_load
+                              )} ${result.tender_head.product.product_type.unit}`}
+                              balance={`${formatQuantity(
+                                result,
+                                'available_qty',
+                                result.yet_to_load
+                              )} ${result.tender_head.product.product_type.unit}`}
+                              order={result.tender_head}
+                            />
+
                           ))}
                         </TableBody>
                       </Table>
                     </TableContainer>
                   </Scrollbar>
-                </Card>) : (<Typography variant="subtitle1" marginLeft={4} paddingTop={4}>This tender has no orders</Typography>)}
+                </Card>) : (
+
+                <Label
+                  color={primary.main}
+                  sx={{
+                    position: 'absolute',
+                    textTransform: 'uppercase',
+                    marginTop: 4,
+                    marginLeft: 5,
+                  }}
+                >
+                
+                    This tender has no orders
+                 
+                </Label>
+
+              )}
             </Step>
           </Stepper>
         </Stack>
       ) : (
-        <Typography variant="h10">Tender details data is null</Typography>
+        <Label
+          color={primary.main}
+          sx={{
+            position: 'absolute',
+            textTransform: 'uppercase',
+          }}
+        >
+          <Typography variant="h10">
+            Tender details data is null
+          </Typography>
+        </Label>
+
       )}
     </Container>
   );

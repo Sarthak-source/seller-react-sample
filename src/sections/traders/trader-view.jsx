@@ -1,60 +1,125 @@
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
+import TextField from '@mui/material/TextField';
+
+
+
+import { Alert } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
 import TableContainer from '@mui/material/TableContainer';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { fetchTraderData, fetchTraderDataStart } from 'src/redux/actions/traders';
 import { useRouter } from 'src/routes/hooks';
 import TableEmptyRows from '../dashboard/table-empty-rows';
 import SharedTableHead from '../dashboard/table-head';
 import TableNoData from '../dashboard/table-no-data';
 import TableToolbar from '../dashboard/table-toolbar';
-import { applyFilter, emptyRows, getComparator } from '../dashboard/utils';
+import { applyFilter, getComparator } from '../dashboard/utils';
 import TraderTableRow from './trader-table-row/trader-table-row';
 import { useTraderTableFormat } from './use-trader-table-formate';
 
-
 export default function TraderView() {
     const router = useRouter();
-    const [page, setPage] = useState(1);
+    const dispatch = useDispatch();
+    const traders = useSelector((state) => state.traders.traderData);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
-    const [rowsPerPage, setRowsPerPage] = useState(15);
-    const [traderData, setTraderData] = useState([]);
-    const { traderHeaderRow } = useTraderTableFormat();
-    const [loading, setLoading] = useState(true);
-    const searchTerm = useSelector((state) => state.search.searchTerm);
-    useEffect(() => { }, [searchTerm])
+    const [traderData, setTraderData] = useState(traders);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [nameController, setNameController] = useState('');
+    const [numberController, setNumberController] = useState('');
 
-    const handleOpenTrader = () => {
-        router.replace('/home/trader-create');
-    };
+    const loading = useSelector((state) => state.traders.loading);
+    const { traderHeaderRow } = useTraderTableFormat();
+    const searchTerm = useSelector((state) => state.search.searchTerm);
 
     useEffect(() => {
-        const fetchTraderData = async () => {
+        const fetchData = async () => {
             try {
-                const data = await NetworkRepository.sellerTraders();
-                console.log('Seller traders', data);
-                setTraderData(data);
+                if (Array.isArray(traderData) && traderData.length === 0) {
+                    dispatch(fetchTraderDataStart());
+                    await dispatch(fetchTraderData());
+                }
             } catch (error) {
-                console.error('Error fetching Trader data:', error);
-            } finally {
-                setLoading(false); // Set loading to false when data is fetched (whether successful or not)
+                console.error('Error fetching trader data:', error);
             }
         };
-        fetchTraderData();
-    }, []);
+
+        fetchData();
+        setTraderData(traders);
+    }, [dispatch, traderData, traders]);
+
+    const handleOpenTrader = () => {
+        setOpenDialog(true)
+    };
+
+    const handleNameChange = (event) => {
+        setNameController(event.target.value);
+    };
+
+    const handleNumberChange = (event) => {
+        setNumberController(event.target.value);
+    };
+
+    const addTrader = async () => {
+        try {
+            if (nameController === '') {
+                showSnackbar('Please add a name.', 'error');
+            } else if (Number.isNaN(Number(numberController)) || numberController.length !== 10) {
+                showSnackbar('Please add a valid number.', 'error');
+
+            } else {
+                const result = await NetworkRepository.traderPostView(nameController, numberController);
+                console.log('result', result)
+                setOpenDialog(false)
+                setNameController('')
+                setNumberController('')
+                showSnackbar('Trader created successfully.', 'success');
+            }
+        } catch (error) {
+            console.error('Error adding trader:', error);
+        }
+    };
+
+    const closeDialog
+        = () => {
+            setOpenDialog(false)
+            setNameController('')
+            setNumberController('')
+        }
+    // Function to close the Snackbar
+    const showSnackbar = (message, severity) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -87,27 +152,26 @@ export default function TraderView() {
                 </Button>
             </Stack>
 
-            {!loading ? (<Card>
-                <TableToolbar
-                    numSelected={0}
-                    showIcons={false}
-                    label='Search name or Phone no..'
-                />
-                <Scrollbar>
-                    <TableContainer sx={{ overflow: 'unset' }}>
-                        <Table sx={{ minWidth: 800 }}>
-                            <SharedTableHead
-                                order={order}
-                                orderBy={orderBy}
-                                rowCount={dataFiltered.length}
-                                numSelected={selected.length}
-                                onRequestSort={handleSort}
-                                headLabel={traderHeaderRow}
-                            />
-                            <TableBody>
-                                {dataFiltered
-                                    .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
-                                    .map((row) => (
+            {!loading ? (
+                <Card>
+                    <TableToolbar
+                        numSelected={0}
+                        showIcons={false}
+                        label='Search name or Phone no..'
+                    />
+                    <Scrollbar>
+                        <TableContainer sx={{ overflow: 'unset' }}>
+                            <Table sx={{ minWidth: 800 }}>
+                                <SharedTableHead
+                                    order={order}
+                                    orderBy={orderBy}
+                                    rowCount={dataFiltered.length}
+                                    numSelected={selected.length}
+                                    onRequestSort={handleSort}
+                                    headLabel={traderHeaderRow}
+                                />
+                                <TableBody>
+                                    {dataFiltered.map((row) => (
                                         <TraderTableRow
                                             name={row.name}
                                             status={row.is_preferred === true ? "Active" : "Inactive"}
@@ -117,21 +181,61 @@ export default function TraderView() {
                                             mills={row.mills}
                                         />
                                     ))}
-
-                                <TableEmptyRows
-                                    height={77}
-                                    emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
-                                />
-                                {notFound && <TableNoData query={searchTerm} />}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Scrollbar>
-            </Card>) : (
+                                    <TableEmptyRows
+                                        height={77}
+                                        emptyRows={0}
+                                    />
+                                    {notFound && <TableNoData query={searchTerm} />}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Scrollbar>
+                </Card>
+            ) : (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
                     <SkeletonLoader />
                 </Box>
             )}
+            <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                <DialogTitle>Add Trader</DialogTitle>
+                <DialogContent >
+                    <TextField
+                        name="remarks"
+                        label="Name"
+                        value={nameController}
+                        onChange={handleNameChange}
+                        fullWidth
+                        sx={{ marginBottom: 2, marginTop: 2 }}
+                    />
+                    <TextField
+                        name="number"
+                        label="Phone number"
+                        inputProps={{ maxLength: 10 }}
+                        value={numberController}
+                        onChange={handleNumberChange}
+                        fullWidth
+                        sx={{ marginBottom: 2 }}
+                    />
+                    {/* Your dialog content goes here */}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={addTrader}>Add</Button>
+                    <Button onClick={closeDialog}>Cancel</Button>
+                    {/* Additional action buttons if needed */}
+                </DialogActions>
+            </Dialog>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+
         </Container>
+
     );
 }

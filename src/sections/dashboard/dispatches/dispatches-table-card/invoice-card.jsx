@@ -28,19 +28,15 @@ export default function InoviceCard(
     const [orderBy, setOrderBy] = useState('name');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [dispatchesData, setDispatchesData] = useState([]);
-    const { loadingInstructionHeaderRow } = useDispatchesTableFormat();
+    const { invoiceHeaderRow } = useDispatchesTableFormat();
     const [loading, setLoading] = useState(true);
     const selectedMill = useSelector((state) => state.mill.selectedMill);
     const searchTerm = useSelector((state) => state.search.searchTerm);
 
     useEffect(() => {
-        setDispatchesData([])
-    }, [searchTerm])
-
-    useEffect(() => {
         setPage(1)
         setDispatchesData([])
-    }, [selectedMill])
+    }, [selectedMill, searchTerm, status])
 
     const fetchDispatchesData = async (dispatchesPage, text, currentStatus, millId) => {
         try {
@@ -79,13 +75,63 @@ export default function InoviceCard(
         }
     };
 
-   
-
     const dataFiltered = applyFilter({
         inputData: dispatchesData,
         comparator: getComparator(order, orderBy),
-       
+
     });
+
+    const dataFormated = dataFiltered.map(row => ({
+        type: 'invoice',
+        orderNo: row.loading_instruction[0].order_head.id,
+        lrNum: row.loading_instruction[0].lr_number,
+        invoiceNo: row.invoice_num !== '0' ? row.invoice_num : row.dc_num,
+        millName: row.mill.name,
+        name: row.trader.name,
+        date: row.loading_instruction[0].date ? format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy') : 'Not given',
+        vehicleNumber: row.vehicle_num,
+        quantity: row.total_qty,
+        billedTo: `${row.loading_instruction[0].billing_address.name}\n${row.billing_gstin}\n${row.loading_instruction[0].billing_address.address}`,
+        shipTo: `${row.loading_instruction[0].address.name}\n${row.address_gstin}\n${row.loading_instruction[0].address.address}`,
+        rate: row.loading_instruction[0].qty,
+        grade: row.loading_instruction[0].order_head.price
+    }));
+
+    const handleExportCSV = () => {
+        const dataToExport = [
+            invoiceHeaderRow.map((row) => row.label),
+            ...dataFormated.map((row) => [
+                row.orderNo,
+                row.lrNum,
+                row.invoiceNo,
+                row.millName,
+                row.name,
+                row.date,
+                row.vehicleNumber,
+                row.quantity,
+                row.billedTo.replace(/[\r\n]/g, ' ').replace(/#/g, '').replace(/,/g, ''), // Replace line breaks with a space
+                row.shipTo.replace(/[\r\n]/g, ' ').replace(/#/g, '').replace(/,/g, ''),   // Replace line breaks with a space
+                row.rate,
+                row.grade,
+            ]),
+        ];
+    
+        const csvContent = `data:text/csv;charset=utf-8,${dataToExport.map((row) => row.join(',')).join('\n')}`;
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'dispatches_data.csv');
+        document.body.appendChild(link);
+        link.click();
+    };
+    
+
+    // Example usage:
+    console.log(dataFormated);
+
+
+
+    
 
     console.log('ivoice', dataFiltered)
 
@@ -98,6 +144,7 @@ export default function InoviceCard(
                         numSelected={selected.length}
                         identifier='InoviceCard'
                         label='Search dispatches..'
+                        onDownload={handleExportCSV}
                     />
                     <Scrollbar>
                         <TableContainer sx={{ overflow: 'unset' }}>
@@ -105,28 +152,31 @@ export default function InoviceCard(
                                 <SharedTableHead
                                     order={order}
                                     orderBy={orderBy}
-                                    rowCount={dispatchesData.length}
+                                    rowCount={dataFormated.length}
                                     numSelected={selected.length}
                                     onRequestSort={handleSort}
-                                    headLabel={loadingInstructionHeaderRow}
+
+                                    headLabel={invoiceHeaderRow}
                                 />
                                 <TableBody>
-                                    {dataFiltered
+                                    {dataFormated
                                         .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
-
                                             <DispatchTableRow
-                                                orderNo={row.loading_instruction[0].order_head.id}
-                                                invoiceNo={row.loading_instruction[0].lr_number}
-                                                millName={row.mill.name}
-                                                name={row.trader.name}
-                                                date={row.loading_instruction[0].date ? format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy') : 'Not given'}
-                                                vehicleNumber={row.vehicle_num}
-                                                quantity={row.total_qty}
-                                                billedTo={`${row.loading_instruction[0].billing_address.name}\n${row.billing_gstin}\n${row.loading_instruction[0].billing_address.address}`}
-                                                shipTo={`${row.loading_instruction[0].address.name}\n${row.address_gstin}\n${row.loading_instruction[0].address.address}`}
-                                                rate={row.loading_instruction[0].qty}
-                                                grade={row.loading_instruction[0].order_head.price}
+                                               
+                                                type={row.type}
+                                                orderNo={row.orderNo}
+                                                lrNum={row.lrNum}
+                                                invoiceNo={row.invoiceNo}
+                                                millName={row.millName}
+                                                name={row.name}
+                                                date={row.date}
+                                                vehicleNumber={row.vehicleNumber}
+                                                quantity={row.quantity}
+                                                billedTo={row.billedTo}
+                                                shipTo={row.shipTo}
+                                                rate={row.rate}
+                                                grade={row.grade}
                                             />
                                         ))}
                                     <TableEmptyRows

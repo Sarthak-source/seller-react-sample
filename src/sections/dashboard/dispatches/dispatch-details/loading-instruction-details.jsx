@@ -1,6 +1,7 @@
 import {
   Card,
   Container,
+  Grid,
   Stack,
   Step,
   StepContent,
@@ -27,6 +28,7 @@ import { useOrderTableFormate } from '../../orders/use-order-table-formate';
 import TenderTableRow from '../../tender/tender-table-row/tender-table-row';
 import { useTenderTableFormat } from '../../tender/use-tender-table-formate';
 import DispatchTableRow from '../dispatches-table-row/dispatch-table-row';
+import QuatityCheckCard from '../quality-check-card';
 import { useDispatchesTableFormat } from '../use-dispatches-table-formate';
 
 export default function LoadingInstructionDetails() {
@@ -41,6 +43,8 @@ export default function LoadingInstructionDetails() {
   const { loadingInstructionHeaderRow } = useDispatchesTableFormat();
   const [loading, setLoading] = useState(true);
 
+  console.log('loadingInstructionDetailsData', loadingInstructionDetailsData)
+
   useEffect(() => {
     const fetchDetails = async () => {
       try {
@@ -50,7 +54,8 @@ export default function LoadingInstructionDetails() {
         // Create an array to store promises for fetching tenderDetails and orderDetails
         const detailsPromises = loadingInstructionDetails.loadinginstruction.map(async (loadinginstruction) => {
           const tenderDetails = await NetworkRepository.tenderDetails(loadinginstruction.order_head.tender_head.id);
-          const orderDetails = await NetworkRepository.tenderOrder(loadinginstruction.order_head.tender_head.id);
+
+          const orderDetails = await NetworkRepository.orderSummary(loadinginstruction.order_head.id);
           console.log(' { loadinginstruction, tenderDetails, orderDetails }', { loadinginstruction, tenderDetails, orderDetails })
           return { loadinginstruction, tenderDetails, orderDetails };
         });
@@ -60,7 +65,7 @@ export default function LoadingInstructionDetails() {
 
         // Extract the results and update state
         const tenderDetails = detailsResults.map(result => result.tenderDetails);
-        const orderDetailsData = detailsResults.map(result => result.orderDetails);
+        const orderDetailsData = detailsResults.map(result => result.orderDetails.order);
 
         console.log('tenderDetails dfdsf', tenderDetails)
 
@@ -77,6 +82,57 @@ export default function LoadingInstructionDetails() {
   }, [id]);
 
   console.log('tenderOrderData', tenderDetailsData)
+  console.log('tenderOrderData', tenderOrderData)
+
+
+  const getImageUrlAndTitleList = (item) => {
+    const mapping = [
+      {
+        key: 'dl_img_frontside',
+        title: 'Dl FrontSide Image',
+      },
+      {
+        key: 'dl_img_backside',
+        title: 'Dl BackSide Image',
+      },
+      {
+        key: 'rc_img',
+        title: 'RC',
+      },
+      {
+        key: 'insurance_img',
+        title: 'Insurance',
+      },
+      {
+        key: 'driver_with_vehicle',
+        title: 'Drive with vehicle',
+      },
+      {
+        key: 'vehicle_body_img',
+        title: 'Vehicle',
+      },
+    ];
+
+    const imageUrlAndTitleList = mapping.map((mappingItem) => {
+      const { key, title } = mappingItem;
+      let imageUrl;
+
+      try {
+        imageUrl = item.loadinginstruction?.[0].quality_check?.driver?.[key];
+      } catch (error) {
+        // Handle the error, set imageUrl to a default value, or log the error
+        console.error(`Error getting item image URL for key ${key}:`, error);
+        imageUrl = ''; // Default value for imageUrl
+      }
+
+      return {
+        imageUrl,
+        title,
+      };
+    });
+
+    return imageUrlAndTitleList;
+  };
 
   return (
     <Container maxWidth="xl">
@@ -93,8 +149,8 @@ export default function LoadingInstructionDetails() {
 
       {loadingInstructionDetailsData && loadingInstructionDetailsData.loadinginstruction ? (
         <Stack spacing={2} >
-          <Stepper orientation="vertical">
-            <Step>
+          <Stepper orientation="vertical" active>
+            <Step active expanded>
               <StepLabel><Typography variant='h6'>Dispatchs</Typography></StepLabel>
               <StepContent>
                 <Card sx={{ marginTop: 2 }}>
@@ -114,8 +170,10 @@ export default function LoadingInstructionDetails() {
                           {
                             loadingInstructionDetailsData.loadinginstruction.map((loadinginstruction, index) => (
                               <DispatchTableRow
-                                orderNo={loadinginstruction.id}
-                                invoiceNo={loadinginstruction.lr_number}
+                                type='loadingsInstruction'
+                                orderNo={loadinginstruction.order_head.id}
+                                lrNum={loadinginstruction.lr_number}
+
                                 millName={loadingInstructionDetailsData.mill}
                                 name={loadingInstructionDetailsData.trader}
                                 date={format(parseISO(loadinginstruction.date), 'MM/dd/yyyy')}
@@ -135,13 +193,13 @@ export default function LoadingInstructionDetails() {
                 </Card>
               </StepContent>
             </Step>
-            <Step>
+            <Step active expanded>
               <StepLabel>
                 <Typography variant='h6'>Orders</Typography>
               </StepLabel>
-
+              <StepContent>
               {tenderOrderData ? (
-                <Card sx={{ marginTop: 2, marginLeft: 4 }}>
+                <Card sx={{ marginTop: 2,  }}>
                   <Scrollbar>
                     <TableContainer sx={{ overflow: 'unset' }}>
                       <Table sx={{ minWidth: 800 }}>
@@ -153,8 +211,8 @@ export default function LoadingInstructionDetails() {
                           ))}
                         </TableHead>
                         <TableBody>
-                          {tenderOrderData.map((tenderOrder, index) => (
-                            tenderOrder.results.map((result) => (
+                          {
+                           tenderOrderData && tenderOrderData.map((result) => (
                               <OrdersTableRow
                                 key={result.id}
                                 ordersId={result.id}
@@ -193,19 +251,25 @@ export default function LoadingInstructionDetails() {
                                 )} ${result.tender_head.product.product_type.unit}`}
                                 order={result.tender_head}
                               />
-                            ))))}
+                            ))}
                         </TableBody>
                       </Table>
                     </TableContainer>
                   </Scrollbar>
                 </Card>
               ) : (<Typography variant="subtitle1" marginLeft={4} paddingTop={4}>This Dispatch has no orders</Typography>)}
+                
+                </StepContent>
+
+          
 
             </Step>
-            <Step>
+            <Step active expanded>
               <StepLabel><Typography variant='h6'>Tenders</Typography></StepLabel>
 
-              <Card sx={{ marginTop: 2, marginLeft: 4 }}>
+              <StepContent>
+
+              <Card sx={{ marginTop: 2,  }}>
                 <Scrollbar>
                   <TableContainer sx={{ overflow: 'unset' }}>
                     <Table sx={{ minWidth: 800 }}>
@@ -242,7 +306,28 @@ export default function LoadingInstructionDetails() {
                   </TableContainer>
                 </Scrollbar>
               </Card>
+                
+              </StepContent>
 
+              
+
+            </Step>
+
+            <Step active expanded>
+              <StepLabel><Typography variant='h6'>Quality check</Typography></StepLabel>
+              {
+                loadingInstructionDetailsData.loadinginstruction?.[0].quality_check !== null ? (
+                  <Grid container spacing={3} sx={{ marginTop: 2, marginLeft: 4, pr: 5 }}>
+                    {getImageUrlAndTitleList(loadingInstructionDetailsData.loadinginstruction?.[0].quality_check).map((data) => (
+                      <Grid key={data.title} xs={12} sm={6} md={3} sx={{ pr: 2, pb: 2 }}>
+                        <QuatityCheckCard item={data} />
+                      </Grid>
+                    ))}
+                  </Grid>
+                ) : (
+                  <>No Quality check data</>
+                )
+              }
             </Step>
           </Stepper>
         </Stack>
@@ -252,5 +337,3 @@ export default function LoadingInstructionDetails() {
     </Container>
   );
 }
-
-

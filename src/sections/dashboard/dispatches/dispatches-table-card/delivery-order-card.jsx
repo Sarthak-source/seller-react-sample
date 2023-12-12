@@ -22,9 +22,7 @@ import TableToolbar from '../../table-toolbar';
 import { applyFilter, emptyRows, getComparator } from '../../utils';
 import { useDispatchesTableFormat } from '../use-dispatches-table-formate';
 
-export default function DeliveryOrderCard(
-
-) {
+export default function DeliveryOrderCard() {
     const [page, setPage] = useState(1);
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
@@ -46,7 +44,6 @@ export default function DeliveryOrderCard(
     }, [selectedMill])
 
     const fetchDispatchesData = async (dispatchesPage, text, millId) => {
-
         try {
             setLoading(true);
             const data = await NetworkRepository.deliveryOrders(dispatchesPage, text, millId);
@@ -55,7 +52,7 @@ export default function DeliveryOrderCard(
         } catch (error) {
             console.error('Error fetching Dispatches data:', error);
         } finally {
-            setLoading(false); // Set loading to false when data is fetched (whether successful or not)
+            setLoading(false);
         }
     };
 
@@ -76,20 +73,15 @@ export default function DeliveryOrderCard(
     };
 
     const handleChangeRowsPerPage = (event) => {
-
         const newRowsPerPage = parseInt(event.target.value, 10);
         if (newRowsPerPage === 15 || newRowsPerPage === 30 || newRowsPerPage === 45) {
             setRowsPerPage(newRowsPerPage);
         }
     };
 
-
-
-
     const dataFiltered = applyFilter({
         inputData: dispatchesData,
         comparator: getComparator(order, orderBy),
-
     });
 
     console.log('derlivery', dataFiltered)
@@ -97,7 +89,6 @@ export default function DeliveryOrderCard(
     const notFound = !dataFiltered.length;
     return (
         <>
-
             <Card>
                 <TableToolbar
                     numSelected={selected.length}

@@ -13,13 +13,13 @@ const NetworkAxiosOptions = {
         if (token !== null) {
             console.log(`~~~~~~~~~~~~~~~~~~~~ SET HEADER : ${token} ~~~~~~~~~~~~~~~~~~~`);
             return {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
                 'Accept': 'application/json',
                 'authorization': token,
             };
         }
         return {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded', 
             'Accept': 'application/json',
         };
 

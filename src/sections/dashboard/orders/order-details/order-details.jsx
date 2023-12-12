@@ -7,9 +7,12 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import NetworkRepository from 'src/app-utils/network_repository';
+import Label from 'src/components/label';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { primary } from 'src/theme/palette';
 import { ip } from '../../../../app-utils/api-constants';
 import OrderCard from './components/order-card';
+
 
 
 export default function OrderDetails() {
@@ -81,12 +84,12 @@ export default function OrderDetails() {
                                         <Typography variant="subtitle1">Loading Instruction</Typography>
                                         <Typography>{orderSummary.orderSeller.li_count}</Typography>
                                     </Box>
-                                    <Divider/>
+                                    <Divider />
                                     <Box display="flex" justifyContent="space-between" pb={1} pt={1}>
                                         <Typography variant="subtitle1">Delivery Orders</Typography>
                                         <Typography>{orderSummary.orderSeller.do_count}</Typography>
                                     </Box>
-                                    <Divider/>
+                                    <Divider />
                                     <Box display="flex" justifyContent="space-between" pt={1}>
                                         <Typography variant="subtitle1">Total Invoice</Typography>
                                         <Typography>{orderSummary.orderSeller.inv_count}</Typography>
@@ -132,9 +135,17 @@ export default function OrderDetails() {
                                         </Table>
                                     </TableContainer>
                                 </Card>) : (
-                                <Typography>
+
+                                <Label
+                                    color={primary.main}
+                                    sx={{
+                                        position: 'absolute',
+                                        textTransform: 'uppercase',
+                                    }}
+                                >
                                     No invoice vehicles
-                                </Typography>
+                                </Label>
+
                             )}
                         </Box>
                     </Grid>

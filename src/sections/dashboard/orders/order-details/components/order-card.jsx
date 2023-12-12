@@ -25,7 +25,7 @@ export default function OrderCard({ data }) {
           padding: '10px',
 
         }}>
-          <Typography variant="subtitle1" >Order No. {data.id}</Typography>
+          <Typography variant="subtitle1" >Tender No. {data.id}</Typography>
           <Box mt={1}>
             <Typography variant="h6" color="primary.main">{data.mill.name}</Typography>
             <Typography variant="subtitle1"  color="textSecondary" mt={1}>{`${data.mill.location} (${data.mill.state.name})`}</Typography>

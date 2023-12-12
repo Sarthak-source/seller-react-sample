@@ -81,7 +81,7 @@ export default function TraderTableRow({
         <TableCell
           onMouseEnter={(e) => {
             e.currentTarget.style.borderRadius = '8px';
-            e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.boxShadow = 'none';
@@ -98,7 +98,7 @@ export default function TraderTableRow({
         <TableCell
           onMouseEnter={(e) => {
             e.currentTarget.style.borderRadius = '8px';
-            e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.boxShadow = 'none';
@@ -107,7 +107,7 @@ export default function TraderTableRow({
         <TableCell
           onMouseEnter={(e) => {
             e.currentTarget.style.borderRadius = '8px';
-            e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.boxShadow = 'none';

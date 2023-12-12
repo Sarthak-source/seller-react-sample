@@ -20,6 +20,7 @@ const sellerId = selectedUser() ?? "85";
 
 
 const NetworkRepository = {
+
   userSignup: async (name, password, number) => {
     try {
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
@@ -214,8 +215,8 @@ const NetworkRepository = {
   invoicesReport: async (page, text, status, millId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: text !== '' ? `${ApiAppConstants.invoices}?seller=${sellerId}&characters=${text}` :
-          `${ApiAppConstants.invoices}?seller=${sellerId}&page=${page}&mill_pk=${millId || ''}&status=${status}`,
+        url: text !== '' ? `${ApiAppConstants.invoices}?seller=${sellerId}&characters=${text}&delivery_order__status=${status}` :
+          `${ApiAppConstants.invoices}?seller=${sellerId}&page=${page}&mill_pk=${millId || ''}&delivery_order__status=${status}`,
         header: { authorization: auth },
       });
 
@@ -323,7 +324,89 @@ const NetworkRepository = {
       const er = e;
       return er.detail.toString();
     }
-  }
+  },
+
+  tenderPostView: async (
+    mill,
+    product,
+    qty,
+    price,
+    seller,
+    remark,
+    traderIds,
+    isExclusive,
+    tenderType) => {
+
+    try {
+      const traderIdsArray = Array.isArray(traderIds) ? traderIds : [traderIds];
+
+      const data = new URLSearchParams();
+      data.append("mill", mill.toString());
+      data.append("product", product.toString());
+      data.append("qty", qty.toString());
+      data.append("price", price.toString());
+      data.append("seller", seller.toString());
+      data.append("remark", remark);
+      data.append("is_exclusive", isExclusive.toString());
+      data.append("tender_type", tenderType);
+      traderIdsArray.forEach((traderId) => {
+        data.append("trader_ids", traderId);
+      });
+
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.tenderPostView}`,
+        data: data.toString(),
+        header: {
+          'authorization': auth
+        },
+      });
+
+      console.log('\x1b[97m Response :', apiResponse);
+
+      return apiResponse;
+    } catch (error) {
+      alert(error.toString());
+      return error.toString();
+    }
+  },
+
+  traderPostView: async (name, number) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.traderPostView}`,
+        data: { "name": name, "phone": number, "seller": sellerId },
+        header: { authorization: auth },
+      });
+
+      console.log('\x1b[97m Response :', apiResponse);
+
+      return apiResponse;
+    } catch (error) {
+      alert(error.toString());
+      return error.toString();
+    }
+  },
+
+  lrUpdate: async (id, lrNumber) => {
+    try {
+      const data = new URLSearchParams();
+      data.append("lr_number", lrNumber)
+      const apiResponse = await NetworkAxios.putAxiosHttpMethod({
+        url: `${ApiAppConstants.lrUpdate}${id}/`,
+        data: data.toString(),
+        header: { authorization: auth },
+      });
+
+      console.log('\x1b[97m Response :', apiResponse);
+
+      return apiResponse;
+    } catch (error) {
+      alert(error.toString());
+      return error.toString();
+    }
+  },
+
+
 }
 
 

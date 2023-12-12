@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 
+import { Box } from '@mui/material';
 import DispatchesView from './dispatches/dispatches';
 import OrdersView from './orders/orders';
 import PaymentsView from './payments/payments';
@@ -21,7 +22,17 @@ export default function DashboardView() {
         onChange={(event, newValue) => setTab(newValue)}
         textColor="primary"
         indicatorColor="primary"
-        style={{ marginBottom: '2%', display: 'flex', justifyContent: 'flex-start' }}
+        
+        style={{
+          marginBottom: '2px',
+          marginTop: '-1%',
+          display: 'flex',
+          width:"100%",
+          justifyContent: 'flex-start',
+          position: 'fixed',
+          zIndex: 2,
+          backgroundColor: '#f9fafb',
+        }}
       >
         <Tab label="Tenders" style={{ marginLeft: '-18px' }} />
         <Tab label="Orders" />
@@ -29,11 +40,17 @@ export default function DashboardView() {
         <Tab label="Dispatches" />
       </Tabs>
 
+      <Box sx={{
+        paddingTop: '50px'
+      }}>
+        {tab === 0 && <TenderView />}
+        {tab === 1 && <OrdersView />}
+        {tab === 2 && <PaymentsView />}
+        {tab === 3 && <DispatchesView />}
+      </Box>
 
-      {tab === 0 && <TenderView />}
-      {tab === 1 && <OrdersView/>}
-      {tab === 2 && <PaymentsView/>}
-      {tab === 3 && <DispatchesView/>}
+
+
     </Container>
   );
 }

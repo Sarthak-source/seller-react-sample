@@ -21,6 +21,14 @@ const Label = forwardRef(
     return (
       <StyledLabel
         ref={ref}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderRadius = '8px';
+          e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderRadius = '8px';
+          e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.0)';
+        }}
         component="span"
         ownerState={{ color, variant }}
         sx={{

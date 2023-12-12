@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-import { Avatar, Box, Stack, Typography } from '@mui/material';
+import { useTheme } from '@emotion/react';
+import { Avatar, Box, Stack, TextField, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Popover from '@mui/material/Popover';
@@ -9,12 +10,16 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import { useNavigate } from 'react-router-dom';
 import { ApiAppConstants, ip } from 'src/app-utils/api-constants';
+import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
 import { useDispatchTableFuctions } from './use-dispatch-table-fuctions';
 
 export default function DispatchTableRow({
+    type,
     orderNo,
     invoiceNo,
+    lrNum,
+    lrId,
     millName,
     name,
     date,
@@ -24,9 +29,11 @@ export default function DispatchTableRow({
     shipTo,
     rate,
     grade,
+
 }) {
     const [open, setOpen] = useState(null);
     const navigate = useNavigate();
+    const theme = useTheme();
 
 
     const handleOpenMenu = (event) => {
@@ -47,9 +54,36 @@ export default function DispatchTableRow({
         navigate(`/home/loading-instruction-details/${orderSelected}`); // Use navigate to go to the details page
     };
 
-    const { handlePrint } = useDispatchTableFuctions();
-    const pdfUrl = `http://${ip}/${ApiAppConstants.getInvoiceDoc}${invoiceNo}`;
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedLrNum, setEditedLrNum] = useState(lrNum);
 
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
+
+    const handleSave = async () => {
+        try {
+          await NetworkRepository.lrUpdate(lrId, editedLrNum);
+          setIsEditing(false);
+        } catch (error) {
+          console.error('An error occurred while saving:', error);
+          alert('Error occurred while saving. Please try again.');
+        } finally{
+            setEditedLrNum(editedLrNum)
+        }
+      };
+      
+
+    const handleCancel = () => {
+        // Cancel editing, reset the editedLrNum to the original lrNum
+        setEditedLrNum(lrNum);
+        setIsEditing(false);
+    };
+
+    const { handlePrint } = useDispatchTableFuctions();
+    const pdfUrl = `http://${ip}/${ApiAppConstants.getInvoiceDoc}${orderNo}`;
+
+    console.log('lrId', lrId)
 
     return (
         <>
@@ -62,14 +96,38 @@ export default function DispatchTableRow({
                     onClick={() => handleOpenDetails(orderNo)}
                     style={{ cursor: 'pointer' }}
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.borderRadius = '8px'; 
-                        e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.5)';
+                        e.currentTarget.style.borderRadius = '8px';
+                        e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.boxShadow = 'none';
                     }}
                 >{orderNo}</TableCell>
-                <TableCell>{invoiceNo}</TableCell>
+                <TableCell>
+                    {isEditing ? (
+                        <Stack direction="row" alignItems="center">
+                            <TextField
+                                value={editedLrNum}
+                                style={{ width: `calc(${editedLrNum.length}ch + 30px)`, boxSizing: 'border-box' }}
+                                onChange={(e) => setEditedLrNum(e.target.value)}
+                            />
+                            <IconButton onClick={handleSave} >
+                                <Iconify icon="lets-icons:check-fill" color="primary.main" sx={{width:25,height:25}}/>
+                            </IconButton>
+                            <IconButton onClick={handleCancel}>
+                                <Iconify icon="basil:cancel-outline" color="error.main" sx={{width:25,height:25, ml:-1}}/>
+                            </IconButton>
+                        </Stack>
+                    ) : (
+                        <Stack direction="row" alignItems="center">
+                            {editedLrNum}
+                            <IconButton onClick={handleEdit} >
+                                <Iconify  icon="basil:edit-outline" color="primary.main"/>
+                            </IconButton>
+                        </Stack>
+                    )}
+                </TableCell>
+                {type === 'invoice' && (<TableCell>{invoiceNo}</TableCell>)}
                 <TableCell component="th" scope="row" padding="normal" >
                     <Stack direction="row" alignItems="center" spacing={2}>
                         <Avatar alt={millName} src='avatarUrl' />
@@ -140,7 +198,10 @@ export default function DispatchTableRow({
 }
 
 DispatchTableRow.propTypes = {
+    type: PropTypes.string,
     orderNo: PropTypes.string,
+    lrNum: PropTypes.string,
+    lrId: PropTypes.string,
     invoiceNo: PropTypes.string,
     millName: PropTypes.string,
     name: PropTypes.string,

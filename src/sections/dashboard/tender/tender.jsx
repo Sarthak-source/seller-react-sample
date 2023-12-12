@@ -28,12 +28,6 @@ import { applyFilter, emptyRows, getComparator } from '../utils';
 import TenderTableRow from './tender-table-row/tender-table-row';
 import { useTenderTableFormat } from './use-tender-table-formate';
 
-
-
-
-
-
-
 export default function TenderView() {
     const router = useRouter();
     const [page, setPage] = useState(1);
@@ -52,8 +46,9 @@ export default function TenderView() {
     const [loading, setLoading] = useState(true);
     const selectedMill = useSelector((state) => state.mill.selectedMill);
     const searchTerm = useSelector((state) => state.search.searchTerm);
-    const [transformValue, setTransformValue] = useState('scale(0.85)');
+    const [transformValue, setTransformValue] = useState('scale(0.75)');
     const [isMouseOver, setIsMouseOver] = useState(true);
+
 
     const handleStepSize = (isOver) => {
         setIsMouseOver(isOver);
@@ -161,7 +156,7 @@ export default function TenderView() {
                 row.name,
                 row.location.replace(/,/g, '-'),
                 row.date,
-                row.price,
+                row.price.replace(/,/g, ''),
                 row.status,
                 row.tenderType,
                 row.productType,
@@ -198,12 +193,12 @@ export default function TenderView() {
                 <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}
                 >
                     {steps.map((label, index) => (
-                        <Step key={`${label}${index}`}
-                        >
+                        <Step key={`${label}${index}`}>
                             <StepLabel
-                                onClick={() => handleStepClick(index)}
-                            >
-                                <Box sx={{ width: 1, transform: 'scale(0.85)' }}>{label}</Box>
+                                onClick={() => handleStepClick(index)}>
+                                <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
+                                    {label}
+                                </Box>
                             </StepLabel>
                         </Step>
                     ))}

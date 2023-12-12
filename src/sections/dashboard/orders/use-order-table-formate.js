@@ -1,4 +1,8 @@
+import { fCurrency } from "src/utils/format-number";
+
 export function useOrderTableFormate() {
+
+    const formatPrice = (price, unit) => `₹ ${fCurrency(price)} /${unit}`;
 
     function getStatusText(status) {
         let statusText;
@@ -72,7 +76,7 @@ export function useOrderTableFormate() {
         { id: 'productType', label: 'Product' },
         { id: 'grade', label: 'Grade' },
         { id: 'season', label: 'Season' },
-        { id: 'sale', label: 'Sale' },
+        { id: 'sold', label: 'Sold' },
         { id: 'loading', label: 'Loading' },
         { id: 'dispatched', label: 'Dispatched' },
         { id: 'balance', label: 'Balance', align: 'center' },
@@ -80,6 +84,7 @@ export function useOrderTableFormate() {
     ]
 
     return {
+        formatPrice,
         getStatusText,
         formatQty,
         formatQuantity,

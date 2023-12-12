@@ -4,7 +4,7 @@ const testip = '192.46.215.236';
 
 const prod = '139.162.12.150';
 
-const local= '192.168.1.14:8000';
+const local= '192.168.78.161:8000';
 
 const ip = localStorage.getItem('isTestEnvironment') === 'true'
     ? prod
@@ -54,6 +54,7 @@ const ApiAppConstants = {
     evQualityCheck: 'Ev_QualityCheck/',
     evehicleDoc: 'evehicledoc/',
     checkDOStatus: 'check_DO_status/',
+    lrUpdate:'lr_number/',
     generateInvoice: 'generate_invoice/',
     sellerInwardLedgers: 'sellerInwardLedgers/', // for last five inwards
     inwardLedger: 'inwardLedger/',
