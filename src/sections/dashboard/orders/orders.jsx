@@ -22,6 +22,7 @@ import TableToolbar from '../table-toolbar';
 import { applyFilter, emptyRows, getComparator } from '../utils';
 import OrderTableRow from './order-table-row/order-table-row';
 
+import { QontoConnector } from '../stepper-line';
 import { useOrderTableFormate } from './use-order-table-formate';
 
 export default function OrdersView() {
@@ -135,8 +136,8 @@ export default function OrdersView() {
         season: row.tender_head.product.properties.length > 0 ? row.tender_head.product.properties[0].value : 'Not given',
         sale: formatQty(row.qty),
         loading: `${formatQuantity(row, 'yet_to_load', row.yet_to_load)} ${row.tender_head.product.product_type.unit}`,
-        dispatched: `${formatQuantity(row, 'dispatched_qty', row.yet_to_load)} ${row.tender_head.product.product_type.unit}`,
-        balance: `${formatQuantity(row, 'available_qty', row.yet_to_load)} ${row.tender_head.product.product_type.unit}`,
+        dispatched: `${formatQuantity(row, 'dispatched_qty', row.dispatched_qty)} ${row.tender_head.product.product_type.unit}`,
+        balance: `${formatQuantity(row, 'available_qty', row.available_qty)} ${row.tender_head.product.product_type.unit}`,
         order: row,
     }));
 
@@ -183,7 +184,7 @@ export default function OrdersView() {
                 onMouseEnter={() => handleStepSize(true)}
                 onMouseLeave={() => handleStepSize(false)}
             >
-                <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
+                <Stepper activeStep={activeStep} alternativeLabel connector={<QontoConnector />} style={{ marginBottom: '3%' }}>
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
                             <StepLabel
@@ -234,13 +235,13 @@ export default function OrdersView() {
                                                 loading={row.loading}
                                                 dispatched={row.dispatched}
                                                 balance={row.balance}
-                                                order={row.order.tender_head}
+                                                order={row.order}
                                             />
                                         ))}
 
                                     <TableEmptyRows
                                         height={77}
-                                        emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
+                                        emptyRows={emptyRows(page-1, rowsPerPage / 15, dataFiltered.length)}
                                     />
 
                                     {notFound && <TableNoData query={searchTerm} />}

@@ -30,6 +30,7 @@ export default function DoOrderTableRow({
 }) {
     const [open, setOpen] = useState(null);
     const navigate = useNavigate();
+    
 
 
     const handleOpenMenu = (event) => {
@@ -50,7 +51,6 @@ export default function DoOrderTableRow({
     const pdfUrl = `http://${ip}/${ApiAppConstants.getDoDoc}${doNo}`;
 
     const handleOpenDetails = (orderSelected) => {
-
         navigate(`/home/loading-instruction-details/${orderSelected}`); // Use navigate to go to the details page
     };
 
@@ -139,6 +139,7 @@ export default function DoOrderTableRow({
                     Cancel
                 </MenuItem>
             </Popover>
+           
         </>
     );
 }

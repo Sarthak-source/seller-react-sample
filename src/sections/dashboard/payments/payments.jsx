@@ -22,6 +22,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
+import { QontoConnector } from '../stepper-line';
 import TableEmptyRows from '../table-empty-rows';
 import SharedTableHead from '../table-head';
 import TableNoData from '../table-no-data';
@@ -213,7 +214,7 @@ export default function PaymentsView() {
                 onMouseEnter={() => handleStepSize(true)}
                 onMouseLeave={() => handleStepSize(false)}
                 sx={{ width: 1, transform: transformValue }}>
-                <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
+                <Stepper activeStep={activeStep} connector={<QontoConnector />} alternativeLabel style={{ marginBottom: '3%' }}>
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
                             <StepLabel
@@ -261,7 +262,7 @@ export default function PaymentsView() {
                                         ))}
                                     <TableEmptyRows
                                         height={77}
-                                        emptyRows={emptyRows(page, rowsPerPage / 15, paymentsData.length)}
+                                        emptyRows={emptyRows(page-1, rowsPerPage / 15, paymentsData.length)}
                                     />
                                     {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>

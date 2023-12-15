@@ -80,7 +80,7 @@ export default function OrderDetails() {
                             <Card>
                                 <Box pr={2} pl={2} pt={2} pb={2}>
 
-                                    <Box display="flex" justifyContent="space-between" pb={2}>
+                                    <Box display="flex" justifyContent="space-between" pb={1}>
                                         <Typography variant="subtitle1">Loading Instruction</Typography>
                                         <Typography>{orderSummary.orderSeller.li_count}</Typography>
                                     </Box>

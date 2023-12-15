@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 
 import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
@@ -12,6 +11,9 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 
+import { useTheme } from '@emotion/react';
+import { Box } from '@mui/material';
+import HoverExpandButton from 'src/components/buttons/expanded-button';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
 import { useTenderTableFormat } from '../use-tender-table-formate';
@@ -50,9 +52,16 @@ export default function TenderTableRow({
     setOpen(null);
   };
 
+  const theme = useTheme();
+
+  console.log('theme', theme.palette.warning.main)
 
 
-  const { getStatusColor } = useTenderTableFormat();
+  console.log('status', status)
+
+
+
+  const { getStatusColor, getStatus } = useTenderTableFormat();
 
 
   return (
@@ -91,7 +100,7 @@ export default function TenderTableRow({
           </Typography>
         </TableCell>
         <TableCell>
-          <Label color={getStatusColor(status)}>{status}</Label>
+          <Label color={getStatusColor(status)}>{getStatus(status)}</Label>
         </TableCell>
         <TableCell>{tenderType}</TableCell>
         <TableCell>{productType}</TableCell>
@@ -101,9 +110,42 @@ export default function TenderTableRow({
         <TableCell>{sold}</TableCell>
         <TableCell>{balance}</TableCell>
         <TableCell align="right">
-          <IconButton onClick={handleOpenMenu}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
+
+
+          <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
+
+
+            {
+              status === 'Added' && (
+                <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.success.main} >
+                  <Iconify icon="material-symbols:order-approve-rounded" />
+                  <Box sx={{ fontWeight: 'bold' }}> Active</Box>
+                </HoverExpandButton>
+              )
+            }
+
+            {status === 'Closed' || status === 'Added'  && (
+
+              <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.warning.main}>
+                <Iconify icon="mdi:file-remove" />
+                <Box sx={{ fontWeight: 'bold' }}> Reject</Box>
+              </HoverExpandButton>
+
+            )}
+
+
+
+
+            {
+              status === 'Active' && (
+                <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.error.main}>
+                  <Iconify icon="basil:cancel-solid" />
+                  <Box sx={{ fontWeight: 'bold' }}> Close</Box>
+                </HoverExpandButton>
+              )
+            }
+
+          </Box>
         </TableCell>
       </TableRow>
       <Popover

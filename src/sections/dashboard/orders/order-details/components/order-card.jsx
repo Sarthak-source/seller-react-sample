@@ -12,8 +12,10 @@ export default function OrderCard({ data }) {
     return value.toString();
   }
 
+  console.log('data.tender_head', data)
+
   return (
-    <Link to={`/home/order-details/${data.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+    <Link to={`/home/order-details/${data.tender_head.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
 
       <Card
         style={{
@@ -25,10 +27,18 @@ export default function OrderCard({ data }) {
           padding: '10px',
 
         }}>
-          <Typography variant="subtitle1" >Tender No. {data.id}</Typography>
+          <Typography variant="subtitle1" >Tender No. {data.tender_head.id}</Typography>
+
+          <Box
+            display="flex" justifyContent="space-between" pt={1}
+          >
+            <Typography variant="h6" color="primary.main">{data.tender_head.mill.name}</Typography>
+            <Typography variant="subtitle1" >Order No. {data.id}</Typography>
+          </Box>
+
           <Box mt={1}>
-            <Typography variant="h6" color="primary.main">{data.mill.name}</Typography>
-            <Typography variant="subtitle1"  color="textSecondary" mt={1}>{`${data.mill.location} (${data.mill.state.name})`}</Typography>
+
+            <Typography variant="subtitle1" color="textSecondary" mt={1}>{`${data.tender_head.mill.location} (${data.tender_head.mill.state.name})`}</Typography>
           </Box>
         </Box>
         <Divider />
@@ -49,7 +59,7 @@ export default function OrderCard({ data }) {
                   <TableCell>
                     Quantity
                   </TableCell>
-                  {data.product.properties.map((property, index) => (
+                  {data.tender_head.product.properties.map((property, index) => (
                     <TableCell>{property.label}</TableCell>
                   ))}
                 </TableRow>
@@ -58,21 +68,21 @@ export default function OrderCard({ data }) {
                 <TableRow>
                   <TableCell>
 
-                    {data.product.product_type.product_type}
+                    {data.tender_head.product.product_type.product_type}
 
                   </TableCell>
                   <TableCell>
-                    {data.product.code}
+                    {data.tender_head.product.code}
                   </TableCell>
                   <TableCell>
-                    {data.sold === null ? data.sold : 'None' }
+                    {data.dispatched_qty} {data.tender_head.product.product_type.unit}
                   </TableCell>
                   <TableCell>
 
-                    {parseFloat(data.qty).toFixed(2)} {data.product.product_type.unit}
+                    {parseFloat(data.tender_head.qty).toFixed(2)} {data.tender_head.product.product_type.unit}
 
                   </TableCell>
-                  {data.product.properties.map((property, index) => (
+                  {data.tender_head.product.properties.map((property, index) => (
                     <TableCell>{property.value}</TableCell>
                   ))}
                 </TableRow>

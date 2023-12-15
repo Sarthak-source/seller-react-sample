@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import { useMemo, useState } from 'react';
 import Iconify from 'src/components/iconify';
 import { useRouter } from 'src/routes/hooks';
+import { QontoConnector } from '../stepper-line';
 import DeliveryOrderCard from './dispatches-table-card/delivery-order-card';
 import InoviceCard from './dispatches-table-card/invoice-card';
 import LoadingsInstructionCard from './dispatches-table-card/loading-instruction-card';
@@ -45,7 +46,7 @@ export default function DispatchesView() {
                 onMouseEnter={() => handleStepSize(true)}
                 onMouseLeave={() => handleStepSize(false)}
                 sx={{ width: 1, transform: transformValue }}>
-                <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}>
+                <Stepper activeStep={activeStep} alternativeLabel connector={<QontoConnector />} style={{ marginBottom: '3%' }}>
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
                             <StepLabel

@@ -5,11 +5,11 @@ import { useState } from 'react';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import * as XLSX from 'xlsx';
 
-
 const RenderHtmlFromLink = ({ link }) => {
   const [htmlContent, setHtmlContent] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const width = window.resizeTo(window.innerWidth, window.innerHeight);
 
   const fetchHtml = async () => {
     try {
@@ -38,9 +38,32 @@ const RenderHtmlFromLink = ({ link }) => {
               th, td {
                 border: 1px solid black;
                 text-align: center;
-                font-size: 14px;
                 padding-top: 10px;
                 padding-bottom: 10px;
+                font-family: 'Public Sans', sans-serif;
+              }              
+              b,td {
+                font-size: 15px;
+                font-family: 'Public Sans', sans-serif;
+              }
+              h3{
+                font-size: 16px;
+                font-family: Public Sans, sans-serif;
+              }         
+              h2{
+                font-size:22px;
+                font-family: Public Sans, sans-serif;
+              }
+              h4 {
+                font-size:16px;
+              font-family: Public Sans, sans-serif;
+              }
+              h1{
+                font-size:20px;
+              font-family: Public Sans, sans-serif;
+              }
+              title {
+                font-family: Public Sans, sans-serif;
               }
             </style>
           </head>
@@ -173,20 +196,29 @@ const RenderHtmlFromLink = ({ link }) => {
         e.currentTarget.style.borderRadius = '8px';
         e.currentTarget.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
       }}
-      elevation={3} style={{ margin: '16px 0', maxHeight: '100%', overflow: 'auto' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', pr: '16px', pt: '16px' }}>
-        <ButtonGroup variant="outlined" aria-label="outlined button group" size='small'>
+
+      elevation={3}
+      style={{ margin: '16px 0', maxHeight: '100%', maxWidth: width, overflow: 'auto' }}
+
+    >
+      <Box
+        sx={{ display: 'flex', justifyContent: 'flex-end', pr: '16px', pt: '16px' }}
+      >
+        <ButtonGroup variant="outlined" aria-label="outlined button group" size='small'
+          style={{ position: 'sticky', top: '0', zIndex: '1', backgroundColor: 'white' }}
+        >
           <Button onClick={downloadExcel}>EXCEL</Button>
           <Button onClick={downloadPDF}>PDF</Button>
         </ButtonGroup>
       </Box>
       {!loading ? (
+
         <Typography variant="body1"
           sx={{ px: '30px', mb: '20px' }}
           dangerouslySetInnerHTML={{ __html: htmlContent }} />
       ) : (
         <Box
-          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '600px' }}>
           <SkeletonLoader />
         </Box>
       )}

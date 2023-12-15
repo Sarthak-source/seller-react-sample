@@ -99,7 +99,7 @@ export default function Searchbar() {
         </Slide>
 
         {/* List component */}
-        {open && (
+        {open &&searchInput && (
           <Paper
             elevation={0}
             style={{

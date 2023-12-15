@@ -14,12 +14,12 @@ import Typography from '@mui/material/Typography';
 import { format, parseISO } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { useRouter } from 'src/routes/hooks';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
+import { QontoConnector } from '../stepper-line';
 import TableEmptyRows from '../table-empty-rows';
 import SharedTableHead from '../table-head';
 import TableNoData from '../table-no-data';
@@ -48,7 +48,6 @@ export default function TenderView() {
     const searchTerm = useSelector((state) => state.search.searchTerm);
     const [transformValue, setTransformValue] = useState('scale(0.75)');
     const [isMouseOver, setIsMouseOver] = useState(true);
-
 
     const handleStepSize = (isOver) => {
         setIsMouseOver(isOver);
@@ -190,11 +189,12 @@ export default function TenderView() {
             <Box sx={{ width: 1, transform: transformValue }}
                 onMouseEnter={() => handleStepSize(true)}
                 onMouseLeave={() => handleStepSize(false)}>
-                <Stepper activeStep={activeStep} alternativeLabel style={{ marginBottom: '3%' }}
+                <Stepper activeStep={activeStep} connector={<QontoConnector />} alternativeLabel style={{ marginBottom: '3%' }}
                 >
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
                             <StepLabel
+                            
                                 onClick={() => handleStepClick(index)}>
                                 <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
                                     {label}
@@ -246,7 +246,7 @@ export default function TenderView() {
                                         ))}
                                     <TableEmptyRows
                                         height={77}
-                                        emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
+                                        emptyRows={emptyRows(page-1, rowsPerPage / 15, dataFiltered.length)}
                                     />
                                     {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>

@@ -24,3 +24,5 @@ export const StyledScrollbar = styled(SimpleBar)(({ theme }) => ({
     zIndex: 'inherit',
   },
 }));
+
+

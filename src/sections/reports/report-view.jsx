@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
+import DispatchReportView from './dispatch-reports/dispatch-report';
 import ProductWiseReportView from './product-wise-report/product-wise-report';
 import SeasonWiseReportView from './season-wise-report/season-wise-report';
 import StockReportView from './stock-report/stock-report';
@@ -33,6 +34,7 @@ export default function ReportView() {
         <Tab label="Store house report" />
         <Tab label="Store house RG1 report" /> 
         <Tab label="Season-wise report" />
+        <Tab label="Dispatch report" />
          
       </Tabs>
 
@@ -42,6 +44,7 @@ export default function ReportView() {
       {tab === 3 && <StoreHouseReportView/>}
       {tab === 4 && <StoreHouseRD1ReportView/>}
       {tab === 5 && <SeasonWiseReportView/>}
+      {tab === 6 && <DispatchReportView/>}
       
     </Container>
   );

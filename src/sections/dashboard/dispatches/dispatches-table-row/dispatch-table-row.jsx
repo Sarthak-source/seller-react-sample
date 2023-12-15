@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-import { useTheme } from '@emotion/react';
-import { Avatar, Box, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Snackbar, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Popover from '@mui/material/Popover';
@@ -12,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { ApiAppConstants, ip } from 'src/app-utils/api-constants';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
+import Label from 'src/components/label';
 import { useDispatchTableFuctions } from './use-dispatch-table-fuctions';
 
 export default function DispatchTableRow({
@@ -29,11 +29,13 @@ export default function DispatchTableRow({
     shipTo,
     rate,
     grade,
-
+    qcStatus,
 }) {
     const [open, setOpen] = useState(null);
     const navigate = useNavigate();
-    const theme = useTheme();
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
 
     const handleOpenMenu = (event) => {
@@ -54,6 +56,19 @@ export default function DispatchTableRow({
         navigate(`/home/loading-instruction-details/${orderSelected}`); // Use navigate to go to the details page
     };
 
+    const showSnackbar = (message, severity) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
+
     const [isEditing, setIsEditing] = useState(false);
     const [editedLrNum, setEditedLrNum] = useState(lrNum);
 
@@ -63,16 +78,17 @@ export default function DispatchTableRow({
 
     const handleSave = async () => {
         try {
-          await NetworkRepository.lrUpdate(lrId, editedLrNum);
-          setIsEditing(false);
+            await NetworkRepository.lrUpdate(lrId, editedLrNum);
+            showSnackbar('LR number updated successfully.', 'success');
+            setIsEditing(false);
         } catch (error) {
-          console.error('An error occurred while saving:', error);
-          alert('Error occurred while saving. Please try again.');
-        } finally{
+            console.error('An error occurred while saving:', error);
+            showSnackbar('Something went wrong. Please try again.', 'error');
+        } finally {
             setEditedLrNum(editedLrNum)
         }
-      };
-      
+    };
+
 
     const handleCancel = () => {
         // Cancel editing, reset the editedLrNum to the original lrNum
@@ -80,7 +96,7 @@ export default function DispatchTableRow({
         setIsEditing(false);
     };
 
-    const { handlePrint } = useDispatchTableFuctions();
+    const { handlePrint, getStatusColor, getStatus } = useDispatchTableFuctions();
     const pdfUrl = `http://${ip}/${ApiAppConstants.getInvoiceDoc}${orderNo}`;
 
     console.log('lrId', lrId)
@@ -90,7 +106,6 @@ export default function DispatchTableRow({
             <TableRow
                 onMouseEnter={() => handleToggle(true)}
                 onMouseLeave={() => handleToggle(false)}
-
                 hover tabIndex={-1} role="checkbox">
                 <TableCell
                     onClick={() => handleOpenDetails(orderNo)}
@@ -111,22 +126,37 @@ export default function DispatchTableRow({
                                 style={{ width: `calc(${editedLrNum.length}ch + 30px)`, boxSizing: 'border-box' }}
                                 onChange={(e) => setEditedLrNum(e.target.value)}
                             />
-                            <IconButton onClick={handleSave} >
-                                <Iconify icon="lets-icons:check-fill" color="primary.main" sx={{width:25,height:25}}/>
-                            </IconButton>
-                            <IconButton onClick={handleCancel}>
-                                <Iconify icon="basil:cancel-outline" color="error.main" sx={{width:25,height:25, ml:-1}}/>
-                            </IconButton>
+                            <Tooltip title="Change LR number">
+                                <IconButton onClick={handleSave} >
+                                    <Iconify icon="lets-icons:check-fill" color="primary.main" sx={{ width: 25, height: 25 }} />
+                                </IconButton>
+                            </Tooltip>
+
+                            <Tooltip title="Cancel">
+                                <IconButton onClick={handleCancel}>
+                                    <Iconify icon="basil:cancel-outline" color="error.main" sx={{ width: 25, height: 25, ml: -1 }} />
+                                </IconButton>
+                            </Tooltip>
                         </Stack>
                     ) : (
                         <Stack direction="row" alignItems="center">
                             {editedLrNum}
-                            <IconButton onClick={handleEdit} >
-                                <Iconify  icon="basil:edit-outline" color="primary.main"/>
-                            </IconButton>
+                            <Tooltip title="Edit LR number">
+                                <IconButton onClick={handleEdit} >
+                                    <Iconify icon="basil:edit-outline" color="primary.main" />
+                                </IconButton>
+                            </Tooltip>
                         </Stack>
                     )}
                 </TableCell>
+
+                {type === 'loadingsInstruction' && (
+                    <TableCell>
+                        <Label color={getStatusColor(qcStatus)}>{getStatus(qcStatus)}</Label>
+                    </TableCell>
+
+                )}
+
                 {type === 'invoice' && (<TableCell>{invoiceNo}</TableCell>)}
                 <TableCell component="th" scope="row" padding="normal" >
                     <Stack direction="row" alignItems="center" spacing={2}>
@@ -193,6 +223,16 @@ export default function DispatchTableRow({
                     Cancel
                 </MenuItem>
             </Popover>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </>
     );
 }
@@ -212,4 +252,5 @@ DispatchTableRow.propTypes = {
     shipTo: PropTypes.string,
     rate: PropTypes.string,
     grade: PropTypes.string,
+    qcStatus: PropTypes.string,
 };

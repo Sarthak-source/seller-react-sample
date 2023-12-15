@@ -27,6 +27,29 @@ export function useTenderTableFormat() {
         }
     };
 
+    const getStatus = (status) => {
+        console.log('status', status);
+        switch (status) {
+            case 'Close':
+                // Use RGB representation for grey
+                return 'Closed';
+            case 'Rejected':
+                // Use RGB representation for red
+                return 'Rejected';
+            case 'Active':
+                // Use RGB representation for blue
+                return 'Active';
+            case 'Added':
+                // Use RGB representation for orange
+                return 'Added';
+            case 'Completed':
+                return 'Completed'
+            default:
+                // Use RGB representation for green
+                return status;
+        }
+    };
+
     const tenderHeaderRow = [
         { id: 'tenderId', label: 'Tender no' },
         { id: 'name', label: 'Mill name' },
@@ -49,6 +72,7 @@ export function useTenderTableFormat() {
         formatPrice,
         getPropertyValue,
         getStatusColor,
+        getStatus,
         tenderHeaderRow,
     };
 }

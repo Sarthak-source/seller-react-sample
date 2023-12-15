@@ -21,6 +21,7 @@ export function useDispatchesTableFormat() {
     const loadingInstructionHeaderRow = [
         { id: 'orderNo', label: 'Order No' },
         { id: 'lrNo', label: 'LR No' },
+        { id: 'qcStatus', label: 'QC Status' },
         { id: 'name', label: 'Mill name' },
         { id: 'userName', label: 'Name' },
         { id: 'date', label: 'Date' },
