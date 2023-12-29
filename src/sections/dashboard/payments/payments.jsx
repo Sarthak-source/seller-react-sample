@@ -164,10 +164,10 @@ export default function PaymentsView() {
                 row.amount,
                 row.refNo,
                 row.status,
-                row.millName,    
+                row.millName,
                 row.tradeName,
                 row.date,
-                
+
             ]),
         ];
 
@@ -213,7 +213,7 @@ export default function PaymentsView() {
             <Box
                 onMouseEnter={() => handleStepSize(true)}
                 onMouseLeave={() => handleStepSize(false)}
-                sx={{ width: 1, transform: transformValue }}>
+                sx={{ width: 1, transform: transformValue, transition: 'transform 0.3s ease', }}>
                 <Stepper activeStep={activeStep} connector={<QontoConnector />} alternativeLabel style={{ marginBottom: '3%' }}>
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
@@ -262,7 +262,7 @@ export default function PaymentsView() {
                                         ))}
                                     <TableEmptyRows
                                         height={77}
-                                        emptyRows={emptyRows(page-1, rowsPerPage / 15, paymentsData.length)}
+                                        emptyRows={emptyRows(page - 1, rowsPerPage / 15, paymentsData.length)}
                                     />
                                     {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>

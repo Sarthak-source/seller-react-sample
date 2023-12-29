@@ -126,7 +126,7 @@ export default function DeliveryOrderCard() {
                                     ))}
                                 <TableEmptyRows
                                     height={77}
-                                    emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
+                                    emptyRows={emptyRows(page-1, rowsPerPage / 15, dataFiltered.length)}
                                 />
                                 {notFound && <TableNoData query={searchTerm} />}
                             </TableBody>) : (

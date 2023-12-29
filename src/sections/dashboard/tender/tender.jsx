@@ -58,6 +58,8 @@ export default function TenderView() {
         router.replace('/home/tender-create');
     };
 
+
+
     console.log('tenderData', tenderData)
 
     useEffect(() => { }, [searchTerm])
@@ -186,7 +188,7 @@ export default function TenderView() {
                     Add tenders
                 </Button>
             </Stack>
-            <Box sx={{ width: 1, transform: transformValue }}
+            <Box sx={{ width: 1, transform: transformValue, transition: 'transform 0.3s ease', }}
                 onMouseEnter={() => handleStepSize(true)}
                 onMouseLeave={() => handleStepSize(false)}>
                 <Stepper activeStep={activeStep} connector={<QontoConnector />} alternativeLabel style={{ marginBottom: '3%' }}
@@ -194,7 +196,7 @@ export default function TenderView() {
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
                             <StepLabel
-                            
+
                                 onClick={() => handleStepClick(index)}>
                                 <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
                                     {label}
@@ -246,7 +248,7 @@ export default function TenderView() {
                                         ))}
                                     <TableEmptyRows
                                         height={77}
-                                        emptyRows={emptyRows(page-1, rowsPerPage / 15, dataFiltered.length)}
+                                        emptyRows={emptyRows(page - 1, rowsPerPage / 15, dataFiltered.length)}
                                     />
                                     {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>

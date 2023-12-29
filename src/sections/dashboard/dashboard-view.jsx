@@ -25,7 +25,7 @@ export default function DashboardView() {
         
         style={{
           marginBottom: '2px',
-          marginTop: '-1%',
+          marginTop: '-1.5%',
           display: 'flex',
           width:"100%",
           justifyContent: 'flex-start',

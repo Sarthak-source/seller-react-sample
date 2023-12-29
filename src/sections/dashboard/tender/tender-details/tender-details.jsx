@@ -108,7 +108,7 @@ export default function TenderDetails() {
                 </Card>
               </StepContent>
             </Step>
-            <Step  active expanded>
+            <Step active expanded>
               <StepLabel>
                 <Typography variant='h6'>Orders</Typography>
               </StepLabel>
@@ -163,7 +163,7 @@ export default function TenderDetails() {
                                 'available_qty',
                                 result.yet_to_load
                               )} ${result.tender_head.product.product_type.unit}`}
-                              order={result.tender_head}
+                              order={result}
                             />
 
                           ))}
@@ -182,9 +182,9 @@ export default function TenderDetails() {
                     marginLeft: 5,
                   }}
                 >
-                
-                    This tender has no orders
-                 
+
+                  This tender has no orders
+
                 </Label>
 
               )}

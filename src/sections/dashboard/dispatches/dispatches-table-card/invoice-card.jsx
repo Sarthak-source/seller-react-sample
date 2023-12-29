@@ -83,6 +83,7 @@ export default function InoviceCard(
 
     const dataFormated = dataFiltered.map(row => ({
         type: 'invoice',
+        doPk:row.delivery_order,
         orderNo: row.loading_instruction[0].order_head.id,
         lrNum: row.loading_instruction[0].lr_number,
         invoiceNo: row.invoice_num !== '0' ? row.invoice_num : row.dc_num,
@@ -165,7 +166,9 @@ export default function InoviceCard(
                                             <DispatchTableRow
                                                
                                                 type={row.type}
+                                                subtype={status}
                                                 orderNo={row.orderNo}
+                                                doPk={row.doPk}
                                                 lrNum={row.lrNum}
                                                 invoiceNo={row.invoiceNo}
                                                 millName={row.millName}
@@ -181,7 +184,7 @@ export default function InoviceCard(
                                         ))}
                                     <TableEmptyRows
                                         height={77}
-                                        emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
+                                        emptyRows={emptyRows(page-1, rowsPerPage / 15, dataFiltered.length)}
                                     />
                                     {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>

@@ -1,11 +1,11 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 import Box from '@mui/material/Box';
 
-import Nav from './nav';
-import Main from './main';
 import Header from './header';
+import Main from './main';
+import Nav from './nav';
 
 // ----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ export default function DashboardLayout({ children }) {
 
   return (
     <>
-      <Header onOpenNav={handleOpenNav} openNav={openNav} />
+    <Header onOpenNav={handleOpenNav} openNav={openNav} />    
       <Box
         sx={{
           minHeight: 1,

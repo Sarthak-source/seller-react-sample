@@ -54,7 +54,7 @@ export default function TenderTableRow({
 
   const theme = useTheme();
 
-  console.log('theme', theme.palette.warning.main)
+  console.log('theme', theme.palette)
 
 
   console.log('status', status)
@@ -67,12 +67,10 @@ export default function TenderTableRow({
   return (
     <>
       <TableRow
-
         hover tabIndex={-1} role="checkbox">
         {/* <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell> */}
-
         <TableCell
           style={{ cursor: 'pointer' }}
           onMouseEnter={(e) => {
@@ -109,12 +107,16 @@ export default function TenderTableRow({
         <TableCell>{total}</TableCell>
         <TableCell>{sold}</TableCell>
         <TableCell>{balance}</TableCell>
-        <TableCell align="right">
+        <TableCell
 
-
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = theme.palette.grey[200];
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = theme.palette.common.white;
+          }}
+          align="right" style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor : theme.palette.common.white}}>
           <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
-
-
             {
               status === 'Added' && (
                 <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.success.main} >
@@ -123,19 +125,13 @@ export default function TenderTableRow({
                 </HoverExpandButton>
               )
             }
-
-            {status === 'Closed' || status === 'Added'  && (
-
+            {status === 'Closed' || status === 'Added' && (
               <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.warning.main}>
                 <Iconify icon="mdi:file-remove" />
                 <Box sx={{ fontWeight: 'bold' }}> Reject</Box>
               </HoverExpandButton>
 
             )}
-
-
-
-
             {
               status === 'Active' && (
                 <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.error.main}>

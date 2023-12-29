@@ -57,7 +57,7 @@ export default function QuatityCheckCard({ item }) {
                 {renderImg}
             </Box>
 
-            <Stack spacing={2} sx={{ pb: 4.5, pl: 2 }}>
+            <Stack spacing={2} sx={{ pb: 4.5, pl: 2, pt:1 }}>
                 {renderName}
             </Stack>
         </Card>

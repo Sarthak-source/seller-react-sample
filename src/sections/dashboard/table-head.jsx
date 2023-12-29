@@ -6,6 +6,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 
+import { useTheme } from '@emotion/react';
 import { Typography } from '@mui/material';
 import { visuallyHidden } from './utils';
 
@@ -24,6 +25,9 @@ export default function SharedTableHead({
     onRequestSort(event, property);
   };
 
+  const theme = useTheme();
+
+
   return (
     <TableHead sx={{ height: 86 }}>
       <TableRow>
@@ -35,12 +39,22 @@ export default function SharedTableHead({
           />
         </TableCell> */}
 
-        {headLabel.map((headCell) => (
+        {headLabel.map((headCell,index) => (
           <TableCell
             key={headCell.id}
             align={headCell.align || 'left'}
             sortDirection={orderBy === headCell.id ? order : false}
-            sx={{ width: headCell.width, minWidth: headCell.minWidth }}
+            sx={{ 
+              width: headCell.width, 
+              minWidth: headCell.minWidth, 
+              ...(index === headLabel.length - 1 && {
+                position: 'sticky',
+                right: 0,
+                zIndex: 0,
+                backgroundColor: theme.palette.grey[200], // Add background color if needed
+              }),
+            }}
+            
           >
             <TableSortLabel
               hideSortIcon

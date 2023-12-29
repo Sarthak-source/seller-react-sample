@@ -5,38 +5,51 @@ export function useOrderTableFormate() {
     const formatPrice = (price, unit) => `₹ ${fCurrency(price)} /${unit}`;
 
     function getStatusText(status) {
-        let statusText;
+        try {
+            let statusText;
 
-        if (status === "close") {
-            statusText = "Closed";
-        } else if (status === "cancel") {
-            statusText = "Canceled";
-        } else if (status === "rejected") {
-            statusText = "Rejected";
-        } else if (status === "Approved") {
-            statusText = "Bid Accepted";
-        } else if (status === "booked") {
-            statusText = "Bid Received";
-        } else if (status === "doIssued") {
-            statusText = "Completed";
-        } else {
-            statusText = `${status}`;
+            switch (status) {
+                case "close":
+                    statusText = "Closed";
+                    break;
+                case "Cancel":
+                    statusText = "Canceled";
+                    break;
+                case "rejected":
+                    statusText = "Rejected";
+                    break;
+                case "Approved":
+                    statusText = "Bid Accepted";
+                    break;
+                case "booked":
+                    statusText = "Bid Received";
+                    break;
+                case "DOIssued":
+                    statusText = "Completed";
+                    break;
+                default:
+                    statusText = `${status}`;
+            }
+
+            return statusText;
+        } catch (error) {
+            console.error("Error converting status:", error);
+            return "Unknown"; // or handle the error in a way that makes sense for your application
         }
-
-        return statusText;
     }
+
 
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
             case 'close':
-            case 'cancel':
+            case 'canceled':
             case 'rejected':
                 return 'rgb(255, 0, 0)'; // Red
             case 'approved':
                 return 'rgb(0, 0, 255)'; // Blue
             case 'booked':
                 return 'rgb(255, 165, 0)'; // Orange
-            case 'doissued':
+            case 'completed':
                 return 'rgb(0, 128, 0)'; // Green
             default:
                 return 'rgb(0, 128, 0)'; // Black

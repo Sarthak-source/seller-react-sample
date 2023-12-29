@@ -86,6 +86,7 @@ export default function LoadingInstructionDetails() {
 
 
   const getImageUrlAndTitleList = (item) => {
+    console.log('item',item)
     const mapping = [
       {
         key: 'dl_img_frontside',
@@ -118,7 +119,7 @@ export default function LoadingInstructionDetails() {
       let imageUrl;
 
       try {
-        imageUrl = item.loadinginstruction?.[0].quality_check?.driver?.[key];
+        imageUrl = item.driver?.[key];
       } catch (error) {
         // Handle the error, set imageUrl to a default value, or log the error
         console.error(`Error getting item image URL for key ${key}:`, error);
@@ -249,7 +250,7 @@ export default function LoadingInstructionDetails() {
                                   'available_qty',
                                   result.yet_to_load
                                 )} ${result.tender_head.product.product_type.unit}`}
-                                order={result.tender_head}
+                                order={result}
                               />
                             ))}
                         </TableBody>
@@ -308,9 +309,6 @@ export default function LoadingInstructionDetails() {
               </Card>
                 
               </StepContent>
-
-              
-
             </Step>
 
             <Step active expanded>

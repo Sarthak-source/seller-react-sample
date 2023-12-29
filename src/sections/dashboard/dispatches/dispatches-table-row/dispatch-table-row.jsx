@@ -1,22 +1,25 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-import { Alert, Avatar, Box, Snackbar, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { useTheme } from '@emotion/react';
+import { Alert, Avatar, Box, Dialog, DialogTitle, Paper, Snackbar, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import MenuItem from '@mui/material/MenuItem';
-import Popover from '@mui/material/Popover';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import { useNavigate } from 'react-router-dom';
 import { ApiAppConstants, ip } from 'src/app-utils/api-constants';
 import NetworkRepository from 'src/app-utils/network_repository';
+import HoverExpandButton from 'src/components/buttons/expanded-button';
+import AlertDialog from 'src/components/dialogs/action-dialog';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
 import { useDispatchTableFuctions } from './use-dispatch-table-fuctions';
 
 export default function DispatchTableRow({
     type,
+    subtype,
     orderNo,
+    doPk,
     invoiceNo,
     lrNum,
     lrId,
@@ -36,15 +39,17 @@ export default function DispatchTableRow({
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const theme = useTheme();
+    const pdfContainerRef = useRef();
+    const isMounted = useRef(true); // Add this line
+
 
 
     const handleOpenMenu = (event) => {
         setOpen(event.currentTarget);
     };
 
-    const handleCloseMenu = () => {
-        setOpen(null);
-    };
+
 
     const [expanded, setExpanded] = useState(false);
 
@@ -97,9 +102,121 @@ export default function DispatchTableRow({
     };
 
     const { handlePrint, getStatusColor, getStatus } = useDispatchTableFuctions();
-    const pdfUrl = `http://${ip}/${ApiAppConstants.getInvoiceDoc}${orderNo}`;
 
-    console.log('lrId', lrId)
+    function getPdfLink(status) {
+        try {
+            let PdfLink;
+
+            switch (status) {
+                case "Issued":
+                    PdfLink = `http://${ip}${ApiAppConstants.getInvoiceDoc}/${doPk}`;
+                    break;
+                case "Reported":
+                    PdfLink = `http://${ip}${ApiAppConstants.gatePass}?do_pk=${doPk}&type=inward`;
+
+                    break;
+                case "Unload":
+                    PdfLink = `http://${ip}${ApiAppConstants.gatePass}?do_pk=${doPk}&type=outward`;
+                    break;
+                default:
+                    PdfLink = `http://${ip}${ApiAppConstants.getInvoiceDoc}/${doPk}`;
+            }
+
+            return PdfLink;
+        } catch (error) {
+            console.error("Error converting status:", error);
+            return "Unknown"; // or handle the error in a way that makes sense for your application
+        }
+    }
+
+
+    const pdfUrl = getPdfLink(subtype);
+
+
+
+    const [isDialogOpen, setDialogOpen] = useState(false);
+    const [isMailDialogOpen, setMailDialogOpen] = useState(false);
+
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+        setMailDialogOpen(false);
+    };
+
+
+
+    const handleEmailSend = async () => {
+        await NetworkRepository.mailDoInvoice()
+    };
+
+    const [pdfData, setPdfData] = useState(null);
+
+    const handlePdf = async (url) => {
+        try {
+            const apiResponse = await NetworkRepository.getPdf(url);
+            if (isMounted.current) {
+                setPdfData(apiResponse);
+            }
+        } catch (error) {
+            console.error('Error fetching PDF:', error);
+        }
+    };
+
+
+
+    useEffect(() => {
+
+
+        const pdfContainer = pdfContainerRef.current;
+
+        if (pdfData && pdfContainer) {
+            const dataUrl = URL.createObjectURL(new Blob([pdfData], { type: 'application/pdf' }));
+
+            const pdfEmbed = document.createElement('iframe');
+            pdfEmbed.setAttribute('width', '100%');
+            pdfEmbed.setAttribute('height', '600px');
+            pdfEmbed.setAttribute('type', 'application/pdf');
+            pdfEmbed.setAttribute('src', dataUrl);
+
+            pdfContainer.innerHTML = '';
+            pdfContainer.appendChild(pdfEmbed);
+        }
+
+    }, [pdfUrl, pdfData, isMounted]);
+
+
+
+    console.log('pdfData', pdfData)
+
+    const pdfPopUp = (dialogOpen) => (
+
+        (
+            <Dialog open={dialogOpen} onClose={handleDialogClose} fullWidth
+                maxWidth="md"
+            >
+                <DialogTitle >
+                    <Stack sx={{ height: '10px' }} direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+                        <Typography variant="h6">View PDF</Typography>
+                        <Box display="flex" justifyContent="space-between" sx={{ gap: 1, height: '30px' }} >
+                            <HoverExpandButton onClick={handleDialogClose} width='90px' color={theme.palette.error.main}>
+                                <Iconify icon="basil:cancel-solid" />
+                                <Typography sx={{ fontWeight: 'bold', fontSize: 14 }}>Close</Typography>
+                            </HoverExpandButton>
+                        </Box>
+                    </Stack>
+                </DialogTitle>
+                <Paper>
+                    <div ref={pdfContainerRef} />
+                </Paper>
+            </Dialog>
+        )
+    )
+
+    const printOpen = () => {
+        setDialogOpen(true)
+        if (subtype === 'Issued' || subtype === 'Reported' || subtype === 'Unload') {
+            handlePdf(pdfUrl);
+        }
+    }
 
     return (
         <>
@@ -170,7 +287,7 @@ export default function DispatchTableRow({
                 <TableCell>{date}</TableCell>
                 <TableCell>{vehicleNumber}</TableCell>
                 <TableCell>{quantity}</TableCell>
-                <TableCell >
+                <TableCell>
                     {expanded ? (
                         <Box >
                             {billedTo}
@@ -193,36 +310,52 @@ export default function DispatchTableRow({
                         </Box>
                     )}
                 </TableCell>
-
-
                 <TableCell>{rate}</TableCell>
                 <TableCell>{grade}</TableCell>
-                <TableCell align="right">
-                    <IconButton onClick={handleOpenMenu}>
-                        <Iconify icon="eva:more-vertical-fill" />
-                    </IconButton>
+                <TableCell onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = theme.palette.grey[200];
+                }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = theme.palette.common.white;
+                    }}
+                    align="right" style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: theme.palette.common.white }} >
+                    <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
+                        {
+                            type === 'invoice' && (
+                                <HoverExpandButton onClick={printOpen} width='100px' color={theme.palette.success.main} >
+                                    <Iconify icon="lets-icons:print" />
+                                    <Box sx={{ fontWeight: 'bold' }}> Print</Box>
+                                </HoverExpandButton>
+                            )
+                        }
+                        {type === 'invoice' && (
+                            <HoverExpandButton onClick={() => setMailDialogOpen(true)} width='100px' color={theme.palette.info.main}>
+                                <Iconify icon="fluent:mail-24-filled" />
+                                <Box sx={{ fontWeight: 'bold' }}> Mail</Box>
+                            </HoverExpandButton>
+                        )
+                        }
+                        {
+                            type === 'loadingsInstruction' && (
+                                <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.success.main}>
+                                    <Iconify icon="material-symbols:order-approve-rounded" />
+                                    <Box sx={{ fontWeight: 'bold' }}> Active</Box>
+                                </HoverExpandButton>
+                            )
+                        }
+                        {
+                            type === 'loadingsInstruction' && (
+                                <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.error.main}>
+                                    <Iconify icon="basil:cancel-solid" />
+                                    <Box sx={{ fontWeight: 'bold' }}> Cancel</Box>
+                                </HoverExpandButton>
+                            )
+                        }
+                    </Box>
                 </TableCell>
             </TableRow>
-            <Popover
-                open={!!open}
-                anchorEl={open}
-                onClose={handleCloseMenu}
-                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                PaperProps={{
-                    sx: { width: 140 },
-                }}
-            >
-                <MenuItem onClick={() => handlePrint(pdfUrl)}>
-                    <Iconify icon="lets-icons:print" sx={{ mr: 2 }} />
-                    Print
-                </MenuItem>
 
-                <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
-                    <Iconify icon="fluent:calendar-cancel-24-regular" sx={{ mr: 2 }} />
-                    Cancel
-                </MenuItem>
-            </Popover>
+
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={6000}
@@ -233,14 +366,22 @@ export default function DispatchTableRow({
                     {snackbarMessage}
                 </Alert>
             </Snackbar>
+            <AlertDialog
+                content='Are sure you want send mail'
+                isDialogOpen={isMailDialogOpen}
+                handleConfirm={handleEmailSend}
+                handleClose={handleDialogClose} />
+            {pdfPopUp(isDialogOpen)}
         </>
     );
 }
 
 DispatchTableRow.propTypes = {
     type: PropTypes.string,
+    subtype: PropTypes.string,
     orderNo: PropTypes.string,
     lrNum: PropTypes.string,
+    doPk: PropTypes.string,
     lrId: PropTypes.string,
     invoiceNo: PropTypes.string,
     millName: PropTypes.string,

@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify';
 
 import store from '../redux/configure-store';
-import { ApiAppConstants, auth } from './api-constants';
+import { ApiAppConstants, auth, ip } from './api-constants';
 import NetworkAxios from './network_axios';
 
 const state = store.getState();
@@ -94,6 +94,21 @@ const NetworkRepository = {
       return apiResponse;
     } catch (error) {
       return error.toString();
+    }
+  },
+
+  sellerConfig: async () => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.sellerConfig}?seller=${sellerId}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
     }
   },
 
@@ -406,6 +421,213 @@ const NetworkRepository = {
     }
   },
 
+
+  updateOrderDetails: async (
+    orderId,
+    poNumber,
+    invoicePrefix,
+    lutNum,
+    remark,
+    eTransporter) => {
+
+    try {
+
+      const data = new URLSearchParams();
+      data.append("order_pk", orderId.toString());
+      data.append("lut_num", lutNum.toString());
+      data.append("invoice_prefix", invoicePrefix.toString());
+      data.append("remark", remark);
+      data.append("purchaseorder_num", poNumber.toString());
+      data.append("e_transporter", eTransporter);
+
+
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.updateOrderDetails}`,
+        data: data.toString(),
+        header: {
+          'authorization': auth
+        },
+      });
+
+      console.log('\x1b[97m Response :', apiResponse);
+
+      return apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  transporterGstinListView: async (gstIn) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.transporterGstinListView}?gstin=${gstIn}`,
+        header: {
+          'authorization': auth
+        },
+      });
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  gstinListView: async (gstIn) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.gstinListView}?trader=${sellerId}&gstin=${gstIn}`,
+        header: {
+          'authorization': auth
+        },
+      });
+
+      console.log('apiResponseapiResponseapiResponse', apiResponse)
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  addressListPost: async (
+    { name,
+      gstin,
+      pin,
+      address,
+      location }) => {
+    try {
+      const data = new URLSearchParams();
+
+      data.append("trader", sellerId.toString());
+      data.append("name", name.toString());
+      data.append("gstin", gstin.toString());
+      data.append("pin", pin.toString());
+      data.append("address", address.toString());
+      data.append("location", location.toString());
+
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `$${ApiAppConstants.addressListPost}`,
+        header: {
+          'authorization': auth
+        },
+        data: data.toString(),
+      });
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  removeFlexibleProducts: async (orderId) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.removeFlexibleProducts}`,
+        header: {
+          'authorization': auth
+        },
+        data: { "order": orderId }
+      });
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  addressListView: async (gstIn) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.addressList}?gstin__gstin=${gstIn}`,
+        header: {
+          'authorization': auth
+        },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  eoiSetting2: async (
+    orderId,
+    boe,
+    documents,
+    supType,
+    subSupType,
+    docType,
+  ) => {
+    try {
+
+
+      const data = JSON.stringify({
+        'boe_num': boe,
+        'document': documents,
+        'supply_type': supType,
+        'sub_supply_type': subSupType,
+        'document_type': docType
+      });
+
+      console.log('eoiSetting212', data, {
+        'boe_num': boe,
+        'document': documents,
+        'supply_type': supType,
+        'sub_supply_type': subSupType,
+        'document_type': docType
+      })
+
+      const apiResponse =
+        await NetworkAxios.putAxiosHttpMethod({
+          url: `${ApiAppConstants.orderUpdate}${orderId}/`,
+          header: { 'authorization': auth },
+          data,
+          ContentType: 'application/json'
+        });
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+
+  mailDoInvoice: async (invoices, id) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: invoices
+          ? `http://${ip}/${ApiAppConstants.mailInvoice}${id}`
+          : `http://${ip}/${ApiAppConstants.mailDoc}${id}`,
+        header: { 'authorization': auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  getPdf: async (url) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url,
+        header: { 'authorization': auth },
+        full:false,
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
 
 }
 

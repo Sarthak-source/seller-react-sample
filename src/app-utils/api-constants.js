@@ -2,9 +2,9 @@ const auth = `Basic ${btoa('gfg:gfgtech123')}`;
 
 const testip = '192.46.215.236';
 
-const prod = '139.162.12.150';
+const prod = '172.105.55.52';
 
-const local= '192.168.78.161:8000';
+const local = '192.168.78.161:8000';
 
 const ip = localStorage.getItem('isTestEnvironment') === 'true'
     ? prod
@@ -54,7 +54,7 @@ const ApiAppConstants = {
     evQualityCheck: 'Ev_QualityCheck/',
     evehicleDoc: 'evehicledoc/',
     checkDOStatus: 'check_DO_status/',
-    lrUpdate:'lr_number/',
+    lrUpdate: 'lr_number/',
     generateInvoice: 'generate_invoice/',
     sellerInwardLedgers: 'sellerInwardLedgers/', // for last five inwards
     inwardLedger: 'inwardLedger/',
@@ -70,9 +70,24 @@ const ApiAppConstants = {
     reports: 'reports',
     scanDOdest: 'scan_DO_dest/',
     doUnload: 'deliveryOrderUpdateStatus/',
-    gatePass: 'gatepass/',
-    getDoDoc:'get_doc/do/',
-    getInvoiceDoc:'/get_doc/invoice/'
+    getDoDoc: 'get_doc/do/',
+    getInvoiceDoc: '/get_doc/invoice/',
+    gatePass: '/api/gatepass/',
+    addressListPost: 'addressListPost/',
+    gstinListView: 'gstinListView/',
+    transporterGstinListView: 'transporterListView/',
+    addressList: 'addressList/',
+    orderHeadAddressUpdate: 'orderHeadAddressUpdate/',
+    cancelInvoice: 'cancel_invoice/',
+    transporterAdd: 'add_gstin/',
+    searchTransporter: 'searchTransporter/',
+    assignOrderToTransporter: 'assignOrderToTransporter/',
+    orderUpdate: 'order_update/',
+    orderPostView: 'orderPostView/',
+    vehicle2: 'vehiclesListView',
+    loadingInstructionPost: 'loadingInstructionPost/',
+    sellers: 'sellers/',
+    location: 'location/'
 };
 
 export { ApiAppConstants, auth, ip, testip };

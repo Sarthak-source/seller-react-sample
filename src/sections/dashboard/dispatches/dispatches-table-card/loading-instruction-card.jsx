@@ -171,6 +171,7 @@ export default function LoadingsInstructionCard(
                                         .map((row) => (
                                             <DispatchTableRow
                                                 type='loadingsInstruction'
+                                                subtype={status}
                                                 key={row.orderNo}
                                                 orderNo={row.orderNo}
                                                 lrNum={row.lrNum}
@@ -189,7 +190,7 @@ export default function LoadingsInstructionCard(
                                         ))}
                                     <TableEmptyRows
                                         height={77}
-                                        emptyRows={emptyRows(page, rowsPerPage / 15, dataFiltered.length)}
+                                        emptyRows={emptyRows(page-1, rowsPerPage / 15, dataFiltered.length)}
                                     />
                                     {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>) : (

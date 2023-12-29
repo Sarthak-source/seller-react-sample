@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
-import { selectTempUser, selectUser } from 'src/redux/actions/user-actions';
+import { selectTempUser, selectUser, selectUserConfig } from 'src/redux/actions/user-actions';
 import { useRouter } from 'src/routes/hooks';
 
 
-export default function OTPComponent({ phoneNumber }) {
+export default function OTPComponent({ phoneNumber,usedIn,resultSet }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const selectedTempUser = useSelector((state) => state.user.selectedTempUser);
@@ -32,11 +32,17 @@ export default function OTPComponent({ phoneNumber }) {
         console.log('phoneNumber', phoneNumber);
         const result = await NetworkRepository.verifyLogin(phoneNumber, otpArg);
         console.log('Result:', result.type);
-        if (result.type === 'success') {
+        if (result.type === 'success' && usedIn==='LogIn') {
+          const configUserData = await NetworkRepository.sellerConfig();
           dispatch(selectUser(selectedTempUser))
+          dispatch(selectUserConfig(configUserData))
           dispatch(selectTempUser({}))
           router.replace('/home');
-        } else {
+        } else if(usedIn==='InvoiceEwaybillSetting'){
+          resultSet(result.type)
+        }
+        
+        else {
           alert('Wrong OTP');
         }
       } catch (error) {
@@ -47,7 +53,7 @@ export default function OTPComponent({ phoneNumber }) {
     if (concatenatedOtp.length === 4) {
       verifyLoginAsync(concatenatedOtp);
     }
-  }, [otp, router, phoneNumber, dispatch, selectedTempUser]);
+  }, [otp, router, phoneNumber, dispatch, selectedTempUser,usedIn,resultSet]);
 
   return (
     <Stack spacing={5} pb={5} pt={5} direction="row">
@@ -68,4 +74,6 @@ export default function OTPComponent({ phoneNumber }) {
 
 OTPComponent.propTypes = {
   phoneNumber: PropTypes.string,
+  usedIn:PropTypes.string,
+  resultSet:PropTypes.func,
 }

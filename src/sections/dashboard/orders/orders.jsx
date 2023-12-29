@@ -35,7 +35,7 @@ export default function OrdersView() {
     const [orderBy, setOrderBy] = useState('name');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [totalDataCount, setTotalDataCount] = useState(0);
-    const steps = useMemo(() => ['All', 'Bids', 'Accepted', 'Completed', 'Rejected'], []);
+    const steps = useMemo(() => ['All', 'Pending Bids', 'Accepted', 'Completed', 'Rejected'], []);
     const querySteps = useMemo(() => ['All', 'Booked', 'Approved', 'DOIssued', 'Rejected',], []);
     const [ordersData, setOrdersData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -47,7 +47,7 @@ export default function OrdersView() {
         setTransformValue(!isMouseOver ? 'scale(0.85)' : 'scale(0.75)');
     };
 
-    const { formatPrice,getStatusText, formatQty, formatQuantity, orderHeaderRow } = useOrderTableFormate();
+    const { formatPrice, getStatusText, formatQty, formatQuantity, orderHeaderRow } = useOrderTableFormate();
     const totalPages = Math.ceil(totalDataCount / rowsPerPage);
 
     const selectedMill = useSelector((state) => state.mill.selectedMill);
@@ -128,7 +128,7 @@ export default function OrdersView() {
         traderName: row.trader.name,
         millName: row.tender_head.mill.name,
         date: format(parseISO(row.date), 'MM/dd/yyyy'),
-        price: formatPrice(row.price,row.tender_head.product.product_type.unit),
+        price: formatPrice(row.price, row.tender_head.product.product_type.unit),
         status: getStatusText(row.status),
         tenderType: row.tender_head.tender_type,
         productType: row.tender_head.product.product_type.product_type,
@@ -179,7 +179,8 @@ export default function OrdersView() {
             </Stack>
             <Box sx={{
                 width: 1,
-                transform: transformValue
+                transform: transformValue,
+                transition: 'transform 0.3s ease',
             }}
                 onMouseEnter={() => handleStepSize(true)}
                 onMouseLeave={() => handleStepSize(false)}
@@ -241,7 +242,7 @@ export default function OrdersView() {
 
                                     <TableEmptyRows
                                         height={77}
-                                        emptyRows={emptyRows(page-1, rowsPerPage / 15, dataFiltered.length)}
+                                        emptyRows={emptyRows(page - 1, rowsPerPage / 15, dataFiltered.length)}
                                     />
 
                                     {notFound && <TableNoData query={searchTerm} />}

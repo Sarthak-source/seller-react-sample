@@ -13,12 +13,12 @@ import { bgBlur } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
 
+import MyBreadcrumbs from 'src/components/bread-crumbs/bread-crumbs';
 import AccountPopover from './common/account-popover';
 import Searchbar from './common/searchbar';
 import { HEADER, NAV } from './config-layout';
 
 // ----------------------------------------------------------------------
-
 export default function Header({ onOpenNav, openNav }) {
   const theme = useTheme();
 
@@ -26,20 +26,34 @@ export default function Header({ onOpenNav, openNav }) {
 
   const renderContent = (
     <>
-      <IconButton onClick={onOpenNav} sx={{ mr: 1 }}>
-        <Iconify icon="eva:menu-2-fill" color='primary.main' />
-      </IconButton>
-      <Searchbar />
+    <Stack marginLeft={-1}>
+    <Stack direction='row' marginTop={2}>
+        <IconButton onClick={onOpenNav} sx={{ mr: 1 }}>
+          <Iconify icon="eva:menu-2-fill" color='primary.main' />
+        </IconButton>
+        <Searchbar />
+       
+      </Stack>
+    <MyBreadcrumbs />
+    </Stack>
+     
+
+
       <Box sx={{ flexGrow: 1 }} />
       <Stack direction="row" alignItems="center" spacing={1}>
         {/* <LanguagePopover />
         <NotificationsPopover /> */}
         <AccountPopover />
       </Stack>
+
+
+
     </>
+
   );
 
   return (
+
     <AppBar
       sx={{
         boxShadow: 'none',
@@ -66,6 +80,11 @@ export default function Header({ onOpenNav, openNav }) {
         {renderContent}
       </Toolbar>
     </AppBar>
+
+
+
+
+
   );
 }
 

@@ -86,7 +86,7 @@ export default function LoginView() {
           label="Phone number"
           onChange={handlePhoneNumberChange}
           inputProps={{ maxLength: 10 }} /> :
-          <OTPComponent phoneNumber={phoneNumber} />}
+          <OTPComponent phoneNumber={phoneNumber} usedIn='LogIn'/>}
       </Stack>
       {showOpt ? (<Typography variant="body2" sx={{ mb: 5 }}>
         Don’t have an account?

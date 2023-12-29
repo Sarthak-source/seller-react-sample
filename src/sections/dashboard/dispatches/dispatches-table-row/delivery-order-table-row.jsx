@@ -1,5 +1,4 @@
 import { Avatar, Box, Stack, Typography } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Popover from '@mui/material/Popover';
 import TableCell from '@mui/material/TableCell';
@@ -7,8 +6,10 @@ import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
+import { useTheme } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
 import { ApiAppConstants, ip } from 'src/app-utils/api-constants';
+import HoverExpandButton from 'src/components/buttons/expanded-button';
 import Iconify from 'src/components/iconify';
 import { useDispatchTableFuctions } from './use-dispatch-table-fuctions';
 
@@ -30,7 +31,9 @@ export default function DoOrderTableRow({
 }) {
     const [open, setOpen] = useState(null);
     const navigate = useNavigate();
-    
+    const theme = useTheme();
+
+
 
 
     const handleOpenMenu = (event) => {
@@ -66,7 +69,7 @@ export default function DoOrderTableRow({
                     onClick={() => handleOpenDetails(orderNo)}
                     style={{ cursor: 'pointer' }}
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.borderRadius = '8px'; 
+                        e.currentTarget.style.borderRadius = '8px';
                         e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
                     }}
                     onMouseLeave={(e) => {
@@ -115,9 +118,22 @@ export default function DoOrderTableRow({
                 <TableCell>{rate}</TableCell>
                 <TableCell>{grade}</TableCell>
                 <TableCell align="right">
-                    <IconButton onClick={handleOpenMenu}>
-                        <Iconify icon="eva:more-vertical-fill" />
-                    </IconButton>
+                    <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
+
+                        <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.success.main}>
+                            <Iconify icon="mdi:file-remove" />
+                            <Box sx={{ fontWeight: 'bold' }}> Print </Box>
+                        </HoverExpandButton>
+
+
+
+
+                        <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.info.main}>
+                            <Iconify icon="material-symbols:assignment-return" />
+                            <Box sx={{ fontWeight: 'bold' }}> Cancel </Box>
+                        </HoverExpandButton>
+
+                    </Box>
                 </TableCell>
             </TableRow>
             <Popover
@@ -139,7 +155,7 @@ export default function DoOrderTableRow({
                     Cancel
                 </MenuItem>
             </Popover>
-           
+
         </>
     );
 }

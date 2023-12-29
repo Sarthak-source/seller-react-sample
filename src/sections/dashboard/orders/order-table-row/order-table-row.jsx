@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 
 import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
 
+import { useTheme } from '@emotion/react';
 import MenuItem from '@mui/material/MenuItem';
 import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
@@ -13,7 +13,9 @@ import Typography from '@mui/material/Typography';
 
 import { useDispatch } from 'react-redux';
 
+import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import HoverExpandButton from 'src/components/buttons/expanded-button';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
 import { selectOrder } from 'src/redux/actions/order-actions';
@@ -39,6 +41,8 @@ export default function OrdersTableRow({
     const [open, setOpen] = useState(null);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const theme = useTheme();
+
 
     const handleOpenMenu = (event) => {
         setOpen(event.currentTarget);
@@ -97,9 +101,22 @@ export default function OrdersTableRow({
                 <TableCell>{dispatched}</TableCell>
                 <TableCell>{balance}</TableCell>
                 <TableCell align="right">
-                    <IconButton onClick={handleOpenMenu}>
-                        <Iconify icon="eva:more-vertical-fill" />
-                    </IconButton>
+                    <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
+                        {
+                            status === 'Booked' && (
+                                <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.success.main} >
+                                    <Iconify icon="material-symbols:order-approve-rounded" />
+                                    <Box sx={{ fontWeight: 'bold' }}> Accept</Box>
+                                </HoverExpandButton>
+                            )
+                        }
+                        {status === 'Booked' || status === 'Bid Accepted' && (
+                            <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.error.main}>
+                                <Iconify icon="mdi:file-remove" />
+                                <Box sx={{ fontWeight: 'bold' }}> {status === "Approved" ? "Close" : "Reject"}</Box>
+                            </HoverExpandButton>
+                        )}
+                    </Box>
                 </TableCell>
             </TableRow>
             <Popover

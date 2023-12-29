@@ -9,3 +9,8 @@ export const selectTempUser = (user) => ({
   type: actionTypes.SELECT_TEMP_USER,
   payload: user
 });
+
+export const selectUserConfig = (userConfig) => ({
+  type: actionTypes.SELECT_USER_CONFIG,
+  payload: userConfig
+});

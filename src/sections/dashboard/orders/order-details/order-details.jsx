@@ -1,4 +1,4 @@
-import { Box, Button, Card, Container, Divider, Grid, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import { Box, Card, Container, Divider, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
@@ -12,6 +12,7 @@ import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { primary } from 'src/theme/palette';
 import { ip } from '../../../../app-utils/api-constants';
 import OrderCard from './components/order-card';
+import OrderUpdateForm from './components/order-update-form';
 
 
 
@@ -136,75 +137,43 @@ export default function OrderDetails() {
                                     </TableContainer>
                                 </Card>) : (
 
-                                <Label
-                                    color={primary.main}
-                                    sx={{
-                                        position: 'absolute',
-                                        textTransform: 'uppercase',
-                                    }}
-                                >
-                                    No invoice vehicles
-                                </Label>
+                                <Card>
+
+                                    <Stack sx={{p:2}}>
+
+                                        <Label
+                                            color={primary.main}
+                                            sx={{
+                                                position: 'absolute',
+                                                textTransform: 'uppercase',
+                                            }}
+                                        >
+                                            No invoice vehicles
+                                        </Label>
+
+                                        <Box
+                                            component="img"
+
+                                            src='https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg?w=1060&t=st=1702019602~exp=1702020202~hmac=57da9194b9435ec95e27dd6e62fa486527a2fbd01692ff3a09a04fbc6e18807d'
+                                            sx={{
+                                                top: 0,
+                                                width: '300px',
+                                                height: '300px',
+                                                objectFit: 'cover',
+                                                position: 'inherit',
+                                            }}
+                                        />
+
+                                    </Stack>
+                                </Card>
+
+
 
                             )}
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={6} >
-                        <Card>
-                            <Box p={2}>
-                                <TextField
-                                    // controller={poNumber}
-                                    variant="outlined"
-                                    margin="dense"
-                                    label="PO Number"
-                                    fullWidth
-                                />
-                                <Box style={{ height: 20 }} />
-                                <TextField
-                                    // controller={invoiceOrderPrefix}
-                                    variant="outlined"
-                                    margin="dense"
-                                    label="Invoice order prefix"
-                                    fullWidth
-                                />
-                                <Box style={{ height: 20 }} />
-                                <TextField
-                                    // controller={lutNo}
-                                    variant="outlined"
-                                    margin="dense"
-                                    label="Lut No."
-                                    fullWidth
-                                />
-                                <Box style={{ height: 20 }} />
-                                <TextField
-                                    // controller={remark}
-                                    variant="outlined"
-                                    margin="dense"
-                                    label="Remark"
-                                    fullWidth
-                                />
-                                <Box style={{ height: 20 }} />
-                                <TextField
-                                    // controller={shippingFromController}
-                                    variant="outlined"
-                                    margin="dense"
-                                    label='Shipping From'
-                                    fullWidth
-                                />
-                                <Box style={{ height: 20 }} />
-                                <TextField
-                                    // controller={transporterIdController}
-                                    variant="outlined"
-                                    margin="dense"
-                                    label='Transporter Id'
-                                    fullWidth
-                                />
-                                <Box style={{ height: 20 }} />
-                                <Button variant="contained" fullWidth style={{ height: '40px' }}>
-                                    Update
-                                </Button>
-                            </Box>
-                        </Card>
+                        <OrderUpdateForm orderSummary={orderSummary} />
                     </Grid>
                 </Grid>
             }

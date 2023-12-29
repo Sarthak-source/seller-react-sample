@@ -45,7 +45,7 @@ export default function DispatchesView() {
             <Box
                 onMouseEnter={() => handleStepSize(true)}
                 onMouseLeave={() => handleStepSize(false)}
-                sx={{ width: 1, transform: transformValue }}>
+                sx={{ width: 1, transform: transformValue, transition: 'transform 0.3s ease', }}>
                 <Stepper activeStep={activeStep} alternativeLabel connector={<QontoConnector />} style={{ marginBottom: '3%' }}>
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>

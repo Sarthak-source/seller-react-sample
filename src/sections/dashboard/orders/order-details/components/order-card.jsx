@@ -1,6 +1,5 @@
 import { Box, Card, Divider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 
 
 export default function OrderCard({ data }) {
@@ -15,7 +14,7 @@ export default function OrderCard({ data }) {
   console.log('data.tender_head', data)
 
   return (
-    <Link to={`/home/order-details/${data.tender_head.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+   
 
       <Card
         style={{
@@ -93,7 +92,7 @@ export default function OrderCard({ data }) {
           </TableContainer>
         </Box>
       </Card>
-    </Link>
+   
   );
 }
 

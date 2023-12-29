@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import { alpha } from '@mui/material/styles';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { selectUser } from 'src/redux/actions/user-actions';
+import { selectUser, selectUserConfig } from 'src/redux/actions/user-actions';
 import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
@@ -50,6 +50,7 @@ export default function AccountPopover() {
 
   const handleLogOut = () => {
     dispatch(selectUser(null))
+    dispatch(selectUserConfig(null))
     router.replace('/');
   };
 
