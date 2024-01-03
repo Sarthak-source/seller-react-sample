@@ -41,7 +41,7 @@ const RenderHtmlFromLink = ({ link }) => {
                 padding-top: 10px;
                 padding-bottom: 10px;
                 font-family: 'Public Sans', sans-serif;
-              }              
+              }
               b,td {
                 font-size: 15px;
                 font-family: 'Public Sans', sans-serif;
@@ -49,7 +49,7 @@ const RenderHtmlFromLink = ({ link }) => {
               h3{
                 font-size: 16px;
                 font-family: Public Sans, sans-serif;
-              }         
+              }
               h2{
                 font-size:22px;
                 font-family: Public Sans, sans-serif;
@@ -219,7 +219,7 @@ const RenderHtmlFromLink = ({ link }) => {
       ) : (
         <Box
           sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '600px' }}>
-          <SkeletonLoader />
+          <SkeletonLoader marginTop='20px'/>
         </Box>
       )}
     </Paper>

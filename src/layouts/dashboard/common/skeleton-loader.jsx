@@ -1,8 +1,11 @@
-import { Box, Skeleton } from '@mui/material';
+import PropTypes from 'prop-types';
 
-export default function SkeletonLoader() {
+import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
+
+export default function SkeletonLoader({ marginTop = '300px' }) {
   return (
-    <Box marginTop="300px" marginLeft="10%" width='100%'>
+    <Box marginTop={marginTop} marginLeft="10%" width='100%'>
       <Skeleton variant="rectangular" width="50%" height={20} animation="wave" />
       <Skeleton variant="rectangular" width="90%" height={20} animation="wave" style={{ margin: '20px 0' }} />
       <Skeleton variant="rectangular" width="30%" height={20} animation="wave" />
@@ -19,3 +22,6 @@ export default function SkeletonLoader() {
   );
 };
 
+SkeletonLoader.propTypes = {
+  marginTop: PropTypes.string,
+};

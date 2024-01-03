@@ -4,16 +4,16 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 
 import Avatar from '@mui/material/Avatar';
-import MenuItem from '@mui/material/MenuItem';
-import Popover from '@mui/material/Popover';
 import Stack from '@mui/material/Stack';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 
 import { useTheme } from '@emotion/react';
-import { Box } from '@mui/material';
+import { Alert, Box, Snackbar } from '@mui/material';
+import NetworkRepository from 'src/app-utils/network_repository';
 import HoverExpandButton from 'src/components/buttons/expanded-button';
+import AlertDialog from 'src/components/dialogs/action-dialog';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
 import { useTenderTableFormat } from '../use-tender-table-formate';
@@ -40,15 +40,56 @@ export default function TenderTableRow({
 
   const [open, setOpen] = useState(null);
 
+  const [content, setContent] = useState('');
+  const [statusType, setStatusType] = useState('');
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+
   const handleOpenDetails = () => {
     navigate(`/home/tender-details/${tenderId}`); // Use navigate to go to the details page
   };
 
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
+  const handleOpen = (contentType, statusArg) => {
+    setOpen(true);
+    setContent(contentType)
+    setStatusType(statusArg)
   };
 
-  const handleCloseMenu = () => {
+  const showSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
+
+  const handleConfirm = async (statusConfirm) => {
+    try {
+      const data = await NetworkRepository.tenderUpdate(tenderId, statusConfirm);
+      console.log('Response:', data);
+      // Show success Snackbar or any other desired action
+      showSnackbar('Tender updated successfully.', 'success');
+
+    } catch (error) {
+      console.error('Error:', error);
+      // Show error Snackbar or handle the error accordingly
+      showSnackbar('Something went wrong. Please try again.', 'error');
+
+    } finally {
+      setOpen(null);
+    }
+  };
+
+  const handleClose = () => {
     setOpen(null);
   };
 
@@ -115,55 +156,47 @@ export default function TenderTableRow({
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = theme.palette.common.white;
           }}
-          align="right" style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor : theme.palette.common.white}}>
+          align="right" style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: theme.palette.common.white }}>
           <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
             {
               status === 'Added' && (
-                <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.success.main} >
+                <HoverExpandButton onClick={() => handleOpen('Make this tender active?', 'Active')} width='100px' color={theme.palette.success.main} >
                   <Iconify icon="material-symbols:order-approve-rounded" />
                   <Box sx={{ fontWeight: 'bold' }}> Active</Box>
                 </HoverExpandButton>
               )
             }
-            {status === 'Closed' || status === 'Added' && (
-              <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.warning.main}>
+            {status === 'Added' && (
+              <HoverExpandButton onClick={() => handleOpen(`Are you sure you wan't to reject this tender?`, 'Reject')} width='100px' color={theme.palette.error.main}>
                 <Iconify icon="mdi:file-remove" />
-                <Box sx={{ fontWeight: 'bold' }}> Reject</Box>
+                <Box sx={{ fontWeight: 'bold' }}> Reject
+                </Box>
               </HoverExpandButton>
-
             )}
-            {
-              status === 'Active' && (
-                <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.error.main}>
-                  <Iconify icon="basil:cancel-solid" />
-                  <Box sx={{ fontWeight: 'bold' }}> Close</Box>
-                </HoverExpandButton>
-              )
-            }
-
+            {status === 'Active' && (
+              <HoverExpandButton onClick={() => handleOpen(`Are you sure you wan't to close this tender?`, 'Close')} width='100px' color={theme.palette.error.main}>
+                <Iconify icon="mdi:file-remove" />
+                <Box sx={{ fontWeight: 'bold' }}> Close</Box>
+              </HoverExpandButton>
+            )}
           </Box>
         </TableCell>
       </TableRow>
-      <Popover
-        open={!!open}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: { width: 140 },
-        }}
+      <AlertDialog
+        content={content}
+        isDialogOpen={open}
+        handleConfirm={() => handleConfirm(statusType)}
+        handleClose={handleClose} />
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <MenuItem onClick={handleCloseMenu}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover>
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

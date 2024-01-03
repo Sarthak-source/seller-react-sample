@@ -39,8 +39,8 @@ export default function TenderView() {
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [tenderData, setTenderData] = useState([]);
     const [totalDataCount, setTotalDataCount] = useState(0);
-    const steps = useMemo(() => ['All', 'Pending Approval', 'Live', 'Rejected', 'Closed', 'Completed'], []);
-    const querySteps = useMemo(() => ['', 'Added', 'Active', 'Rejected', 'Close', 'Completed'], []);
+    const steps = useMemo(() => ['Pending Approval', 'Live', 'Rejected', 'Closed', 'Completed', 'All',], []);
+    const querySteps = useMemo(() => ['Added', 'Active', 'Rejected', 'Close', 'Completed', ''], []);
     const totalPages = Math.ceil(totalDataCount / rowsPerPage);
     const { generateLocation, formatPrice, getPropertyValue, tenderHeaderRow } = useTenderTableFormat();
     const [loading, setLoading] = useState(true);
@@ -48,6 +48,7 @@ export default function TenderView() {
     const searchTerm = useSelector((state) => state.search.searchTerm);
     const [transformValue, setTransformValue] = useState('scale(0.75)');
     const [isMouseOver, setIsMouseOver] = useState(true);
+    const currentState = useSelector((state) => state.stateRefreash.currentState);
 
     const handleStepSize = (isOver) => {
         setIsMouseOver(isOver);
@@ -67,6 +68,11 @@ export default function TenderView() {
     useEffect(() => {
         setPage(1)
         setTenderData([])
+    }, [currentState])
+
+    useEffect(() => {
+        setPage(1)
+        setTenderData([])
     }, [selectedMill])
 
     const handleStepClick = (index) => {
@@ -77,6 +83,7 @@ export default function TenderView() {
     };
 
     useEffect(() => {
+        console.log('sdfsdfsdf')
         const fetchTenderData = async (tenderPage, status, millId) => {
             try {
                 setLoading(true);
@@ -89,6 +96,7 @@ export default function TenderView() {
                     setPagination(tenderPage)
                 }
                 setTenderData(prevData => [...prevData, ...data.results]);
+                console.log('sdfsdfsdf', data.results)
             } catch (error) {
                 console.error('Error fetching tender data:', error);
             } finally {
@@ -96,7 +104,7 @@ export default function TenderView() {
             }
         };
         fetchTenderData(page, querySteps[activeStep], selectedMill.id);
-    }, [page, activeStep, querySteps, pagination, selectedMill]);
+    }, [page, activeStep, querySteps, pagination, selectedMill, currentState]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';

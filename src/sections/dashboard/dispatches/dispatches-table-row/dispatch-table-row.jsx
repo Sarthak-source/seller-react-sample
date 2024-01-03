@@ -13,6 +13,7 @@ import HoverExpandButton from 'src/components/buttons/expanded-button';
 import AlertDialog from 'src/components/dialogs/action-dialog';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
+import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { useDispatchTableFuctions } from './use-dispatch-table-fuctions';
 
 export default function DispatchTableRow({
@@ -76,6 +77,7 @@ export default function DispatchTableRow({
 
     const [isEditing, setIsEditing] = useState(false);
     const [editedLrNum, setEditedLrNum] = useState(lrNum);
+    const [pdfData, setPdfData] = useState(null);
 
     const handleEdit = () => {
         setIsEditing(true);
@@ -140,15 +142,20 @@ export default function DispatchTableRow({
     const handleDialogClose = () => {
         setDialogOpen(false);
         setMailDialogOpen(false);
+        setPdfData(null)
     };
-
-
 
     const handleEmailSend = async () => {
-        await NetworkRepository.mailDoInvoice()
+        console.log('mailDoInvoice', doPk)
+        try {
+            await NetworkRepository.mailDoInvoice(true, doPk)
+            showSnackbar('Mail sent successfully', 'success');
+        } catch (error) {
+            console.error("Error converting status:", error);
+        }finally{
+            setMailDialogOpen(false)
+        }
     };
-
-    const [pdfData, setPdfData] = useState(null);
 
     const handlePdf = async (url) => {
         try {
@@ -164,8 +171,6 @@ export default function DispatchTableRow({
 
 
     useEffect(() => {
-
-
         const pdfContainer = pdfContainerRef.current;
 
         if (pdfData && pdfContainer) {
@@ -205,7 +210,7 @@ export default function DispatchTableRow({
                     </Stack>
                 </DialogTitle>
                 <Paper>
-                    <div ref={pdfContainerRef} />
+                    {pdfData ? <div ref={pdfContainerRef} /> : <SkeletonLoader marginTop='10px' />}
                 </Paper>
             </Dialog>
         )
@@ -339,7 +344,7 @@ export default function DispatchTableRow({
                             type === 'loadingsInstruction' && (
                                 <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.success.main}>
                                     <Iconify icon="material-symbols:order-approve-rounded" />
-                                    <Box sx={{ fontWeight: 'bold' }}> Active</Box>
+                                    <Box sx={{ fontWeight: 'bold' }}> Approve</Box>
                                 </HoverExpandButton>
                             )
                         }
@@ -347,7 +352,7 @@ export default function DispatchTableRow({
                             type === 'loadingsInstruction' && (
                                 <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.error.main}>
                                     <Iconify icon="basil:cancel-solid" />
-                                    <Box sx={{ fontWeight: 'bold' }}> Cancel</Box>
+                                    <Box sx={{ fontWeight: 'bold' }}> Reject</Box>
                                 </HoverExpandButton>
                             )
                         }

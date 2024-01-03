@@ -47,8 +47,12 @@ export default function ProfileView() {
                 return 'Store House';
             case 4:
                 return 'Quality check';
-            default:
+            case 5:
                 return 'Destination';
+            case 6:
+                return 'Operations';
+            default:
+                return 'Unknown';
         }
     }
 
@@ -62,6 +66,10 @@ export default function ProfileView() {
                 return 'rgb(255, 165, 0)';
             case 4:
                 return 'rgb(3, 107, 252)';
+            case 5:
+                return 'rgb(18, 37, 2)';
+            case 6:
+                return 'rgb(99, 17, 252)';
             default:
                 return 'rgb(255, 0, 0)';
         }
@@ -70,6 +78,8 @@ export default function ProfileView() {
     const onSubmit = (data) => {
         // Handle form submission
     };
+
+    console.log('selectedUser.seller_role', selectedUser.seller_role)
 
     return (
         <Container>
@@ -139,7 +149,7 @@ export default function ProfileView() {
                                     <Card
                                         sx={{ pr: 18, pl: 2, pt: 2, pb: 2, width: '335px' }} >
                                         <List>
-                                            {selectedUser && selectedUser.mills ? (selectedUser.seller_role.map((role, roleInd) => (
+                                            {selectedUser && selectedUser.mills ? ([...new Set(selectedUser.seller_role)].map((role, roleInd) => (
                                                 <Box key={roleInd} sx={{ pb: 2 }}>
                                                     <Card
                                                         sx={{ pl: 1, pr: 4, pb: 2, pt: 2, width: '305px' }}>

@@ -31,7 +31,7 @@ export default function DispatchesView() {
     };
 
     const handleOpenInternal = () => {
-        router.replace('/home/tender-create');
+        router.replace('/home/delivery-order-create');
     };
 
     return (

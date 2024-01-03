@@ -1,6 +1,4 @@
 import { Avatar, Box, Stack, Typography } from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
-import Popover from '@mui/material/Popover';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
@@ -54,7 +52,7 @@ export default function DoOrderTableRow({
     const pdfUrl = `http://${ip}/${ApiAppConstants.getDoDoc}${doNo}`;
 
     const handleOpenDetails = (orderSelected) => {
-        navigate(`/home/loading-instruction-details/${orderSelected}`); // Use navigate to go to the details page
+        navigate(`/home/delivery-order-create/${orderSelected}`); // Use navigate to go to the details page
     };
 
     return (
@@ -117,44 +115,36 @@ export default function DoOrderTableRow({
                 </TableCell>
                 <TableCell>{rate}</TableCell>
                 <TableCell>{grade}</TableCell>
-                <TableCell align="right">
+                <TableCell
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = theme.palette.grey[200];
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = theme.palette.common.white;
+                    }}
+                    align="right" style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: theme.palette.common.white }}>
                     <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
 
                         <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.success.main}>
-                            <Iconify icon="mdi:file-remove" />
+                            <Iconify icon="lets-icons:print" />
                             <Box sx={{ fontWeight: 'bold' }}> Print </Box>
                         </HoverExpandButton>
 
-
-
-
                         <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.info.main}>
-                            <Iconify icon="material-symbols:assignment-return" />
+                            <Iconify icon="fluent:mail-24-filled" />
+                            <Box sx={{ fontWeight: 'bold' }}> Mail </Box>
+                        </HoverExpandButton>
+
+
+                        <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.error.main}>
+                            <Iconify icon="basil:cancel-solid" />
                             <Box sx={{ fontWeight: 'bold' }}> Cancel </Box>
                         </HoverExpandButton>
 
                     </Box>
                 </TableCell>
             </TableRow>
-            <Popover
-                open={!!open}
-                anchorEl={open}
-                onClose={handleCloseMenu}
-                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                PaperProps={{
-                    sx: { width: 140 },
-                }}
-            >
-                <MenuItem onClick={() => handlePrint(pdfUrl)}>
-                    <Iconify icon="lets-icons:print" sx={{ mr: 2 }} />
-                    Print
-                </MenuItem>
-                <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
-                    <Iconify icon="fluent:calendar-cancel-24-regular" sx={{ mr: 2 }} />
-                    Cancel
-                </MenuItem>
-            </Popover>
+
 
         </>
     );

@@ -49,16 +49,21 @@ export default function PaymentsView() {
     const [loading, setLoading] = useState(true);
     const [transformValue, setTransformValue] = useState('scale(0.75)');
     const [isMouseOver, setIsMouseOver] = useState(true);
+    const currentState = useSelector((state) => state.stateRefreash.currentState);
+    const selectedMill = useSelector((state) => state.mill.selectedMill);
+    const searchTerm = useSelector((state) => state.search.searchTerm);
+    const { paymentHeaderRow } = usePaymentTableFormate();
+
+    useEffect(() => {
+        setPage(1)
+        setPaymentsData([])
+    }, [currentState])
 
     const handleStepSize = (isOver) => {
         setIsMouseOver(isOver);
         setTransformValue(!isMouseOver ? 'scale(0.85)' : 'scale(0.75)');
     };
 
-    const { paymentHeaderRow } = usePaymentTableFormate();
-
-    const selectedMill = useSelector((state) => state.mill.selectedMill);
-    const searchTerm = useSelector((state) => state.search.searchTerm);
     useEffect(() => { }, [searchTerm])
 
     useEffect(() => {
@@ -110,7 +115,7 @@ export default function PaymentsView() {
             }
         };
         fetchPaymentsData(page, querySteps[activeStep], selectedMill.id);
-    }, [page, activeStep, querySteps, pagination, selectedDate, selectedMill]);
+    }, [page, activeStep, querySteps, pagination, selectedDate, selectedMill,currentState]);
 
 
     const handleSort = (event, id) => {

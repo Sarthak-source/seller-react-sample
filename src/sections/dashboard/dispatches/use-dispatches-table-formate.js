@@ -2,7 +2,7 @@ export function useDispatchesTableFormat() {
    
   const deliveryOrderHeaderRow=  [
         { id: 'orderNo', label: 'Order No' },
-        { id: 'invoiceNo', label: 'Invoice No' },
+        { id: 'lrNo', label: 'LR No' },
         { id: 'doNo', label: 'Do No' },
         { id: 'name', label: 'Mill name' },
         { id: 'trader', label: 'Trader' },

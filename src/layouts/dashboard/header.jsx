@@ -36,18 +36,12 @@ export default function Header({ onOpenNav, openNav }) {
       </Stack>
     <MyBreadcrumbs />
     </Stack>
-     
-
-
       <Box sx={{ flexGrow: 1 }} />
       <Stack direction="row" alignItems="center" spacing={1}>
         {/* <LanguagePopover />
         <NotificationsPopover /> */}
         <AccountPopover />
       </Stack>
-
-
-
     </>
 
   );
@@ -80,11 +74,6 @@ export default function Header({ onOpenNav, openNav }) {
         {renderContent}
       </Toolbar>
     </AppBar>
-
-
-
-
-
   );
 }
 

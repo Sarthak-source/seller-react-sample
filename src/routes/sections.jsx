@@ -3,8 +3,9 @@ import { useSelector } from 'react-redux';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 import DashboardLayout from 'src/layouts/dashboard';
 import { DashboardView } from 'src/sections/dashboard';
+import DeliveryCreate from 'src/sections/dashboard/dispatches/add-internal-do/add-internal-do';
+import OrderCreate from 'src/sections/dashboard/orders/self-order/add-self-order';
 import TenderCreate from 'src/sections/dashboard/tender/add-tender/add-tender';
-
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -14,8 +15,9 @@ export const SignUpPage = lazy(() => import('src/pages/sign-up'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const TenderDetails = lazy(() => import('src/sections/dashboard/tender/tender-details/tender-details'));
 export const OrderDetails = lazy(() => import('src/sections/dashboard/orders/order-details/order-details'));
+export const AddVehicle = lazy(() => import('src/sections/dashboard/orders/add-vehicle/add-vehicle'));
 export const TraderDetails = lazy(() => import('src/pages/traders'));
-export const DispatchDetails= lazy(() => import('src/sections/dashboard/dispatches/dispatch-details/loading-instruction-details'));
+export const DispatchDetails = lazy(() => import('src/sections/dashboard/dispatches/dispatch-details/loading-instruction-details'));
 export const ProfileDetails = lazy(() => import('src/pages/profile'));
 export const ReportDetails = lazy(() => import('src/pages/reports'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
@@ -33,7 +35,10 @@ export default function Router() {
     { path: 'tender-details/:id', element: <TenderDetails /> },
     { path: 'order-details/:data', element: <OrderDetails /> },
     { path: 'loading-instruction-details/:id', element: <DispatchDetails /> },
+    { path: 'add-vehicle/:data', element: <AddVehicle /> },
     { path: 'tender-create', element: <TenderCreate /> },
+    { path: 'self-order-create', element: <OrderCreate /> },
+    { path: 'delivery-order-create', element: <DeliveryCreate /> },
     { path: 'traders', element: <TraderDetails /> },
     { path: 'profile', element: <ProfileDetails /> },
     { path: 'reports', element: <ReportDetails /> },

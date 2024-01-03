@@ -1,12 +1,12 @@
 export function usePaymentTableFormate() {
     const paymentHeaderRow = [
+        { id: 'date', label: 'Date' },
         { id: 'paymentsId', label: 'Payments ID' },
         { id: 'amount', label: 'Amount' },
-        { id: 'refNo', label: 'Referce no' },
         { id: 'status', label: 'Status' },
         { id: 'millName', label: 'Mill Name' },
-        { id: 'tradeName', label: 'Trader Name' },
-        { id: 'date', label: 'Date' },
+        { id: 'tradeName', label: 'Trader Name' }, 
+        { id: 'refNo', label: 'Referce no' },
         { id: '' },
     ]
 

@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Step from '@mui/material/Step';
@@ -12,8 +13,10 @@ import Typography from '@mui/material/Typography';
 import { format, parseISO } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { useRouter } from 'src/routes/hooks';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
 import TableEmptyRows from '../table-empty-rows';
 import SharedTableHead from '../table-head';
@@ -26,6 +29,7 @@ import { QontoConnector } from '../stepper-line';
 import { useOrderTableFormate } from './use-order-table-formate';
 
 export default function OrdersView() {
+    const router = useRouter();
     const [page, setPage] = useState(1);
     const [activeStep, setActiveStep] = useState(0);
     const [order, setOrder] = useState('asc');
@@ -35,12 +39,18 @@ export default function OrdersView() {
     const [orderBy, setOrderBy] = useState('name');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [totalDataCount, setTotalDataCount] = useState(0);
-    const steps = useMemo(() => ['All', 'Pending Bids', 'Accepted', 'Completed', 'Rejected'], []);
-    const querySteps = useMemo(() => ['All', 'Booked', 'Approved', 'DOIssued', 'Rejected',], []);
+    const steps = useMemo(() => ['Pending Bids', 'Accepted', 'Completed', 'Rejected', 'All'], []);
+    const querySteps = useMemo(() => ['Booked', 'Approved', 'DOIssued', 'Rejected', 'All'], []);
     const [ordersData, setOrdersData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [transformValue, setTransformValue] = useState('scale(0.75)');
     const [isMouseOver, setIsMouseOver] = useState(true);
+    const currentState = useSelector((state) => state.stateRefreash.currentState);
+
+    useEffect(() => {
+        setPage(1)
+        setOrdersData([])
+    }, [currentState])
 
     const handleStepSize = (isOver) => {
         setIsMouseOver(isOver);
@@ -84,7 +94,7 @@ export default function OrdersView() {
             }
         };
         fetchOrdersData(page, querySteps[activeStep], selectedMill.id);
-    }, [page, pagination, querySteps, selectedMill, activeStep]);
+    }, [page, pagination, querySteps, selectedMill, activeStep, currentState]);
 
 
     const handleSort = (event, id) => {
@@ -172,10 +182,17 @@ export default function OrdersView() {
         link.click();
     };
 
+    const handleOpenSelfOrder = () => {
+        router.replace('/home/self-order-create');
+    };
+
     return (
         <>
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                 <Typography variant="h4">Orders</Typography>
+                <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenSelfOrder}>
+                    Self order
+                </Button>
             </Stack>
             <Box sx={{
                 width: 1,

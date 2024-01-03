@@ -368,6 +368,8 @@ const NetworkRepository = {
         data.append("trader_ids", traderId);
       });
 
+      console.log('datadata', data)
+
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url: `${ApiAppConstants.tenderPostView}`,
         data: data.toString(),
@@ -382,6 +384,42 @@ const NetworkRepository = {
     } catch (error) {
       alert(error.toString());
       return error.toString();
+    }
+  },
+
+  orderPostView: async (
+    price,
+    qty,
+    freight_rate,
+    remark,
+    tender,
+  ) => {
+    try {
+
+      const data = new URLSearchParams();
+
+      data.append("price", price.toString());
+      data.append("freight_rate", freight_rate.toString());
+      data.append("qty", qty.toString());
+      data.append("trader", '172');
+      data.append("tender", tender.toString());
+      data.append("remark", remark);
+
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+
+        url: `${ApiAppConstants.orderPostView}`,
+        data,
+        header: {
+          'authorization': auth
+        },
+
+      }
+      );
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
     }
   },
 
@@ -605,6 +643,7 @@ const NetworkRepository = {
           ? `http://${ip}/${ApiAppConstants.mailInvoice}${id}`
           : `http://${ip}/${ApiAppConstants.mailDoc}${id}`,
         header: { 'authorization': auth },
+        full: false,
       });
 
       return await apiResponse;
@@ -619,7 +658,7 @@ const NetworkRepository = {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url,
         header: { 'authorization': auth },
-        full:false,
+        full: false,
       });
 
       return await apiResponse;
@@ -628,6 +667,148 @@ const NetworkRepository = {
       return e.toString();
     }
   },
+
+  tenderUpdate: async (
+    tenderHeadId, status) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.tenderUpdateStatus}`,
+        data: {
+          "tender_head": tenderHeadId,
+          "status": status,
+          "user_id": sellerId
+        },
+        header: { 'authorization': auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  orderUpdateStatus: async (
+    orderId, status) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.orderUpdateStatus}`,
+        data: {
+          "order_id": orderId,
+          "status": status,
+          "user_id": sellerId,
+        },
+        header: { 'authorization': auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  paymentHeadUpdateStatus: async (
+    paymentID, status) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.paymentHeadUpdateStatus}`,
+        data: {
+          "status": status,
+          "payment_head_pk": paymentID,
+          "user_id": sellerId
+        },
+        header: { 'authorization': auth },
+      });
+      console.log('paymentHeadUpdateStatus', await apiResponse)
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+
+  generateInternalDO: async (
+    mill,
+    product,
+    vehicleNo,
+    doType,
+    qty,
+  ) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.generateInternalDO}`,
+        header: { 'authorization': auth },
+        data: {
+          "mill": mill,
+          "product": product,
+          "qty": qty,
+          "vehicle_num": vehicleNo,
+          "dotype": doType
+        }
+      }
+      );
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  loadingInstructionPost: async (
+    qty,
+    trader,
+    gstin,
+    order_head,
+    vehicle_num,
+    address,
+    billing_gstin,
+    billing_address,
+    product,
+    lr_number) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.loadingInstructionPost}`,
+        header: { 'authorization': auth },
+        data: {
+          "order_head": order_head,
+          "qty": qty,
+          "vehicle_num": vehicle_num,
+          "trader": trader ?? sellerId,
+          "gstin": gstin,
+          "address": address,
+          "billing_gstin": billing_gstin,
+          "billing_address": billing_address,
+          "product": product,
+          "lr_number": lr_number,
+        },
+      });
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  vehicleExistCheck2: async (id) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.vehicle2}?vehicle=${id}`,
+        header: { 'authorization': auth },
+      })
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  }
 
 }
 

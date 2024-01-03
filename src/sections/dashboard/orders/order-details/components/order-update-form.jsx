@@ -89,11 +89,7 @@ export default function OrderUpdateForm({ orderSummary }) {
           }
           if (orderSummary.order.e_transporter) {
             setTransport(orderSummary.order.e_transporter);
-            
-          }    
-          
-          
-
+          }
           
         }
       }, [
