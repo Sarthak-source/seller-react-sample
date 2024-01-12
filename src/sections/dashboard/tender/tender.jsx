@@ -49,6 +49,8 @@ export default function TenderView() {
     const [transformValue, setTransformValue] = useState('scale(0.75)');
     const [isMouseOver, setIsMouseOver] = useState(true);
     const currentState = useSelector((state) => state.stateRefreash.currentState);
+    const selectedUser = useSelector((state) => state.user.selectedUser);
+
 
     const handleStepSize = (isOver) => {
         setIsMouseOver(isOver);
@@ -58,8 +60,6 @@ export default function TenderView() {
     const handleOpenTender = () => {
         router.replace('/home/tender-create');
     };
-
-
 
     console.log('tenderData', tenderData)
 
@@ -88,7 +88,7 @@ export default function TenderView() {
             try {
                 setLoading(true);
                 console.log('tenderMillId', millId)
-                const data = await NetworkRepository.sellerTender(pagination, status, millId);
+                const data = await NetworkRepository.sellerTender(pagination, status, millId, selectedUser.id);
                 setTotalDataCount(data.count);
                 console.log('pagination', pagination, 'tenderPage', tenderPage)
 
@@ -104,7 +104,7 @@ export default function TenderView() {
             }
         };
         fetchTenderData(page, querySteps[activeStep], selectedMill.id);
-    }, [page, activeStep, querySteps, pagination, selectedMill, currentState]);
+    }, [page, activeStep, querySteps, pagination, selectedMill, currentState,selectedUser.id]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';

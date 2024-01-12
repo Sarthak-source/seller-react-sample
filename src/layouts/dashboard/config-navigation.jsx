@@ -27,6 +27,12 @@ const navConfig = [
     path: '/home/profile',
     icon: icon('ic_user'),
   },
+
+  {
+    title: 'Quality check',
+    path: '/home/quality-check',
+    icon: icon('ic_qc'),
+  },
   
   // {
   //   title: 'Not found',

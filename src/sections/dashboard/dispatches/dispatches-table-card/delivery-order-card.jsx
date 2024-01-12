@@ -27,8 +27,11 @@ export default function DeliveryOrderCard() {
     const [dispatchesData, setDispatchesData] = useState([]);
     const { deliveryOrderHeaderRow } = useDispatchesTableFormat();
     const [loading, setLoading] = useState(true);
+    const [totalDataCount, setTotalDataCount] = useState(0);
+    const totalPages = Math.ceil(totalDataCount / rowsPerPage);
     const selectedMill = useSelector((state) => state.mill.selectedMill);
     const searchTerm = useSelector((state) => state.search.searchTerm);
+    const selectedUser = useSelector((state) => state.user.selectedUser);
 
     useEffect(() => {
         setDispatchesData([])
@@ -39,22 +42,24 @@ export default function DeliveryOrderCard() {
         setDispatchesData([])
     }, [selectedMill])
 
-    const fetchDispatchesData = async (dispatchesPage, text, millId) => {
-        try {
-            setLoading(true);
-            const data = await NetworkRepository.deliveryOrders(dispatchesPage, text, millId);
-            console.log('here', data.results)
-            setDispatchesData(prevData => [...prevData, ...data.results]);
-        } catch (error) {
-            console.error('Error fetching Dispatches data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+   
 
     useEffect(() => {
-        fetchDispatchesData(page, searchTerm, selectedMill.id);
-    }, [page, selectedMill, searchTerm]);
+        const fetchDispatchesData = async (dispatchesPage, text, millId) => {
+            try {
+                setLoading(true);
+                const data = await NetworkRepository.deliveryOrders(dispatchesPage, text, millId, selectedUser.id);
+                console.log('here', data.results)
+                setTotalDataCount(data.count);
+                setDispatchesData(prevData => [...prevData, ...data.results]);
+            } catch (error) {
+                console.error('Error fetching Dispatches data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchDispatchesData(page, searchTerm, selectedMill.id, selectedUser.id);
+    }, [page, selectedMill, searchTerm, selectedUser.id]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -122,7 +127,7 @@ export default function DeliveryOrderCard() {
                                     ))}
                                 <TableEmptyRows
                                     height={77}
-                                    emptyRows={emptyRows(page-1, rowsPerPage / 15, dataFiltered.length)}
+                                    emptyRows={emptyRows(page - 1, rowsPerPage / 15, dataFiltered.length)}
                                 />
                                 {notFound && <TableNoData query={searchTerm} />}
                             </TableBody>) : (
@@ -134,13 +139,15 @@ export default function DeliveryOrderCard() {
                     </TableContainer>
                 </Scrollbar>
                 <TablePagination
-                    page={page}
-                    component="div"
-                    count={dataFiltered.length}
-                    rowsPerPage={rowsPerPage}
-                    onPageChange={handleChangePage}
-                    rowsPerPageOptions={[15, 30, 45]}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
+                   page={page}
+                   component="div"
+                   count={dataFiltered.length}
+                   nextIconButtonProps={{ disabled: page >= totalPages }}
+                   backIconButtonProps={{ disabled: !(page > 1) }}
+                   rowsPerPage={rowsPerPage}
+                   onPageChange={handleChangePage}
+                   rowsPerPageOptions={[15, 30, 45]}
+                   onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Card>
         </>

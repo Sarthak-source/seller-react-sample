@@ -43,14 +43,10 @@ export default function DispatchTableRow({
     const theme = useTheme();
     const pdfContainerRef = useRef();
     const isMounted = useRef(true); // Add this line
-
-
-
+    
     const handleOpenMenu = (event) => {
         setOpen(event.currentTarget);
     };
-
-
 
     const [expanded, setExpanded] = useState(false);
 

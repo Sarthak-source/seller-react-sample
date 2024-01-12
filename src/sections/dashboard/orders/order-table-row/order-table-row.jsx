@@ -9,7 +9,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Alert, Box, Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -61,6 +61,8 @@ export default function OrdersTableRow({
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const selectedUser = useSelector((state) => state.user.selectedUser);
+
 
     const { getStatusColor } = useOrderTableFormate();
 
@@ -85,7 +87,7 @@ export default function OrdersTableRow({
 
     const handleConfirm = async (statusConfirm) => {
         try {
-            const data = await NetworkRepository.orderUpdateStatus(ordersId, statusConfirm);
+            const data = await NetworkRepository.orderUpdateStatus(ordersId, statusConfirm,selectedUser.id);
             console.log('Response:', data);
             showSnackbar('Order updated successfully.', 'success');
         } catch (error) {

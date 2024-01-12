@@ -18,7 +18,8 @@ const OrderCreate = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
-  const [loading, setLoading]= useState(false);
+  const [loading, setLoading] = useState(false);
+
 
   const navigate = useNavigate();
 
@@ -65,7 +66,7 @@ const OrderCreate = () => {
           'Offline',
         ).then(async (tender) => {
           console.log('tender.idherewe', tender.id)
-          await NetworkRepository.tenderUpdate(tender.id, "Active").then(async (tenderUpadate) => {
+          await NetworkRepository.tenderUpdate(tender.id, "Active", selectedUser.id).then(async (tenderUpadate) => {
             await NetworkRepository
               .orderPostView(
                 rate,
@@ -73,10 +74,13 @@ const OrderCreate = () => {
                 '',
                 remark,
                 tenderUpadate.id,
+                '172',
               )
               .then(async (order) => {
                 await NetworkRepository.orderUpdateStatus(
-                  order.id, "Approved");
+                  order.id,
+                  "Approved",
+                  selectedUser.id);
               });
           })
         });
@@ -88,7 +92,7 @@ const OrderCreate = () => {
     } catch (error) {
       console.error('Error creating tender:', error);
       showSnackbar('Something went wrong. Please try again.', 'error');
-    } finally{
+    } finally {
       setLoading(false)
     }
   };

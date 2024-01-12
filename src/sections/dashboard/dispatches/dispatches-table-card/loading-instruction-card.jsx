@@ -37,29 +37,33 @@ export default function LoadingsInstructionCard(
 
     const selectedMill = useSelector((state) => state.mill.selectedMill);
     const searchTerm = useSelector((state) => state.search.searchTerm);
+    const selectedUser = useSelector((state) => state.user.selectedUser);
 
     useEffect(() => {
         setPage(1)
         setDispatchesData([])
     }, [searchTerm, status, selectedMill])
 
-    const fetchDispatchesData = async (dispatchesPage, text, currentStatus, millId) => {
-        setLoading(true)
-        try {
 
-            const data = await NetworkRepository.book(dispatchesPage, text, currentStatus, millId);
-            console.log('here', data.results)
-            setDispatchesData(prevData => [...prevData, ...data.results]);
-        } catch (error) {
-            console.error('Error fetching Dispatches data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     useEffect(() => {
+        const fetchDispatchesData = async (dispatchesPage, text, currentStatus, millId) => {
+            setLoading(true)
+            try {
+
+                const data = await NetworkRepository.book(dispatchesPage, text, currentStatus, millId, selectedUser.id);
+                setTotalDataCount(data.count);
+                console.log('here', data.results)
+                setDispatchesData(prevData => [...prevData, ...data.results]);
+            } catch (error) {
+                console.error('Error fetching Dispatches data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchDispatchesData(page, searchTerm, status, selectedMill.id);
-    }, [page, status, selectedMill, searchTerm]);
+    }, [page, status, selectedMill, searchTerm, selectedUser.id]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -90,7 +94,7 @@ export default function LoadingsInstructionCard(
 
     });
 
-    console.log('dataFiltered',dataFiltered)
+    console.log('dataFiltered', dataFiltered)
 
     const dataFormated = dataFiltered.map(row => ({
         orderNo: row.loading_instruction[0].order_head.id,
@@ -105,7 +109,7 @@ export default function LoadingsInstructionCard(
         shipTo: `Name-${row.loading_instruction[0].address.name}-GSTIN-${row.address_gstin}-Billing address-${row.loading_instruction[0].address.address}`,
         rate: row.loading_instruction[0].product != null ? row.loading_instruction[0].order_head.price : 'Not given',
         grade: row.loading_instruction[0].product != null ? row.loading_instruction[0].product.code : 'Not given',
-        qcStatus:row.qc_status,
+        qcStatus: row.qc_status,
 
     }));
 
@@ -190,7 +194,7 @@ export default function LoadingsInstructionCard(
                                         ))}
                                     <TableEmptyRows
                                         height={77}
-                                        emptyRows={emptyRows(page-1, rowsPerPage / 15, dataFiltered.length)}
+                                        emptyRows={emptyRows(page - 1, rowsPerPage / 15, dataFiltered.length)}
                                     />
                                     {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>) : (

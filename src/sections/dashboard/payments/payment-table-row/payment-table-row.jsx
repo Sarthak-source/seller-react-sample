@@ -7,6 +7,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
 import { Alert, Avatar, Box, Snackbar, Stack, Typography } from '@mui/material';
+import { useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 import HoverExpandButton from 'src/components/buttons/expanded-button';
 import AlertDialog from 'src/components/dialogs/action-dialog';
@@ -32,8 +33,7 @@ export default function PaymentsTableRow({
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [content, setContent] = useState('');
   const [statusType, setStatusType] = useState('');
-
-
+  const selectedUser = useSelector((state) => state.user.selectedUser);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -65,7 +65,7 @@ export default function PaymentsTableRow({
 
   const handleConfirm = async (statusConfirm) => {
     try {
-      const data = await NetworkRepository.paymentHeadUpdateStatus(paymentsId, statusConfirm);
+      const data = await NetworkRepository.paymentHeadUpdateStatus(paymentsId, statusConfirm,selectedUser.id);
       console.log('Response:', data);
       showSnackbar('Payment updated successfully.', 'success');
     } catch (error) {

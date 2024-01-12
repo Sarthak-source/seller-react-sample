@@ -16,11 +16,12 @@ export const fetchTraderDataFailure = (error) => ({
   payload: error,
 });
 
-export const fetchTraderData = () => async (dispatch) => {
+export const fetchTraderData = (selectedUserId) => async (dispatch) => {
+
   dispatch(fetchTraderDataStart());
 
   try {
-    const response = await NetworkRepository.sellerTraders();
+    const response = await NetworkRepository.sellerTraders(selectedUserId);
     dispatch(fetchTraderDataSuccess(response));
   } catch (error) {
     dispatch(fetchTraderDataFailure(error.message));

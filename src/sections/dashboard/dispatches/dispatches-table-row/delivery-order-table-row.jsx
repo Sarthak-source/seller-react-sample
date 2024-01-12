@@ -1,15 +1,17 @@
-import { Avatar, Box, Stack, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Dialog, DialogTitle, Paper, Snackbar, Stack, Typography } from '@mui/material';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 
 import { useTheme } from '@emotion/react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ApiAppConstants, ip } from 'src/app-utils/api-constants';
+import NetworkRepository from 'src/app-utils/network_repository';
 import HoverExpandButton from 'src/components/buttons/expanded-button';
+import AlertDialog from 'src/components/dialogs/action-dialog';
 import Iconify from 'src/components/iconify';
-import { useDispatchTableFuctions } from './use-dispatch-table-fuctions';
+import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 
 
 
@@ -30,8 +32,26 @@ export default function DoOrderTableRow({
     const [open, setOpen] = useState(null);
     const navigate = useNavigate();
     const theme = useTheme();
+    const pdfContainerRef = useRef();
+    const [pdfData, setPdfData] = useState(null);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const isMounted = useRef(true); // Add this line
 
 
+    const showSnackbar = (message, severity) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
 
 
     const handleOpenMenu = (event) => {
@@ -43,17 +63,105 @@ export default function DoOrderTableRow({
     };
 
     const [expanded, setExpanded] = useState(false);
+    const [isDialogOpen, setDialogOpen] = useState(false);
+    const [isMailDialogOpen, setMailDialogOpen] = useState(false);
+
+    const pdfUrl = `http://${ip}/${ApiAppConstants.getDoDoc}${doNo}`;
+
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+        setMailDialogOpen(false);
+        setPdfData(null)
+    };
+
+    const handleEmailSend = async () => {
+        console.log('mailDoInvoice', doNo)
+        try {
+            await NetworkRepository.mailDoInvoice(false, doNo)
+            showSnackbar('Mail sent successfully', 'success');
+        } catch (error) {
+            console.error("Error converting status:", error);
+        } finally {
+            setMailDialogOpen(false)
+        }
+    };
+
+
+    useEffect(() => {
+        const pdfContainer = pdfContainerRef.current;
+
+        if (pdfData && pdfContainer) {
+            const dataUrl = URL.createObjectURL(new Blob([pdfData], { type: 'application/pdf' }));
+
+            const pdfEmbed = document.createElement('iframe');
+            pdfEmbed.setAttribute('width', '100%');
+            pdfEmbed.setAttribute('height', '600px');
+            pdfEmbed.setAttribute('type', 'application/pdf');
+            pdfEmbed.setAttribute('src', dataUrl);
+
+            pdfContainer.innerHTML = '';
+            pdfContainer.appendChild(pdfEmbed);
+        }
+
+    }, [pdfUrl, pdfData, isMounted]);
+
+
 
     const handleToggle = (val) => {
         setExpanded(val);
     };
 
-    const { handlePrint } = useDispatchTableFuctions();
-    const pdfUrl = `http://${ip}/${ApiAppConstants.getDoDoc}${doNo}`;
+   
+
 
     const handleOpenDetails = (orderSelected) => {
         navigate(`/home/delivery-order-create/${orderSelected}`); // Use navigate to go to the details page
     };
+
+
+    const printOpen = () => {
+        setDialogOpen(true)
+
+        handlePdf(pdfUrl);
+
+    }
+
+    const handlePdf = async (url) => {
+        try {
+            const apiResponse = await NetworkRepository.getPdf(url);
+            if (isMounted.current) {
+                setPdfData(apiResponse);
+            }
+        } catch (error) {
+            console.error('Error fetching PDF:', error);
+        }
+    };
+
+
+    const pdfPopUp = (dialogOpen) => (
+
+        (
+            <Dialog open={dialogOpen} onClose={handleDialogClose} fullWidth
+                maxWidth="md"
+            >
+                <DialogTitle >
+                    <Stack sx={{ height: '10px' }} direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+                        <Typography variant="h6">View PDF</Typography>
+                        <Box display="flex" justifyContent="space-between" sx={{ gap: 1, height: '30px' }} >
+                            <HoverExpandButton onClick={handleDialogClose} width='90px' color={theme.palette.error.main}>
+                                <Iconify icon="basil:cancel-solid" />
+                                <Typography sx={{ fontWeight: 'bold', fontSize: 14 }}>Close</Typography>
+                            </HoverExpandButton>
+                        </Box>
+                    </Stack>
+                </DialogTitle>
+                <Paper>
+                    {pdfData ? <div ref={pdfContainerRef} /> : <SkeletonLoader marginTop='10px' />}
+                </Paper>
+            </Dialog>
+        )
+    )
+
 
     return (
         <>
@@ -125,12 +233,12 @@ export default function DoOrderTableRow({
                     align="right" style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: theme.palette.common.white }}>
                     <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
 
-                        <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.success.main}>
+                        <HoverExpandButton onClick={printOpen} width='100px' color={theme.palette.success.main}>
                             <Iconify icon="lets-icons:print" />
                             <Box sx={{ fontWeight: 'bold' }}> Print </Box>
                         </HoverExpandButton>
 
-                        <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.info.main}>
+                        <HoverExpandButton onClick={() => setMailDialogOpen(true)} width='100px' color={theme.palette.info.main}>
                             <Iconify icon="fluent:mail-24-filled" />
                             <Box sx={{ fontWeight: 'bold' }}> Mail </Box>
                         </HoverExpandButton>
@@ -144,6 +252,23 @@ export default function DoOrderTableRow({
                     </Box>
                 </TableCell>
             </TableRow>
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+            <AlertDialog
+                content='Are sure you want send mail'
+                isDialogOpen={isMailDialogOpen}
+                handleConfirm={handleEmailSend}
+                handleClose={handleDialogClose} />
+            {pdfPopUp(isDialogOpen)}
 
 
         </>

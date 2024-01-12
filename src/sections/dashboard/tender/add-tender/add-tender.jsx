@@ -16,6 +16,7 @@ import Iconify from 'src/components/iconify';
 import { fetchTraderData, fetchTraderDataStart } from 'src/redux/actions/traders';
 
 export default function TenderCreate() {
+  const [loading, setLoading]=useState(false);
   const theme = useTheme();
   const [tenderValue, setTenderValue] = useState('');
   const [millValue, setMillValue] = useState({});
@@ -98,6 +99,7 @@ export default function TenderCreate() {
       } else if (rateController === '' && tenderValue === 'Fixed') {
         showSnackbar('Please enter rate.', 'error');
       } else {
+        setLoading(true);
         await NetworkRepository.tenderPostView(
           millValue.id,
           product.id,
@@ -117,6 +119,8 @@ export default function TenderCreate() {
     } catch (error) {
       console.error('Error creating tender:', error);
       showSnackbar('Something went wrong. Please try again.', 'error');
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -239,6 +243,7 @@ export default function TenderCreate() {
         </Stack>
         <LoadingButton
           fullWidth
+          loading={loading}
           size="large"
           variant="contained"
           onClick={handleSubmit}
@@ -269,13 +274,15 @@ const TenderBuyerSelection = ({ onSelectChange }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isExclusive, setIsExclusive] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+  const selectedUser = useSelector((state) => state.user.selectedUser);
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (Array.isArray(traderData) && traderData.length === 0) {
           dispatch(fetchTraderDataStart());
-          await dispatch(fetchTraderData());
+          await dispatch(fetchTraderData(selectedUser.id));
         }
       } catch (error) {
         console.error('Error fetching trader data:', error);
@@ -284,7 +291,7 @@ const TenderBuyerSelection = ({ onSelectChange }) => {
 
     fetchData();
     setTraderData(traders);
-  }, [dispatch, traderData, traders]);
+  }, [dispatch, traderData, traders, selectedUser.id]);
 
   const handleCheckboxChange = () => {
     handleOpenDialog(!isExclusive);

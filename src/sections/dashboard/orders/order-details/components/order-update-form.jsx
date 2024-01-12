@@ -57,42 +57,42 @@ export default function OrderUpdateForm({ orderSummary }) {
 
     useEffect(() => {
         if (orderSummary) {
-    
-    
-          if (orderSummary.order.purchaseorder_num) {
-            setPoNumber(orderSummary.order.purchaseorder_num);
-          } 
-          if (orderSummary.order.lut_num) {
-            setLutNo(orderSummary.order.lut_num);
-          } 
-          if (orderSummary.order.invoice_prefix) {
-            setInvoiceOrderPrefix(orderSummary.order.invoice_prefix);
-          } 
-          if (orderSummary.orderSeller.remark) {
-            setRemark(orderSummary.orderSeller.remark);
-          } 
-          if (orderSummary.orderSeller.remark) {
-            setRemark(orderSummary.orderSeller.remark);
-          }
-          if (orderSummary.order.shipping_address) {
-            setShippingTo(orderSummary.order.shipping_address.gstin);
-            setShippingToAddress(orderSummary.order.shipping_address)
-          } 
-          
-          if (orderSummary.order.shipping_from) {
-            setShippingFrom(orderSummary.order.shipping_from.gstin);
-            setShippingFromAddress(orderSummary.order.shipping_from);
-          }
-          if (orderSummary.order.billing_address) {
-            setBillTo(orderSummary.order.billing_address.gstin);
-            setBillToAddress(orderSummary.order.billing_address);
-          }
-          if (orderSummary.order.e_transporter) {
-            setTransport(orderSummary.order.e_transporter);
-          }
-          
+
+
+            if (orderSummary.order.purchaseorder_num) {
+                setPoNumber(orderSummary.order.purchaseorder_num);
+            }
+            if (orderSummary.order.lut_num) {
+                setLutNo(orderSummary.order.lut_num);
+            }
+            if (orderSummary.order.invoice_prefix) {
+                setInvoiceOrderPrefix(orderSummary.order.invoice_prefix);
+            }
+            if (orderSummary.orderSeller.remark) {
+                setRemark(orderSummary.orderSeller.remark);
+            }
+            if (orderSummary.orderSeller.remark) {
+                setRemark(orderSummary.orderSeller.remark);
+            }
+            if (orderSummary.order.shipping_address) {
+                setShippingTo(orderSummary.order.shipping_address.gstin);
+                setShippingToAddress(orderSummary.order.shipping_address)
+            }
+
+            if (orderSummary.order.shipping_from) {
+                setShippingFrom(orderSummary.order.shipping_from.gstin);
+                setShippingFromAddress(orderSummary.order.shipping_from);
+            }
+            if (orderSummary.order.billing_address) {
+                setBillTo(orderSummary.order.billing_address.gstin);
+                setBillToAddress(orderSummary.order.billing_address);
+            }
+            if (orderSummary.order.e_transporter) {
+                setTransport(orderSummary.order.e_transporter);
+            }
+
         }
-      }, [
+    }, [
         orderSummary,
     ])
 
@@ -126,7 +126,7 @@ export default function OrderUpdateForm({ orderSummary }) {
             lutNo,
             remark,
             shippingFrom,
-            
+
         });
         setDialogOpen(false);
     };

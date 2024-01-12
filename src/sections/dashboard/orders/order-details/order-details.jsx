@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { format, parseISO } from 'date-fns';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Label from 'src/components/label';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
@@ -22,7 +22,14 @@ export default function OrderDetails() {
     const [orderSummary, setOrderSummary] = useState({});
     const [invoicesVehicles, setInvoicesVehicles] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
     const selectedOrder = useSelector((state) => state.orders.selectedOrder);
+    const selectedUser = useSelector((state) => state.user.selectedUser);
+
+
+    if (selectedOrder === null) {
+        navigate(`/home`);
+    }
 
     useEffect(() => {
         const fetchOrderData = async (orderID) => {
@@ -30,7 +37,7 @@ export default function OrderDetails() {
                 setLoading(true);
                 const orderData = await NetworkRepository.orderSummary(orderID);
                 setOrderSummary(orderData);
-                const invoicesVehicleData = await NetworkRepository.invoicesVehicleDetails(orderID);
+                const invoicesVehicleData = await NetworkRepository.invoicesVehicleDetails(orderID, selectedUser.id);
 
                 setInvoicesVehicles(invoicesVehicleData.results);
             } catch (error) {
@@ -40,7 +47,7 @@ export default function OrderDetails() {
             }
         };
         fetchOrderData(data);
-    }, [data]);
+    }, [data, selectedUser.id]);
 
     console.log(orderSummary)
 
@@ -139,7 +146,7 @@ export default function OrderDetails() {
 
                                 <Card>
 
-                                    <Stack sx={{p:2}}>
+                                    <Stack sx={{ p: 2 }}>
 
                                         <Label
                                             color={primary.main}

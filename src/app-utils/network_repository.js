@@ -1,25 +1,8 @@
-import { toast } from 'react-toastify';
-
-import store from '../redux/configure-store';
 import { ApiAppConstants, auth, ip } from './api-constants';
 import NetworkAxios from './network_axios';
 
-const state = store.getState();
 
-function selectedUser() {
-  if (state.user && state.user.selectedUser) {
-    console.log('current user', state.user.selectedUser.id);
-    return state.user.selectedUser.id;
-  }
-  console.error('User or selectedUser not found in state');
-  return null;
-}
-
-
-const sellerId = selectedUser() ?? "85";
-
-
-const NetworkRepository = {
+const NetworkRepository= {
 
   userSignup: async (name, password, number) => {
     try {
@@ -97,7 +80,7 @@ const NetworkRepository = {
     }
   },
 
-  sellerConfig: async () => {
+  sellerConfig: async (sellerId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url:
@@ -113,7 +96,7 @@ const NetworkRepository = {
   },
 
 
-  sellerTender: async (page, status, millId) => {
+  sellerTender: async (page, status, millId, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.sellerTender}?seller=${sellerId}&status=${status}&page=${page}&mill_pk=${millId || ''}`,
@@ -122,19 +105,17 @@ const NetworkRepository = {
 
       console.log('Seller Tender Response:', apiResponse);
 
-      if (apiResponse.error_description !== null) {
-        toast.success(apiResponse.error_description);
-      }
+
       return apiResponse;
     } catch (error) {
       console.error('Error:', error);
-      toast.error(error.detail);
+      alert(error.detail);
       throw error.toString();
     }
   },
 
 
-  getPayments: async (date, page, status, millId) => {
+  getPayments: async (date, page, status, millId, sellerId) => {
     try {
       let paymentsUrl = `${ApiAppConstants.payments}?seller=${sellerId}&mill_pk=${millId ?? ''}&page=${page}&status=${status}`;
 
@@ -156,7 +137,7 @@ const NetworkRepository = {
     }
   },
 
-  allOrders: async (status, page, millId) => {
+  allOrders: async (status, page, millId, sellerId) => {
     try {
       const ordersUrl = `${ApiAppConstants.orderListView}?seller=${sellerId}&status=${status}&page=${page}&mill_pk=${millId || ''}`;
 
@@ -175,7 +156,7 @@ const NetworkRepository = {
   },
 
 
-  invoicesVehicleDetails: async (order) => {
+  invoicesVehicleDetails: async (order, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.invoices}?seller=${sellerId}&page=1&order=${order}`,
@@ -191,7 +172,7 @@ const NetworkRepository = {
     }
   },
 
-  deliveryOrders: async (page, text, millId) => {
+  deliveryOrders: async (page, text, millId, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: text !== '' ? `${ApiAppConstants.deliveryOrders}?seller=${sellerId}&characters=${text}`
@@ -209,7 +190,7 @@ const NetworkRepository = {
     }
   },
 
-  book: async (page, text, status, millId) => {
+  book: async (page, text, status, millId, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: text !== '' ? `${ApiAppConstants.loadingInstructions}?seller=${sellerId}&characters=${text}` :
@@ -227,7 +208,7 @@ const NetworkRepository = {
     }
   },
 
-  invoicesReport: async (page, text, status, millId) => {
+  invoicesReport: async (page, text, status, millId, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: text !== '' ? `${ApiAppConstants.invoices}?seller=${sellerId}&characters=${text}&delivery_order__status=${status}` :
@@ -305,7 +286,7 @@ const NetworkRepository = {
     }
   },
 
-  sellerTraders: async () => {
+  sellerTraders: async (sellerId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.sellerTraders}?seller=${sellerId}`,
@@ -393,6 +374,7 @@ const NetworkRepository = {
     freight_rate,
     remark,
     tender,
+    sellerId
   ) => {
     try {
 
@@ -401,20 +383,15 @@ const NetworkRepository = {
       data.append("price", price.toString());
       data.append("freight_rate", freight_rate.toString());
       data.append("qty", qty.toString());
-      data.append("trader", '172');
+      data.append("trader", sellerId);
       data.append("tender", tender.toString());
       data.append("remark", remark);
 
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
-
         url: `${ApiAppConstants.orderPostView}`,
         data,
-        header: {
-          'authorization': auth
-        },
-
-      }
-      );
+        header: { 'authorization': auth },
+      });
 
       return await apiResponse;
     } catch (e) {
@@ -423,7 +400,7 @@ const NetworkRepository = {
     }
   },
 
-  traderPostView: async (name, number) => {
+  traderPostView: async (name, number, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url: `${ApiAppConstants.traderPostView}`,
@@ -516,7 +493,7 @@ const NetworkRepository = {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url:
-          `${ApiAppConstants.gstinListView}?trader=${sellerId}&gstin=${gstIn}`,
+          `${ApiAppConstants.gstinListView}?gstin=${gstIn}`,
         header: {
           'authorization': auth
         },
@@ -535,7 +512,8 @@ const NetworkRepository = {
       gstin,
       pin,
       address,
-      location }) => {
+      location,
+      sellerId }) => {
     try {
       const data = new URLSearchParams();
 
@@ -547,7 +525,7 @@ const NetworkRepository = {
       data.append("location", location.toString());
 
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
-        url: `$${ApiAppConstants.addressListPost}`,
+        url: `${ApiAppConstants.addressListPost}`,
         header: {
           'authorization': auth
         },
@@ -669,7 +647,7 @@ const NetworkRepository = {
   },
 
   tenderUpdate: async (
-    tenderHeadId, status) => {
+    tenderHeadId, status, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url:
@@ -690,7 +668,7 @@ const NetworkRepository = {
   },
 
   orderUpdateStatus: async (
-    orderId, status) => {
+    orderId, status, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url:
@@ -711,7 +689,7 @@ const NetworkRepository = {
   },
 
   paymentHeadUpdateStatus: async (
-    paymentID, status) => {
+    paymentID, status, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url:
@@ -751,8 +729,7 @@ const NetworkRepository = {
           "vehicle_num": vehicleNo,
           "dotype": doType
         }
-      }
-      );
+      });
       return await apiResponse;
     } catch (e) {
       alert(e.toString());
@@ -772,6 +749,21 @@ const NetworkRepository = {
     product,
     lr_number) => {
     try {
+
+      console.log('fear',{
+        "order_head": order_head,
+        "qty": qty,
+        "vehicle_num": vehicle_num,
+        "trader": trader,
+        "gstin": gstin,
+        "address": address,
+        "billing_gstin": billing_gstin,
+        "billing_address": billing_address,
+        "product": product,
+        "lr_number": lr_number,
+      })
+
+
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url:
           `${ApiAppConstants.loadingInstructionPost}`,
@@ -780,7 +772,7 @@ const NetworkRepository = {
           "order_head": order_head,
           "qty": qty,
           "vehicle_num": vehicle_num,
-          "trader": trader ?? sellerId,
+          "trader": trader,
           "gstin": gstin,
           "address": address,
           "billing_gstin": billing_gstin,
@@ -804,6 +796,85 @@ const NetworkRepository = {
         header: { 'authorization': auth },
       })
       return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  vehicleCheck: async (sellerId) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.vehicles}${sellerId}`,
+        header: { 'authorization': auth },
+      })
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  sendOtpDriver: async (
+    mobile,
+    vehicleNo,
+    sellerId
+  ) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.sendOtp}`,
+        header: { 'authorization': auth },
+        data: {
+          "mobile": mobile.toString(),
+          "vehicle": vehicleNo.toString(),
+          "seller_pk": sellerId
+        },
+      });
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  postDriver: async (
+    otp,
+    name,
+    mobileNo,
+    drivingLicenseNo,
+    hlNo,
+    driverPk,
+    dlFront,
+    dlBack,
+  ) => {
+
+    const data = new FormData();
+
+    data.append('otp', otp);
+    data.append('name', name);
+    data.append('mobile_num', mobileNo);
+    data.append('dl_num', drivingLicenseNo);
+
+    if (hlNo != null) {
+      data.append('hl_num', hlNo);
+    }
+
+    if (driverPk == null) {
+      data.append('dl_front', dlFront);
+      data.append('dl_back', dlBack);
+    } else {
+      data.append('driver_pk', driverPk);
+    }
+
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: ApiAppConstants.postDriver,
+        header: { 'authorization': auth },
+        data,
+      });
+
+      return apiResponse;
     } catch (e) {
       alert(e.toString());
       return e.toString();

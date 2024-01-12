@@ -27,33 +27,41 @@ export default function InoviceCard(
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
     const [rowsPerPage, setRowsPerPage] = useState(15);
+    const [totalDataCount, setTotalDataCount] = useState(0);
+    const totalPages = Math.ceil(totalDataCount / rowsPerPage);
+
     const [dispatchesData, setDispatchesData] = useState([]);
     const { invoiceHeaderRow } = useDispatchesTableFormat();
     const [loading, setLoading] = useState(true);
     const selectedMill = useSelector((state) => state.mill.selectedMill);
     const searchTerm = useSelector((state) => state.search.searchTerm);
+    const selectedUser = useSelector((state) => state.user.selectedUser);
+
+
 
     useEffect(() => {
         setPage(1)
         setDispatchesData([])
     }, [selectedMill, searchTerm, status])
 
-    const fetchDispatchesData = async (dispatchesPage, text, currentStatus, millId) => {
-        try {
-            setLoading(true);
-            const data = await NetworkRepository.invoicesReport(dispatchesPage, text, currentStatus, millId);
-            console.log('here', data.results)
-            setDispatchesData(prevData => [...prevData, ...data.results]);
-        } catch (error) {
-            console.error('Error fetching Dispatches data:', error);
-        } finally {
-            setLoading(false); // Set loading to false when data is fetched (whether successful or not)
-        }
-    };
+
 
     useEffect(() => {
+        const fetchDispatchesData = async (dispatchesPage, text, currentStatus, millId) => {
+            try {
+                setLoading(true);
+                const data = await NetworkRepository.invoicesReport(dispatchesPage, text, currentStatus, millId, selectedUser.id);
+                setTotalDataCount(data.count);
+                console.log('here', data.results)
+                setDispatchesData(prevData => [...prevData, ...data.results]);
+            } catch (error) {
+                console.error('Error fetching Dispatches data:', error);
+            } finally {
+                setLoading(false); // Set loading to false when data is fetched (whether successful or not)
+            }
+        };
         fetchDispatchesData(page, searchTerm, status, selectedMill.id);
-    }, [page, status, selectedMill, searchTerm]);
+    }, [page, status, selectedMill, searchTerm, selectedUser.id]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -83,7 +91,7 @@ export default function InoviceCard(
 
     const dataFormated = dataFiltered.map(row => ({
         type: 'invoice',
-        doPk:row.delivery_order,
+        doPk: row.delivery_order,
         orderNo: row.loading_instruction[0].order_head.id,
         lrNum: row.loading_instruction[0].lr_number,
         invoiceNo: row.invoice_num !== '0' ? row.invoice_num : row.dc_num,
@@ -116,7 +124,7 @@ export default function InoviceCard(
                 row.grade,
             ]),
         ];
-    
+
         const csvContent = `data:text/csv;charset=utf-8,${dataToExport.map((row) => row.join(',')).join('\n')}`;
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement('a');
@@ -125,14 +133,14 @@ export default function InoviceCard(
         document.body.appendChild(link);
         link.click();
     };
-    
+
 
     // Example usage:
     console.log(dataFormated);
 
 
 
-    
+
 
     console.log('ivoice', dataFiltered)
 
@@ -164,7 +172,7 @@ export default function InoviceCard(
                                         .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
                                             <DispatchTableRow
-                                               
+
                                                 type={row.type}
                                                 subtype={status}
                                                 orderNo={row.orderNo}
@@ -184,7 +192,7 @@ export default function InoviceCard(
                                         ))}
                                     <TableEmptyRows
                                         height={77}
-                                        emptyRows={emptyRows(page-1, rowsPerPage / 15, dataFiltered.length)}
+                                        emptyRows={emptyRows(page - 1, rowsPerPage / 15, dataFiltered.length)}
                                     />
                                     {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>
@@ -196,6 +204,8 @@ export default function InoviceCard(
                         page={page}
                         component="div"
                         count={dataFiltered.length}
+                        nextIconButtonProps={{ disabled: page >= totalPages }}
+                        backIconButtonProps={{ disabled: !(page > 1) }}
                         rowsPerPage={rowsPerPage}
                         onPageChange={handleChangePage}
                         rowsPerPageOptions={[15, 30, 45]}

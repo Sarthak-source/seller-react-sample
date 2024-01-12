@@ -1,20 +1,7 @@
 export function useDispatchTableFuctions() {
-    const handlePrint = (url) => {
-       
-            // Open the PDF URL in a new window
-            const printWindow = window.open(url, '_blank');
-        
-            // Check if the window has loaded
-            printWindow.onload = () => {
-                // Optionally, you can trigger the print dialog once the window has loaded
-                printWindow.print();
-            };
-        
-        
-        
-    };
 
-    const getStatusColor= (status) => {
+
+    const getStatusColor = (status) => {
         switch (status) {
             case 'Done':
                 return 'rgb(0, 128, 0)';
@@ -27,7 +14,7 @@ export function useDispatchTableFuctions() {
         }
     }
 
-    const getStatus= (status) => {
+    const getStatus = (status) => {
         switch (status) {
             case 'Done':
                 return 'Done';
@@ -41,7 +28,6 @@ export function useDispatchTableFuctions() {
     }
 
     return {
-        handlePrint,
         getStatusColor,
         getStatus
     };

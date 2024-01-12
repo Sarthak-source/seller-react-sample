@@ -52,6 +52,8 @@ export default function PaymentsView() {
     const currentState = useSelector((state) => state.stateRefreash.currentState);
     const selectedMill = useSelector((state) => state.mill.selectedMill);
     const searchTerm = useSelector((state) => state.search.searchTerm);
+    const selectedUser = useSelector((state) => state.user.selectedUser);
+
     const { paymentHeaderRow } = usePaymentTableFormate();
 
     useEffect(() => {
@@ -100,7 +102,7 @@ export default function PaymentsView() {
         const fetchPaymentsData = async (paymentsPage, status, millId) => {
             try {
                 setLoading(true);
-                const data = await NetworkRepository.getPayments(selectedDate, paymentsPage, status, millId);
+                const data = await NetworkRepository.getPayments(selectedDate, paymentsPage, status, millId,selectedUser.id);
                 setTotalDataCount(data.count);
 
                 console.log('here', data.results)
@@ -115,7 +117,7 @@ export default function PaymentsView() {
             }
         };
         fetchPaymentsData(page, querySteps[activeStep], selectedMill.id);
-    }, [page, activeStep, querySteps, pagination, selectedDate, selectedMill,currentState]);
+    }, [page, activeStep, querySteps, pagination, selectedDate, selectedMill,currentState,selectedUser.id]);
 
 
     const handleSort = (event, id) => {

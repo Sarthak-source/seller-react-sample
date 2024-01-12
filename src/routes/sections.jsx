@@ -20,6 +20,7 @@ export const TraderDetails = lazy(() => import('src/pages/traders'));
 export const DispatchDetails = lazy(() => import('src/sections/dashboard/dispatches/dispatch-details/loading-instruction-details'));
 export const ProfileDetails = lazy(() => import('src/pages/profile'));
 export const ReportDetails = lazy(() => import('src/pages/reports'));
+export const QualityCheck= lazy(() => import('src/sections/quality_check/quality_check'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -39,6 +40,7 @@ export default function Router() {
     { path: 'tender-create', element: <TenderCreate /> },
     { path: 'self-order-create', element: <OrderCreate /> },
     { path: 'delivery-order-create', element: <DeliveryCreate /> },
+    { path: 'quality-check', element: <QualityCheck/>},
     { path: 'traders', element: <TraderDetails /> },
     { path: 'profile', element: <ProfileDetails /> },
     { path: 'reports', element: <ReportDetails /> },

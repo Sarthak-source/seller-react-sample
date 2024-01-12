@@ -52,13 +52,14 @@ export default function TraderView() {
     const loading = useSelector((state) => state.traders.loading);
     const { traderHeaderRow } = useTraderTableFormat();
     const searchTerm = useSelector((state) => state.search.searchTerm);
+    const selectedUser = useSelector((state) => state.user.selectedUser);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 if (Array.isArray(traderData) && traderData.length === 0) {
                     dispatch(fetchTraderDataStart());
-                    await dispatch(fetchTraderData());
+                    await dispatch(fetchTraderData(selectedUser.id));
                 }
             } catch (error) {
                 console.error('Error fetching trader data:', error);
@@ -67,7 +68,7 @@ export default function TraderView() {
 
         fetchData();
         setTraderData(traders);
-    }, [dispatch, traderData, traders]);
+    }, [dispatch, traderData, traders, selectedUser.id]);
 
     const handleOpenTrader = () => {
         setOpenDialog(true)
@@ -89,7 +90,7 @@ export default function TraderView() {
                 showSnackbar('Please add a valid number.', 'error');
 
             } else {
-                const result = await NetworkRepository.traderPostView(nameController, numberController);
+                const result = await NetworkRepository.traderPostView(nameController, numberController, selectedUser.id);
                 console.log('result', result)
                 setOpenDialog(false)
                 setNameController('')

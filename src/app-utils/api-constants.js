@@ -1,4 +1,4 @@
-const auth = `Basic ${btoa('gfg:gfgtech123')}`;
+const auth = `Basic ${btoa(import.meta.env.VITE_PASSWORD_GFG)}`;
 
 const testip = '192.46.215.236';
 

@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 
 import { useTheme } from '@emotion/react';
 import { Alert, Box, Snackbar } from '@mui/material';
+import { useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 import HoverExpandButton from 'src/components/buttons/expanded-button';
 import AlertDialog from 'src/components/dialogs/action-dialog';
@@ -46,6 +47,7 @@ export default function TenderTableRow({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const selectedUser = useSelector((state) => state.user.selectedUser);
 
 
   const handleOpenDetails = () => {
@@ -74,7 +76,7 @@ export default function TenderTableRow({
 
   const handleConfirm = async (statusConfirm) => {
     try {
-      const data = await NetworkRepository.tenderUpdate(tenderId, statusConfirm);
+      const data = await NetworkRepository.tenderUpdate(tenderId, statusConfirm,selectedUser.id);
       console.log('Response:', data);
       // Show success Snackbar or any other desired action
       showSnackbar('Tender updated successfully.', 'success');

@@ -46,7 +46,8 @@ export default function OrdersView() {
     const [transformValue, setTransformValue] = useState('scale(0.75)');
     const [isMouseOver, setIsMouseOver] = useState(true);
     const currentState = useSelector((state) => state.stateRefreash.currentState);
-
+    const selectedUser = useSelector((state) => state.user.selectedUser);
+    
     useEffect(() => {
         setPage(1)
         setOrdersData([])
@@ -80,7 +81,7 @@ export default function OrdersView() {
         const fetchOrdersData = async (ordersPage, status, millId) => {
             try {
                 setLoading(true);
-                const data = await NetworkRepository.allOrders(status, ordersPage, millId);
+                const data = await NetworkRepository.allOrders(status, ordersPage, millId,selectedUser.id);
                 console.log('here', data.results)
                 setTotalDataCount(data.count);
                 if (ordersPage > pagination) {
@@ -94,7 +95,7 @@ export default function OrdersView() {
             }
         };
         fetchOrdersData(page, querySteps[activeStep], selectedMill.id);
-    }, [page, pagination, querySteps, selectedMill, activeStep, currentState]);
+    }, [page, pagination, querySteps, selectedMill, activeStep, currentState,selectedUser.id]);
 
 
     const handleSort = (event, id) => {
