@@ -3,8 +3,19 @@ import { fCurrency } from "src/utils/format-number";
 export function useTenderTableFormat() {
     const generateLocation = (location, stateName) => `${location}, ${stateName.charAt(0).toUpperCase() + stateName.substring(1).toLowerCase()}`;
     const formatPrice = (price, unit) => `₹ ${fCurrency(price)} /${unit}`;
-    const getPropertyValue = (properties, index, property, defaultValue) =>
-        properties.length > index ? properties[index][property] : defaultValue;
+    const getPropertyValue = (properties, property, defaultValue) => {
+        console.log('properties', properties)
+
+        const newPropertyMap = {
+            [properties[0]?.label]: properties[0]?.value,
+            [properties[1]?.label]: properties[1]?.value,
+        };
+
+        console.log('properties', newPropertyMap)
+
+        return newPropertyMap[property] === undefined ? defaultValue : newPropertyMap[property];
+    }
+
 
     const getStatusColor = (status) => {
         console.log('status', status);

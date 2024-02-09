@@ -1,5 +1,5 @@
 import LoadingButton from "@mui/lab/LoadingButton";
-import { Checkbox, DialogActions, IconButton, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
+import { Alert, Checkbox, DialogActions, IconButton, List, ListItem, ListItemAvatar, ListItemText, Snackbar, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import Dialog from "@mui/material/Dialog";
@@ -10,6 +10,7 @@ import TextField from "@mui/material/TextField";
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import NetworkRepository from "src/app-utils/network_repository";
 import Iconify from "src/components/iconify";
 import InvoiceEwaybillSetting from "./invoice-ewaybill-settings";
@@ -21,6 +22,9 @@ export default function OrderUpdateForm({ orderSummary }) {
     const [lutNo, setLutNo] = useState('');
     const [remark, setRemark] = useState('');
 
+
+    const [loading, setLoading] = useState('');
+
     const [shippingTo, setShippingTo] = useState('');
     const [billTo, setBillTo] = useState('');
     const [shippingFrom, setShippingFrom] = useState('');
@@ -30,6 +34,7 @@ export default function OrderUpdateForm({ orderSummary }) {
     const [shippingToAddress, setShippingToAddress] = useState(null);
     const [billToAddress, setBillToAddress] = useState(null);
     const [shippingFromAddress, setShippingFromAddress] = useState(null);
+    const [eTransportAddress, setETransportAddress] = useState(null);
 
 
 
@@ -48,12 +53,20 @@ export default function OrderUpdateForm({ orderSummary }) {
 
     const [eTransportFromGSTNlist, setETransportGSTNlist] = useState([]);
 
-
-
-    const [billToId, setBillID] = useState(0);
-
     const [selectedItemID, setSelectedItemID] = useState(orderSummary.order.flexible_products.map((flexibleProduct) => flexibleProduct.id) || []);
     const selectedUser = useSelector((state) => state.user.selectedUser);
+
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+    const navigate = useNavigate();
+
+    const nav = () => {
+        setTimeout(() => {
+            navigate(`/home/`);
+        }, 2000);
+    };
 
     useEffect(() => {
         if (orderSummary) {
@@ -88,13 +101,15 @@ export default function OrderUpdateForm({ orderSummary }) {
                 setBillToAddress(orderSummary.order.billing_address);
             }
             if (orderSummary.order.e_transporter) {
-                setTransport(orderSummary.order.e_transporter);
+                setTransport(orderSummary.order.e_transporter.gstn_num.gstin);
+                setETransportAddress(orderSummary.order.e_transporter);
             }
 
         }
     }, [
         orderSummary,
     ])
+
 
     const handleCardClick = () => {
         setDialogOpen(true);
@@ -119,17 +134,64 @@ export default function OrderUpdateForm({ orderSummary }) {
         setShippingFromDialogOpen(false)
     };
 
-    const handleUpdate = () => {
-        console.log('Updating with values:', {
-            poNumber,
-            invoiceOrderPrefix,
-            lutNo,
-            remark,
-            shippingFrom,
+    const handleUpdate = async () => {
+        try {
+            setLoading(true);
+            // Check if any required values are null or undefined
+            if (!poNumber || !invoiceOrderPrefix || !lutNo || !remark || !shippingFromAddress || !orderSummary.order.id || !eTransportAddress) {
+                alert('Missing required values for update');
+                // Handle the case where required values are missing, such as displaying an error message to the user
+                return;
+            }
 
-        });
-        setDialogOpen(false);
+            console.log('Updating with values:', {
+                poNumber,
+                invoiceOrderPrefix,
+                lutNo,
+                remark,
+                shippingFromAddress: shippingFromAddress.id,
+                orderId: orderSummary.order.id,
+                eTransportAddress,
+                uo: '00sdsd'
+            });
+
+            // Make the network request asynchronously
+            const data = await NetworkRepository.updateOrderDetails2(
+                orderSummary.order.id,
+                poNumber,
+                invoiceOrderPrefix,
+                lutNo,
+                remark,
+                eTransportAddress.id
+            );
+
+            showSnackbar('Order updated successfully.', 'success');
+            nav();
+
+            console.log('Update successful:', data);
+        } catch (error) {
+            console.error('Error updating order:', error);
+            // Handle the error, such as displaying an error message to the user
+        } finally {
+            // Ensure that the dialog is closed regardless of success or failure
+            setLoading(false);
+            setDialogOpen(false);
+        }
     };
+
+    const showSnackbar = (message, severity) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
+
 
     const handleProductSelection = (product) => {
         const productId = product.id;
@@ -199,6 +261,11 @@ export default function OrderUpdateForm({ orderSummary }) {
             }
 
         }
+    }
+
+    const transportEdit = async (e) => {
+        console.log(e)
+        setETransportAddress(e)
     }
 
     const address = (gstIn, isAddressDialogOpen, onSelect) => (
@@ -278,6 +345,7 @@ export default function OrderUpdateForm({ orderSummary }) {
                             variant="outlined"
                             margin="dense"
                             label='Shipping to'
+                            inputProps={{ maxLength: 15 }}
                             fullWidth
                         />
                         {
@@ -342,6 +410,7 @@ export default function OrderUpdateForm({ orderSummary }) {
                             margin="dense"
                             label='Bill to'
                             fullWidth
+                            inputProps={{ maxLength: 15 }}
                         />
 
                         {
@@ -400,6 +469,7 @@ export default function OrderUpdateForm({ orderSummary }) {
                             margin="dense"
                             label='Shipping From'
                             fullWidth
+                            inputProps={{ maxLength: 15 }}
                         />
                         {
                             shippingFromGSTNlist.length > 0 && (
@@ -438,16 +508,31 @@ export default function OrderUpdateForm({ orderSummary }) {
                 <Box style={{ height: 20 }} />
 
                 <>
-                    <TextField
-                        value={eTransport}
-                        onChange={(e) => eTransportFromGstn(e.target.value)}
-                        variant="outlined"
-                        margin="dense"
-                        label='E-transporter'
-                        fullWidth
-                    />
+                    {eTransportAddress !== null ? (
+                        <Card>
+                            <Box>
+                                <Typography style={{ fontSize: '12px', marginLeft: 15, marginTop: 5 }}>E transport</Typography>
+                                <Box display="flex" justifyContent="space-between" paddingY={0.4} paddingX={2}>
+                                    {eTransportAddress.name}
+                                    <IconButton onClick={() => setETransportAddress(null)} >
+                                        <Iconify icon="basil:edit-outline" />
+                                    </IconButton>
+                                </Box>
+                            </Box>
+                        </Card>
+                    ) : (
+                        <TextField
+                            value={eTransport}
+                            onChange={(e) => eTransportFromGstn(e.target.value)}
+                            variant="outlined"
+                            margin="dense"
+                            label='E-transporter'
+                            fullWidth
+                            inputProps={{ maxLength: 15 }}
+                        />
+                    )}
                     {
-                        eTransportFromGSTNlist.length > 0 && (
+                        eTransportFromGSTNlist.length > 0 && (eTransportAddress === null) && (
                             <List>
                                 {eTransportFromGSTNlist.map((gstIn) => (
                                     <Card
@@ -466,11 +551,12 @@ export default function OrderUpdateForm({ orderSummary }) {
                                                 <Checkbox
                                                     edge="start"
                                                     disableRipple
-
+                                                    checked={eTransportAddress === gstIn}
+                                                    onChange={() => transportEdit(gstIn)}
                                                 />
                                             </ListItemAvatar>
                                             <ListItemText
-                                                primary={gstIn.name}
+                                                primary={gstIn.gstn_num.gstin}
                                             />
                                         </ListItem>
                                     </Card>
@@ -498,6 +584,7 @@ export default function OrderUpdateForm({ orderSummary }) {
                     onClick={handleUpdate}
                     variant="contained"
                     fullWidth
+                    loading={loading}
                     style={{ height: '40px' }}
                 >
                     Update
@@ -562,6 +649,16 @@ export default function OrderUpdateForm({ orderSummary }) {
                     </DialogContent>
                 </Dialog>
             </Box>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Card>
     );
 }

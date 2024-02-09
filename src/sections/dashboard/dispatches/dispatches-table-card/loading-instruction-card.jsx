@@ -102,7 +102,7 @@ export default function LoadingsInstructionCard(
         lrId: row.loading_instruction[0].id,
         millName: row.mill,
         name: row.trader,
-        date: format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy'),
+        date: format(parseISO(row.loading_instruction[0].date), 'dd/MMM/yyyy'),
         vehicleNumber: row.veicle_num,
         quantity: row.total_qty,
         billedTo: `Name-${row.loading_instruction[0].billing_address.name}-GSTIN-${row.billing_gstin}-Billing address-${row.loading_instruction[0].billing_address.address}`,
@@ -110,7 +110,7 @@ export default function LoadingsInstructionCard(
         rate: row.loading_instruction[0].product != null ? row.loading_instruction[0].order_head.price : 'Not given',
         grade: row.loading_instruction[0].product != null ? row.loading_instruction[0].product.code : 'Not given',
         qcStatus: row.qc_status,
-
+        loadingInstructions: row,
     }));
 
     console.log(
@@ -190,6 +190,7 @@ export default function LoadingsInstructionCard(
                                                 rate={row.rate}
                                                 grade={row.grade}
                                                 qcStatus={row.qcStatus}
+                                                loadingInstructions={row.loadingInstructions}
                                             />
                                         ))}
                                     <TableEmptyRows

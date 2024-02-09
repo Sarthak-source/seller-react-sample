@@ -1,10 +1,8 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
@@ -12,8 +10,11 @@ import { alpha, useTheme } from '@mui/material/styles';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
+import { ip } from 'src/app-utils/api-constants';
 import NetworkRepository from 'src/app-utils/network_repository';
+import Label from 'src/components/label/label';
 import Logo from 'src/components/logo';
+import { LongPressableBox } from 'src/components/long-press/long-press';
 import { selectTempUser } from 'src/redux/actions/user-actions';
 import { useRouter } from 'src/routes/hooks';
 import { bgGradient } from 'src/theme/css';
@@ -68,7 +69,7 @@ export default function LoginView() {
     }
   }
 
-  const label = checked ? 'Switch to Test' : 'Switch to Prod';
+  const label = checked ? `` : `TEST : ${ip}`;
 
 
   const renderForm = (
@@ -86,7 +87,7 @@ export default function LoginView() {
           label="Phone number"
           onChange={handlePhoneNumberChange}
           inputProps={{ maxLength: 10 }} /> :
-          <OTPComponent phoneNumber={phoneNumber} usedIn='LogIn'/>}
+          <OTPComponent phoneNumber={phoneNumber} usedIn='LogIn' />}
       </Stack>
       {showOpt ? (<Typography variant="body2" sx={{ mb: 5 }}>
         Don’t have an account?
@@ -128,14 +129,20 @@ export default function LoginView() {
         height: 1,
       }}
     >
-      <Logo
-        sx={{
-          position: 'fixed',
-          top: { xs: 16, md: 24 },
-          left: { xs: 16, md: 24 },
-        }}
-      />
-
+      <LongPressableBox onLongPress={handleChange} body={
+        <Stack direction="column" alignItems="center" spacing={2}>
+          <Logo
+            sx={{
+              position: 'fixed',
+              top: { xs: 16, md: 24 },
+              left: { xs: 16, md: 24 },
+            }}
+          />
+          {label !== `` && (<Label>
+            {label}
+          </Label>)}
+        </Stack>
+      } />
       <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
         <Card
           sx={{
@@ -153,19 +160,22 @@ export default function LoginView() {
                 color: alpha(theme.palette.background.default, 0),
                 imgUrl: '/assets/logo-full.png',
               }),
+
               height: 0.3,
               transform: 'scale(80%) translateX(-45px)',
+
             }}
           />
           <Typography variant="h5" mt={1}>Sign in to Sutra</Typography>
           {renderForm}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: '16px' }}>
-            <FormControlLabel
+            {/* <FormControlLabel
               control={
                 <Switch checked={checked} onChange={handleChange} />}
               label={label}
               labelPlacement="end" // Align label to the right of the switch
-            />
+            /> */}
+
           </Box>
 
         </Card>

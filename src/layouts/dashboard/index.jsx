@@ -18,7 +18,7 @@ export default function DashboardLayout({ children }) {
 
   return (
     <>
-    <Header onOpenNav={handleOpenNav} openNav={openNav} />    
+    <Header onOpenNav={handleOpenNav} openNav={openNav} />
       <Box
         sx={{
           minHeight: 1,

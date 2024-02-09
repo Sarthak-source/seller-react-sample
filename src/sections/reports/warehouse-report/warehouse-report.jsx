@@ -21,7 +21,7 @@ export default function WarehouseReportView() {
     setIsFullScreen(!isFullScreen);
   };
 
-  const link=`http://${ip}/reports/wareHouse_reports/?mill_pk=${encodeURIComponent(selectedOption)}`
+  const link = `http://${ip}/reports/wareHouse_reports/?mill_pk=${encodeURIComponent(selectedOption)}`
 
   const FullScreen = ({ icon }) => (
     <Fab onClick={toggleFullScreen} color="primary" sx={{ mt: 2, position: 'fixed', top: "85%", right: 16 }}>
@@ -45,6 +45,8 @@ export default function WarehouseReportView() {
           <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
             Select mill
           </Typography>
+          
+
           <Select
             value={selectedOption}
             onChange={handleSelectChange}
@@ -61,7 +63,6 @@ export default function WarehouseReportView() {
               </MenuItem>
             ))}
           </Select>
-
           {selectedOption && <RenderHtmlFromLink link={link} />}
           {selectedOption && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
         </Card>

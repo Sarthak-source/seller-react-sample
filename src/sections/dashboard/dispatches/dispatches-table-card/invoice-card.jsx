@@ -95,15 +95,17 @@ export default function InoviceCard(
         orderNo: row.loading_instruction[0].order_head.id,
         lrNum: row.loading_instruction[0].lr_number,
         invoiceNo: row.invoice_num !== '0' ? row.invoice_num : row.dc_num,
+        lrId: row.loading_instruction[0].id,
         millName: row.mill.name,
         name: row.trader.name,
-        date: row.loading_instruction[0].date ? format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy') : 'Not given',
+        date: row.loading_instruction[0].date ? format(parseISO(row.loading_instruction[0].date), 'dd/MMM/yyyy') : 'Not given',
         vehicleNumber: row.vehicle_num,
         quantity: row.total_qty,
         billedTo: `${row.loading_instruction[0].billing_address.name}\n${row.billing_gstin}\n${row.loading_instruction[0].billing_address.address}`,
         shipTo: `${row.loading_instruction[0].address.name}\n${row.address_gstin}\n${row.loading_instruction[0].address.address}`,
         rate: row.loading_instruction[0].qty,
-        grade: row.loading_instruction[0].order_head.price
+        grade: row.loading_instruction[0].order_head.price,
+        loadingInstructions: row,
     }));
 
     const handleExportCSV = () => {
@@ -172,12 +174,12 @@ export default function InoviceCard(
                                         .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
                                             <DispatchTableRow
-
                                                 type={row.type}
                                                 subtype={status}
                                                 orderNo={row.orderNo}
                                                 doPk={row.doPk}
                                                 lrNum={row.lrNum}
+                                                lrId={row.lrId}
                                                 invoiceNo={row.invoiceNo}
                                                 millName={row.millName}
                                                 name={row.name}
@@ -188,6 +190,7 @@ export default function InoviceCard(
                                                 shipTo={row.shipTo}
                                                 rate={row.rate}
                                                 grade={row.grade}
+                                                loadingInstructions={row.loadingInstructions}
                                             />
                                         ))}
                                     <TableEmptyRows

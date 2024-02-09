@@ -19,7 +19,7 @@ const NetworkAxiosOptions = {
             };
         }
         return {
-            'Content-Type': 'application/x-www-form-urlencoded', 
+            'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'application/json',
         };
 
@@ -59,9 +59,9 @@ const NetworkAxiosOptions = {
         }
     },
 
-    async getAxiosHttpMethod({ url, header,full=true }) {
+    async getAxiosHttpMethod({ url, header, full = true }) {
         console.log(url);
-        const fullUrl=full?`${this.endPointUrl}${url}`:url;
+        const fullUrl = full ? `${this.endPointUrl}${url}` : url;
         try {
             const response = await this.axiosOptions.get(fullUrl, { headers: header || this.cacheOptions });
             return response.data;
@@ -90,12 +90,17 @@ const NetworkAxiosOptions = {
             throw error;
         }
     },
-    
 
-    async postAxiosHttpMethod({ url, data, header }) {
+
+    async postAxiosHttpMethod({ url, data, header, ContentType = 'application/x-www-form-urlencoded' }) {
         try {
             console.log('postAxiosHttpMethod', `${this.endPointUrl}${url}`)
-            const response = await this.axiosOptions.post(`${this.endPointUrl}${url}`, data, { headers: header || this.cacheOptions });
+            const response = await this.axiosOptions.post(`${this.endPointUrl}${url}`, data, {
+                headers: {
+                    ...header,
+                    'Content-Type': ContentType,
+                } || this.cacheOptions,
+            });
             return response.data;
         } catch (error) {
             console.error('Error:', error);

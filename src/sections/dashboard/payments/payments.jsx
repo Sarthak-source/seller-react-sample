@@ -17,10 +17,11 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { format, parseISO } from 'date-fns';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { selectPaymentStep } from 'src/redux/actions/tab-step-action';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
 import { QontoConnector } from '../stepper-line';
 import TableEmptyRows from '../table-empty-rows';
@@ -32,9 +33,11 @@ import PaymentsTableRow from './payment-table-row/payment-table-row';
 import { usePaymentTableFormate } from './use-payment-table-formate';
 
 export default function PaymentsView() {
+    const selectedStep = useSelector((state) => state.tabSteps.paymentStepState);
+    const dispatch = useDispatch();
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState(1);
-    const [activeStep, setActiveStep] = useState(0);
+    const [activeStep, setActiveStep] = useState(selectedStep);
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
@@ -78,6 +81,7 @@ export default function PaymentsView() {
         console.log(activeStep);
         setPage(1)
         setPaymentsData([]);
+        dispatch(selectPaymentStep(index));
         setActiveStep(index);
     };
 
@@ -102,10 +106,10 @@ export default function PaymentsView() {
         const fetchPaymentsData = async (paymentsPage, status, millId) => {
             try {
                 setLoading(true);
-                const data = await NetworkRepository.getPayments(selectedDate, paymentsPage, status, millId,selectedUser.id);
+                const data = await NetworkRepository.getPayments(selectedDate, paymentsPage, status, millId, selectedUser.id);
                 setTotalDataCount(data.count);
 
-                console.log('here', data.results)
+                console.log('paymentsPage', data.results)
                 if (paymentsPage > pagination) {
                     setPagination(paymentsPage)
                 }
@@ -117,7 +121,7 @@ export default function PaymentsView() {
             }
         };
         fetchPaymentsData(page, querySteps[activeStep], selectedMill.id);
-    }, [page, activeStep, querySteps, pagination, selectedDate, selectedMill,currentState,selectedUser.id]);
+    }, [page, activeStep, querySteps, pagination, selectedDate, selectedMill, currentState, selectedUser.id]);
 
 
     const handleSort = (event, id) => {
@@ -143,7 +147,9 @@ export default function PaymentsView() {
     const tenderSearch =
         paymentsData.filter((item) =>
             item.mill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.id.toString().toLowerCase().includes(searchTerm.toLowerCase())
+            item.id.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.ref_no.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.trader.name.toString().toLowerCase().includes(searchTerm.toLowerCase())
         );
 
 
@@ -153,13 +159,16 @@ export default function PaymentsView() {
 
     });
 
+    
+
     const dataFormatted = dataFiltered.map(row => ({
         paymentsId: row.id,
         amount: row.amount,
         status: row.status,
         millName: row.mill.name,
         tradeName: row.trader.name,
-        date: format(parseISO(row.payment_date), 'MM/dd/yyyy'),
+        date: format(parseISO(row.payment_date), 'dd/MMM/yyyy'),
+        paymentType:row.payment_type.name,
         refNo: row.ref_no,
     }));
 
@@ -167,14 +176,14 @@ export default function PaymentsView() {
         const dataToExport = [
             paymentHeaderRow.map((row) => row.label),
             ...dataFormatted.map((row) => [
+                row.date,
                 row.paymentsId,
                 row.amount,
                 row.refNo,
                 row.status,
                 row.millName,
+                row.paymentType,
                 row.tradeName,
-                row.date,
-
             ]),
         ];
 
@@ -225,6 +234,7 @@ export default function PaymentsView() {
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
                             <StepLabel
+                                style={{ cursor: 'pointer' }}
                                 onClick={() => handleStepClick(index)}
                             >
                                 <Box sx={{ width: 1, transform: 'scale(0.85)' }}>{label}</Box>
@@ -260,6 +270,7 @@ export default function PaymentsView() {
                                                 key={row.id}
                                                 paymentsId={row.paymentsId}
                                                 amount={row.amount}
+                                                paymentType={row.paymentType}
                                                 status={row.status}
                                                 millName={row.millName}
                                                 tradeName={row.tradeName}

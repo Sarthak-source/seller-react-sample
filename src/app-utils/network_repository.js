@@ -2,7 +2,7 @@ import { ApiAppConstants, auth, ip } from './api-constants';
 import NetworkAxios from './network_axios';
 
 
-const NetworkRepository= {
+const NetworkRepository = {
 
   userSignup: async (name, password, number) => {
     try {
@@ -473,6 +473,43 @@ const NetworkRepository= {
     }
   },
 
+
+  updateOrderDetails2: async (
+    orderId,
+    poNumber,
+    invoicePrefix,
+    lutNum,
+    remark,
+    eTransporter) => {
+
+    try {
+
+      const data = new URLSearchParams();
+      data.append("order_pk", orderId.toString());
+      data.append("lut_num", lutNum.toString());
+      data.append("invoice_prefix", invoicePrefix.toString());
+      data.append("remark", remark);
+      data.append("purchaseorder_num", poNumber.toString());
+      data.append("e_transporter", eTransporter);
+
+
+      const apiResponse = await NetworkAxios.putAxiosHttpMethod({
+        url: `${ApiAppConstants.orderUpdate}${orderId}/`,
+        data: data.toString(),
+        header: {
+          'authorization': auth
+        },
+      });
+
+      console.log('\x1b[97m Response :', apiResponse);
+
+      return apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
   transporterGstinListView: async (gstIn) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
@@ -499,7 +536,7 @@ const NetworkRepository= {
         },
       });
 
-      console.log('apiResponseapiResponseapiResponse', apiResponse)
+
       return await apiResponse;
     } catch (e) {
       alert(e.toString());
@@ -572,6 +609,142 @@ const NetworkRepository= {
     }
   },
 
+  loadingInstructionUpdate: async ({
+    orderId,
+    qty,
+    status,
+    sellerId
+  },
+    gstin_other_tax,
+    remaining_balance,
+    credit,
+  ) => {
+    try {
+      const data = {
+        "credit": credit ?? false,
+        "ids": orderId,
+        "qty": qty,
+        "status": status,
+        "remaining_balance": remaining_balance ?? 0,
+        "user_id": sellerId,
+      };
+
+      console.log('make it matter', data)
+
+      if (gstin_other_tax !== null) {
+        data.gstin_other_tax = gstin_other_tax ?? '';
+      }
+
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.loadingInstructionUpdate}`,
+        data,
+        ContentType: 'application/json',
+        header: {
+          'authorization': auth
+        },
+      });
+
+      console.log('apiResponse', apiResponse)
+
+      // log(apiResponse['body']);
+      return apiResponse;
+    } catch (error) {
+      // Extract error response data from Axios error object
+      if (error.response) {
+        console.log('Error response:', error.response.data);
+        console.log('Error status:', error.response.status);
+        console.log('Error headers:', error.response.headers);
+      } else if (error.request) {
+        console.log('No response received:', error.request);
+      } else {
+        console.log('Error setting up request:', error.message);
+      }
+
+      // Handle the error accordingly
+      return error;
+    }
+  },
+
+  loadingInstructionUpdate2: async ({
+    orderId,
+    qty,
+    status,
+    sellerId,
+    gstin_other_tax,
+    remaining_balance,
+    credit },
+  ) => {
+    try {
+      const data = {
+        "version": '1',
+        "credit": credit ?? false,
+        "ids": orderId,
+        "qty": qty,
+        "status": status,
+        "remaining_balance": remaining_balance ?? 0,
+        "user_id": sellerId,
+      };
+
+      console.log('make it matter', data)
+
+      if (gstin_other_tax !== null) {
+        data.gstin_other_tax = gstin_other_tax ?? '';
+      }
+
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.loadingInstructionUpdate}`,
+        data,
+        ContentType: 'application/json',
+        header: {
+          'authorization': auth
+        },
+      });
+
+      console.log('apiResponse', apiResponse)
+
+      // log(apiResponse['body']);
+      return apiResponse;
+    } catch (error) {
+      // Extract error response data from Axios error object
+      if (error.response) {
+        console.log('Error response:', error.response.data);
+        console.log('Error status:', error.response.status);
+        console.log('Error headers:', error.response.headers);
+      } else if (error.request) {
+        console.log('No response received:', error.request);
+      } else {
+        console.log('Error setting up request:', error.message);
+      }
+
+      // Handle the error accordingly
+      return error;
+    }
+  },
+
+
+
+  orderHeadAddressUpdate: async (
+    orderPk,
+    shippingAddress,
+    billingAddress) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.orderHeadAddressUpdate}`,
+        header: { 'authorization': auth },
+        data: {
+          "order_head_pk": orderPk,
+          "billing_address_pk": billingAddress,
+          "address_pk": shippingAddress
+        }
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      return console.log(e.toString());
+    }
+  },
+
   eoiSetting2: async (
     orderId,
     boe,
@@ -581,8 +754,6 @@ const NetworkRepository= {
     docType,
   ) => {
     try {
-
-
       const data = JSON.stringify({
         'boe_num': boe,
         'document': documents,
@@ -688,6 +859,32 @@ const NetworkRepository= {
     }
   },
 
+  assignToTransporter: async (
+    orderId,
+    transporterName,
+    transporterNum,
+    sellerId,
+  ) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.assignOrderToTransporter}`,
+        header: { 'authorization': auth },
+        data: {
+          "order_pk": orderId,
+          "transporter_name": transporterName,
+          "transporter_num": transporterNum,
+          "trader_pk": sellerId,
+        }
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
   paymentHeadUpdateStatus: async (
     paymentID, status, sellerId) => {
     try {
@@ -750,7 +947,7 @@ const NetworkRepository= {
     lr_number) => {
     try {
 
-      console.log('fear',{
+      console.log('fear', {
         "order_head": order_head,
         "qty": qty,
         "vehicle_num": vehicle_num,

@@ -10,7 +10,7 @@ const DeliveryCreate = () => {
 
   const [doType, setDoType] = useState(selectedUserConfig.internal_sub_type);
   const [mill, setMill] = useState(selectedUserConfig.seller.mills);
-  const [product, setProduct] = useState({});
+  const [product, setProduct] = useState([]);
   const [millValue, setMillValue] = useState({});
   const [qtyUnit, setQtyUnit] = useState('');
   const [deliveryOrder, setDeliveryOrder] = useState({});
@@ -39,7 +39,7 @@ const DeliveryCreate = () => {
     const newValue = event.target.value;
     setMillValue(newValue);
 
-    setProduct(newValue.products);
+
   };
 
   const handleProductChange = (event) => {
@@ -76,7 +76,7 @@ const DeliveryCreate = () => {
         showSnackbar('Please enter quantity.', 'error');
       } else if (vehicleNo === '') {
         showSnackbar('Please enter vehicle number.', 'error');
-      
+
       } else {
         await NetworkRepository.generateInternalDO(
           millValue.id,
@@ -151,7 +151,7 @@ const DeliveryCreate = () => {
               value={millValue && product ? product : ''}
               onChange={handleProductChange}
             >
-              <MenuItem value='' disabled>
+              <MenuItem value="" disabled>
                 Select Product
               </MenuItem>
               {millValue.products.map((productItem) => (
@@ -179,11 +179,7 @@ const DeliveryCreate = () => {
               value={vehicleNo}
               onChange={(e) => setVehicleNo(e.target.value)}
             />
-
           )}
-
-
-
         </Stack>
 
         <LoadingButton loading={loading} fullWidth size="large" variant="contained" onClick={handleSubmit}>

@@ -16,6 +16,7 @@ import { account } from 'src/_mock/account';
 
 import Scrollbar from 'src/components/scrollbar';
 
+import { Card } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { NAV } from './config-layout';
 import navConfig from './config-navigation';
@@ -58,7 +59,7 @@ export default function Nav({ openNav, onCloseNav }) {
   );
 
   const renderMenu = (
-    <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
+    <Stack component="nav" spacing={1} sx={{ px: 2 }}>
       {navConfig.map((item) => (
         <NavItem key={item.title} item={item} />
       ))}
@@ -130,32 +131,36 @@ function NavItem({ item }) {
   const active = item.path === pathname;
 
   return (
-    <ListItemButton
-      component={RouterLink}
-      href={item.path}
-      sx={{
-        minHeight: 44,
-        borderRadius: 0.75,
-        typography: 'body2',
-        color: 'text.secondary',
-        textTransform: 'capitalize',
-        fontWeight: 'fontWeightMedium',
-        ...(active && {
-          color: 'primary.main',
-          fontWeight: 'fontWeightSemiBold',
-          bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
-          '&:hover': {
-            bgcolor: (theme) => alpha(theme.palette.primary.main, 0.16),
-          },
-        }),
-      }}
-    >
-      <Box component="span" sx={{ width: 24, height: 24, mr: 2 }}>
-        {item.icon}
-      </Box>
+    <Card>
+      <ListItemButton
+        component={RouterLink}
+        href={item.path}
+        sx={{
+          py:1.5,
+          minHeight: 44,
+          borderRadius: 0.75,
+          typography: 'body2',
+          color: 'text.secondary',
+          textTransform: 'capitalize',
+          fontWeight: 'fontWeightMedium',
+          ...(active && {
+            color: 'primary.main',
+            fontWeight: 'fontWeightSemiBold',
+            bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+            '&:hover': {
+              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.16),
+            },
+          }),
+        }}
+      >
+        <Box component="span" sx={{ width: 24, height: 24, mr: 2 }}>
+          {item.icon}
+        </Box>
 
-      <Box component="span">{item.title} </Box>
-    </ListItemButton>
+        <Box component="span">{item.title} </Box>
+      </ListItemButton>
+    </Card>
+
   );
 }
 

@@ -37,6 +37,7 @@ const HoverExpandButton = ({ children, width, onClick, color }) => {
       onMouseEnter={handleHover}
       onMouseLeave={handleLeave}
       width={width}
+      style={{ cursor: 'pointer' }}
       sx={{ paddingY: 1.4 }}
       onClick={onClick}
       isHovered={isHovered}

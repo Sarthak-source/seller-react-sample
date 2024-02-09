@@ -13,10 +13,11 @@ import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
 import { format, parseISO } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { selectTenderStep } from 'src/redux/actions/tab-step-action';
 import { useRouter } from 'src/routes/hooks';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
 import { QontoConnector } from '../stepper-line';
@@ -29,18 +30,21 @@ import TenderTableRow from './tender-table-row/tender-table-row';
 import { useTenderTableFormat } from './use-tender-table-formate';
 
 export default function TenderView() {
+    const selectedStep = useSelector((state) => state.tabSteps.tenderStepState);
+    const dispatch = useDispatch();
+
     const router = useRouter();
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState(1);
-    const [activeStep, setActiveStep] = useState(0);
+    const [activeStep, setActiveStep] = useState(selectedStep);
     const [order, setOrder] = useState('asc');
     const [selected, setSelected] = useState([]);
     const [orderBy, setOrderBy] = useState('name');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [tenderData, setTenderData] = useState([]);
     const [totalDataCount, setTotalDataCount] = useState(0);
-    const steps = useMemo(() => ['Pending Approval', 'Live', 'Rejected', 'Closed', 'Completed', 'All',], []);
-    const querySteps = useMemo(() => ['Added', 'Active', 'Rejected', 'Close', 'Completed', ''], []);
+    const steps = useMemo(() => ['Live', 'Pending Approval', 'Rejected', 'Closed', 'Completed', 'All',], []);
+    const querySteps = useMemo(() => ['Active', 'Added', 'Rejected', 'Close', 'Completed', ''], []);
     const totalPages = Math.ceil(totalDataCount / rowsPerPage);
     const { generateLocation, formatPrice, getPropertyValue, tenderHeaderRow } = useTenderTableFormat();
     const [loading, setLoading] = useState(true);
@@ -79,6 +83,7 @@ export default function TenderView() {
         console.log(activeStep);
         setPage(1)
         setTenderData([]);
+        dispatch(selectTenderStep(index));
         setActiveStep(index);
     };
 
@@ -104,7 +109,7 @@ export default function TenderView() {
             }
         };
         fetchTenderData(page, querySteps[activeStep], selectedMill.id);
-    }, [page, activeStep, querySteps, pagination, selectedMill, currentState,selectedUser.id]);
+    }, [page, activeStep, querySteps, pagination, selectedMill, currentState, selectedUser.id]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -137,19 +142,20 @@ export default function TenderView() {
     });
 
     const notFound = !dataFiltered.length;
+    
 
     const dataFormated = dataFiltered.map(row => ({
         key: row.id,
         tenderId: row.id,
         name: row.mill.name,
         location: generateLocation(row.mill.location, row.mill.state.name),
-        date: format(parseISO(row.date), 'MM/dd/yyyy'),
+        date: format(parseISO(row.date), 'dd/MMM/yyyy'),
         price: formatPrice(row.price, row.product.product_type.unit),
         status: row.status,
         tenderType: row.tender_type,
         productType: row.product.product_type.product_type,
-        grade: getPropertyValue(row.product.properties, 0, 'label', 'Not given'),
-        season: getPropertyValue(row.product.properties, 0, 'value', 'Not given'),
+        grade: getPropertyValue(row.product.properties, 'Grade', 'Grade not given'),
+        season: getPropertyValue(row.product.properties, 'Season', 'Season Not given'),
         total: row.qty,
         sold: row.approved_qty,
         balance: row.available_qty,
@@ -176,6 +182,8 @@ export default function TenderView() {
                 row.balance,
             ]),
         ];
+
+        
 
         const csvContent =
             `data:text/csv;charset=utf-8,${dataToExport.map((row) => row.join(',')).join('\n')}`;
@@ -204,6 +212,7 @@ export default function TenderView() {
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
                             <StepLabel
+                                style={{ cursor: 'pointer' }}
 
                                 onClick={() => handleStepClick(index)}>
                                 <Box sx={{ width: 1, transform: 'scale(0.85)' }}>

@@ -12,26 +12,29 @@ import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
 import { format, parseISO } from 'date-fns';
 import { useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { selectOrderStep } from 'src/redux/actions/tab-step-action';
 import { useRouter } from 'src/routes/hooks';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
+import { QontoConnector } from '../stepper-line';
 import TableEmptyRows from '../table-empty-rows';
 import SharedTableHead from '../table-head';
 import TableNoData from '../table-no-data';
 import TableToolbar from '../table-toolbar';
 import { applyFilter, emptyRows, getComparator } from '../utils';
 import OrderTableRow from './order-table-row/order-table-row';
-
-import { QontoConnector } from '../stepper-line';
 import { useOrderTableFormate } from './use-order-table-formate';
 
 export default function OrdersView() {
+    const selectedStep = useSelector((state) => state.tabSteps.orderStepState);
+    const dispatch = useDispatch();
+
     const router = useRouter();
     const [page, setPage] = useState(1);
-    const [activeStep, setActiveStep] = useState(0);
+    const [activeStep, setActiveStep] = useState(selectedStep);
     const [order, setOrder] = useState('asc');
     const [pagination, setPagination] = useState(1);
 
@@ -39,15 +42,15 @@ export default function OrdersView() {
     const [orderBy, setOrderBy] = useState('name');
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [totalDataCount, setTotalDataCount] = useState(0);
-    const steps = useMemo(() => ['Pending Bids', 'Accepted', 'Completed', 'Rejected', 'All'], []);
-    const querySteps = useMemo(() => ['Booked', 'Approved', 'DOIssued', 'Rejected', 'All'], []);
+    const steps = useMemo(() => ['Accepted', 'Pending Bids', 'Completed', 'Rejected', 'All'], []);
+    const querySteps = useMemo(() => ['Approved', 'Booked', 'DOIssued', 'Rejected', 'All'], []);
     const [ordersData, setOrdersData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [transformValue, setTransformValue] = useState('scale(0.75)');
     const [isMouseOver, setIsMouseOver] = useState(true);
     const currentState = useSelector((state) => state.stateRefreash.currentState);
     const selectedUser = useSelector((state) => state.user.selectedUser);
-    
+
     useEffect(() => {
         setPage(1)
         setOrdersData([])
@@ -74,6 +77,7 @@ export default function OrdersView() {
         console.log(activeStep);
         setPage(1)
         setOrdersData([]);
+        dispatch(selectOrderStep(index));
         setActiveStep(index);
     };
 
@@ -81,7 +85,7 @@ export default function OrdersView() {
         const fetchOrdersData = async (ordersPage, status, millId) => {
             try {
                 setLoading(true);
-                const data = await NetworkRepository.allOrders(status, ordersPage, millId,selectedUser.id);
+                const data = await NetworkRepository.allOrders(status, ordersPage, millId, selectedUser.id);
                 console.log('here', data.results)
                 setTotalDataCount(data.count);
                 if (ordersPage > pagination) {
@@ -95,7 +99,7 @@ export default function OrdersView() {
             }
         };
         fetchOrdersData(page, querySteps[activeStep], selectedMill.id);
-    }, [page, pagination, querySteps, selectedMill, activeStep, currentState,selectedUser.id]);
+    }, [page, pagination, querySteps, selectedMill, activeStep, currentState, selectedUser.id]);
 
 
     const handleSort = (event, id) => {
@@ -138,7 +142,7 @@ export default function OrdersView() {
         ordersId: row.id,
         traderName: row.trader.name,
         millName: row.tender_head.mill.name,
-        date: format(parseISO(row.date), 'MM/dd/yyyy'),
+        date: format(parseISO(row.date), 'dd/MMM/yyyy'),
         price: formatPrice(row.price, row.tender_head.product.product_type.unit),
         status: getStatusText(row.status),
         tenderType: row.tender_head.tender_type,
@@ -207,6 +211,7 @@ export default function OrdersView() {
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
                             <StepLabel
+                                style={{ cursor: 'pointer' }}
                                 onClick={() => handleStepClick(index)}
                             >
                                 <Box sx={{ width: 1, transform: 'scale(0.85)' }}>{label}</Box>

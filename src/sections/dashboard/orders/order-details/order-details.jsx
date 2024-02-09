@@ -49,22 +49,20 @@ export default function OrderDetails() {
         fetchOrderData(data);
     }, [data, selectedUser.id]);
 
-    console.log(orderSummary)
-
 
     const url = `http://${ip}/order-dashboard/order/${data}`;
 
     if (loading) {
         return (
-            <Box marginTop="-20%">
-                <SkeletonLoader />
-            </Box>
+            <SkeletonLoader marginTop={5} />
         );
     }
 
 
+
+
     return (
-        <Container maxWidth="xl" style={{ paddingLeft: '30px', paddingRight: '30px' }}>
+        <Container maxWidth="xl" style={{ paddingLeft: '30px', paddingRight: '30px', marginTop: 15 }}>
             <Typography variant="h4">Order Summary</Typography>
 
             <Tabs
@@ -74,7 +72,7 @@ export default function OrderDetails() {
                 indicatorColor="primary"
                 style={{ marginBottom: '2%', display: 'flex', justifyContent: 'flex-start' }}
             >
-                <Tab label="Summary" style={{ marginLeft: '-18px' }} />
+                <Tab label="Summary" style={{ marginLeft: '-14px' }} />
                 <Tab label="Dashboard" />
             </Tabs>
             {tab === 0 &&
@@ -105,7 +103,6 @@ export default function OrderDetails() {
                                 </Box>
                             </Card>
                         </Box>
-
                         <Box >
                             {invoicesVehicles && invoicesVehicles.length > 0 ? (
                                 <Card>
@@ -145,9 +142,7 @@ export default function OrderDetails() {
                                 </Card>) : (
 
                                 <Card>
-
                                     <Stack sx={{ p: 2 }}>
-
                                         <Label
                                             color={primary.main}
                                             sx={{
@@ -160,7 +155,6 @@ export default function OrderDetails() {
 
                                         <Box
                                             component="img"
-
                                             src='https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg?w=1060&t=st=1702019602~exp=1702020202~hmac=57da9194b9435ec95e27dd6e62fa486527a2fbd01692ff3a09a04fbc6e18807d'
                                             sx={{
                                                 top: 0,
@@ -170,18 +164,26 @@ export default function OrderDetails() {
                                                 position: 'inherit',
                                             }}
                                         />
-
                                     </Stack>
                                 </Card>
-
-
-
                             )}
                         </Box>
                     </Grid>
-                    <Grid item xs={12} md={6} >
-                        <OrderUpdateForm orderSummary={orderSummary} />
-                    </Grid>
+                    {orderSummary.order.status === 'Approved' || orderSummary.order.status === 'Booked' ? (
+                        <Grid item xs={12} md={6} >
+                            <OrderUpdateForm orderSummary={orderSummary} />
+                        </Grid>
+                    ) : (
+                        <Grid item xs={12} md={6} >
+
+                            <Card sx={{ px: 2, py: 2 }} >
+                                <Label >
+                                    Can&apos;t update this order
+                                </Label>
+                            </Card>
+                        </Grid>
+                    )}
+
                 </Grid>
             }
             {tab === 1 &&

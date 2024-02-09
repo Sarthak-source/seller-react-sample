@@ -17,12 +17,17 @@ export default function OTPComponent({ phoneNumber, usedIn, resultSet }) {
   const handleChange = (event, index) => {
     const updatedOtp = [...otp];
     updatedOtp[index] = event.target.value;
+
+    if (event.target.value === '' && event.nativeEvent.inputType === 'deleteContentBackward' && index > 0) {
+      document.getElementsByName(`otp-${index - 1}`)[0].focus();
+    }
     if (index < otp.length - 1 && event.target.value !== '') {
       document.getElementsByName(`otp-${index + 1}`)[0].focus();
     }
 
     setOtp(updatedOtp);
   };
+
 
   useEffect(() => {
     const concatenatedOtp = otp.join('');

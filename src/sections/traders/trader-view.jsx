@@ -146,15 +146,15 @@ export default function TraderView() {
 
     return (
         <Container maxWidth="xl">
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                <Typography variant="h4">Traders</Typography>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5} mt={1}>
+                <Typography variant="h4" mt={2} mb={-2}>Traders</Typography>
                 <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenTrader}>
                     Add Traders
                 </Button>
             </Stack>
 
             {!loading ? (
-                <Card>
+                <Card >
                     <TableToolbar
                         numSelected={0}
                         showIcons={false}

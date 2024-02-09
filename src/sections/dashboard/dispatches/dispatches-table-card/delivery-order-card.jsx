@@ -42,7 +42,7 @@ export default function DeliveryOrderCard() {
         setDispatchesData([])
     }, [selectedMill])
 
-   
+
 
     useEffect(() => {
         const fetchDispatchesData = async (dispatchesPage, text, millId) => {
@@ -114,15 +114,16 @@ export default function DeliveryOrderCard() {
                                             orderNo={row.loading_instruction[0].order_head.id}
                                             invoiceNo={row.loading_instruction[0].lr_number}
                                             doNo={row.do_num}
+                                            doId={row.id}
                                             millName={row.mill.name}
                                             name={row.trader}
-                                            date={row.loading_instruction[0].date ? format(parseISO(row.loading_instruction[0].date), 'MM/dd/yyyy') : 'Not given'}
+                                            date={row.loading_instruction[0].date ? format(parseISO(row.loading_instruction[0].date), 'dd/MMM/yyyy') : 'Not given'}
                                             vehicleNumber={row.vehicle_num !== null ? row.vehicle_num : '   Not given'}
                                             quantity={row.qty}
                                             billedTo={`${row.loading_instruction[0].billing_address.name}\n${row.billing_gstin}\n${row.loading_instruction[0].billing_address.address}`}
                                             shipTo={`${row.loading_instruction[0].address.name}\n${row.address_gstin}\n${row.loading_instruction[0].address.address}`}
-                                            rate={row.loading_instruction[0].qty}
-                                            grade={row.loading_instruction[0].order_head.price}
+                                            rate={row.loading_instruction[0].order_head.price}
+                                            grade={row.loading_instruction[0].product != null ? row.loading_instruction[0].product.code : 'Not given'}
                                         />
                                     ))}
                                 <TableEmptyRows
@@ -139,15 +140,15 @@ export default function DeliveryOrderCard() {
                     </TableContainer>
                 </Scrollbar>
                 <TablePagination
-                   page={page}
-                   component="div"
-                   count={dataFiltered.length}
-                   nextIconButtonProps={{ disabled: page >= totalPages }}
-                   backIconButtonProps={{ disabled: !(page > 1) }}
-                   rowsPerPage={rowsPerPage}
-                   onPageChange={handleChangePage}
-                   rowsPerPageOptions={[15, 30, 45]}
-                   onRowsPerPageChange={handleChangeRowsPerPage}
+                    page={page}
+                    component="div"
+                    count={dataFiltered.length}
+                    nextIconButtonProps={{ disabled: page >= totalPages }}
+                    backIconButtonProps={{ disabled: !(page > 1) }}
+                    rowsPerPage={rowsPerPage}
+                    onPageChange={handleChangePage}
+                    rowsPerPageOptions={[15, 30, 45]}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Card>
         </>

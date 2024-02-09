@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ip } from 'src/app-utils/api-constants';
 import Iconify from 'src/components/iconify';
+import Scrollbar from 'src/components/scrollbar';
 import RenderHtmlFromLink from '../render-html';
 
 
@@ -52,7 +53,7 @@ export default function ProductWiseReportView() {
       ) : (
         <Card sx={{ p: 2 }}>
           {selectedOption && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
-
+          <Scrollbar>
           <Stack direction="row">
             <Stack>
               <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
@@ -102,6 +103,8 @@ export default function ProductWiseReportView() {
               )}
             </Stack>
           </Stack>
+          </Scrollbar>
+          
           {selectedOption && <RenderHtmlFromLink link={link} />}
         </Card>
       )}

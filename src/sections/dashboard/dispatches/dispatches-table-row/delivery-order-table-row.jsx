@@ -17,6 +17,7 @@ import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 
 export default function DoOrderTableRow({
     doNo,
+    doId,
     orderNo,
     invoiceNo,
     millName,
@@ -66,7 +67,12 @@ export default function DoOrderTableRow({
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isMailDialogOpen, setMailDialogOpen] = useState(false);
 
-    const pdfUrl = `http://${ip}/${ApiAppConstants.getDoDoc}${doNo}`;
+    console.log('doNo', doId)
+
+    const pdfUrl = `http://${ip}/${ApiAppConstants.getDoDoc}${doId}`;
+
+
+    const termalPdfUrl = `http://${ip}/${ApiAppConstants.thermalDo}${doId}`;
 
     const handleDialogClose = () => {
         setDialogOpen(false);
@@ -111,18 +117,18 @@ export default function DoOrderTableRow({
         setExpanded(val);
     };
 
-   
+
 
 
     const handleOpenDetails = (orderSelected) => {
-        navigate(`/home/delivery-order-create/${orderSelected}`); // Use navigate to go to the details page
+        navigate(`/home/loading-instruction-details/${orderSelected}`); // Use navigate to go to the details page
     };
 
 
-    const printOpen = () => {
+    const printOpen = (url) => {
         setDialogOpen(true)
 
-        handlePdf(pdfUrl);
+        handlePdf(url);
 
     }
 
@@ -233,7 +239,7 @@ export default function DoOrderTableRow({
                     align="right" style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: theme.palette.common.white }}>
                     <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
 
-                        <HoverExpandButton onClick={printOpen} width='100px' color={theme.palette.success.main}>
+                        <HoverExpandButton onClick={() => printOpen(pdfUrl)} width='100px' color={theme.palette.success.main}>
                             <Iconify icon="lets-icons:print" />
                             <Box sx={{ fontWeight: 'bold' }}> Print </Box>
                         </HoverExpandButton>
@@ -243,6 +249,12 @@ export default function DoOrderTableRow({
                             <Box sx={{ fontWeight: 'bold' }}> Mail </Box>
                         </HoverExpandButton>
 
+
+
+                        <HoverExpandButton onClick={() => printOpen(termalPdfUrl)} width='125px' color={theme.palette.info.dark}>
+                            <Iconify icon="solar:printer-minimalistic-bold-duotone" />
+                            <Box sx={{ fontWeight: 'bold' }}> thermal DO </Box>
+                        </HoverExpandButton>
 
                         <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.error.main}>
                             <Iconify icon="basil:cancel-solid" />
@@ -277,6 +289,7 @@ export default function DoOrderTableRow({
 
 DoOrderTableRow.propTypes = {
     doNo: PropTypes.string,
+    doId: PropTypes.string,
     orderNo: PropTypes.string,
     invoiceNo: PropTypes.string,
     millName: PropTypes.string,

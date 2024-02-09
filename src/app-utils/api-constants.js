@@ -71,6 +71,7 @@ const ApiAppConstants = {
     scanDOdest: 'scan_DO_dest/',
     doUnload: 'deliveryOrderUpdateStatus/',
     getDoDoc: 'get_doc/do/',
+    thermalDo:'get_doc/thermal_do/',
     getInvoiceDoc: '/get_doc/invoice/',
     gatePass: '/api/gatepass/',
     addressListPost: 'addressListPost/',

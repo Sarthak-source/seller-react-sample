@@ -21,8 +21,8 @@ export function useOrderTableFormate() {
                 case "Approved":
                     statusText = "Bid Accepted";
                     break;
-                case "booked":
-                    statusText = "Bid Received";
+                case "Booked":
+                    statusText = "Pending Approval";
                     break;
                 case "DOIssued":
                     statusText = "Completed";
@@ -47,7 +47,7 @@ export function useOrderTableFormate() {
                 return 'rgb(255, 0, 0)'; // Red
             case 'approved':
                 return 'rgb(0, 0, 255)'; // Blue
-            case 'booked':
+            case 'pending approval':
                 return 'rgb(255, 165, 0)'; // Orange
             case 'completed':
                 return 'rgb(0, 128, 0)'; // Green

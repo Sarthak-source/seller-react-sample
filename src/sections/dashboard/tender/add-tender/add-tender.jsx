@@ -20,7 +20,7 @@ export default function TenderCreate() {
   const theme = useTheme();
   const [tenderValue, setTenderValue] = useState('');
   const [millValue, setMillValue] = useState({});
-  const [product, setProduct] = useState({});
+  const [product, setProduct] = useState([]);
   const [select, setSelect] = useState([]);
 
   const [qtyUnit, setQtyUnit] = useState('');

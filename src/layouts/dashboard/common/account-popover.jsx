@@ -9,7 +9,11 @@ import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 import { alpha } from '@mui/material/styles';
 
+import { Stack } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
+import { ip } from 'src/app-utils/api-constants';
+import Label from 'src/components/label';
+import { LongPressableBox } from 'src/components/long-press/long-press';
 import { selectUser, selectUserConfig } from 'src/redux/actions/user-actions';
 import { useRouter } from 'src/routes/hooks';
 
@@ -37,8 +41,7 @@ export default function AccountPopover() {
   const selectedUser = useSelector((state) => state.user.selectedUser);
   const dispatch = useDispatch();
   const router = useRouter();
-
-
+  const [checked, setChecked] = useState(localStorage.getItem('isTestEnvironment') === 'true');
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -53,6 +56,15 @@ export default function AccountPopover() {
     dispatch(selectUserConfig(null))
     router.replace('/');
   };
+
+  const handleChange = () => {
+    const newChecked = !checked;
+    localStorage.setItem('isTestEnvironment', newChecked.toString());
+    setChecked(newChecked);
+    window.location.reload();
+  };
+
+  const label = checked ? `` : `TEST : ${ip}`;
 
   return (
     <>
@@ -106,6 +118,16 @@ export default function AccountPopover() {
 
         </Box>
 
+        {label !== `` && (<LongPressableBox onLongPress={handleChange} body={
+          <Stack direction="column" alignItems="center" spacing={2} sx={{mb:2}}>
+
+
+            <Label>
+              {label}
+            </Label>
+          </Stack>
+        } />)}
+
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         {/* {MENU_OPTIONS.map((option) => (
@@ -115,6 +137,8 @@ export default function AccountPopover() {
         ))}
 
         <Divider sx={{ borderStyle: 'dashed', m: 0 }} /> */}
+
+
 
         <MenuItem
           disableRipple

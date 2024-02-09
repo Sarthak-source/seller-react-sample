@@ -26,16 +26,16 @@ export default function Header({ onOpenNav, openNav }) {
 
   const renderContent = (
     <>
-    <Stack marginLeft={-1}>
-    <Stack direction='row' marginTop={2}>
-        <IconButton onClick={onOpenNav} sx={{ mr: 1 }}>
-          <Iconify icon="eva:menu-2-fill" color='primary.main' />
-        </IconButton>
-        <Searchbar />
-       
+      <Stack marginLeft={-1}>
+        <Stack direction='row' marginTop={2}>
+          <IconButton onClick={onOpenNav} sx={{ mr: 1 }}>
+            <Iconify icon="eva:menu-2-fill" color='primary.main' />
+          </IconButton>
+          <Searchbar />
+
+        </Stack>
+        <MyBreadcrumbs />
       </Stack>
-    <MyBreadcrumbs />
-    </Stack>
       <Box sx={{ flexGrow: 1 }} />
       <Stack direction="row" alignItems="center" spacing={1}>
         {/* <LanguagePopover />

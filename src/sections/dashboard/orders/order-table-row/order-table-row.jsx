@@ -11,7 +11,8 @@ import Typography from '@mui/material/Typography';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Alert, Box, Snackbar } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Alert, Box, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import NetworkRepository from 'src/app-utils/network_repository';
 import HoverExpandButton from 'src/components/buttons/expanded-button';
@@ -58,6 +59,12 @@ export default function OrdersTableRow({
     const [content, setContent] = useState('');
     const [statusType, setStatusType] = useState('');
 
+    const [loadingButton, setLoading] = useState(false)
+
+    const [nameController, setNameController] = useState('');
+    const [numberController, setNumberController] = useState('');
+    const [openDialog, setOpenDialog] = useState(false);
+
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -87,7 +94,7 @@ export default function OrdersTableRow({
 
     const handleConfirm = async (statusConfirm) => {
         try {
-            const data = await NetworkRepository.orderUpdateStatus(ordersId, statusConfirm,selectedUser.id);
+            const data = await NetworkRepository.orderUpdateStatus(ordersId, statusConfirm, selectedUser.id);
             console.log('Response:', data);
             showSnackbar('Order updated successfully.', 'success');
         } catch (error) {
@@ -101,6 +108,36 @@ export default function OrdersTableRow({
     const handleClose = () => {
         setOpen(null);
     };
+
+    const handleNameChange = (event) => {
+        setNameController(event.target.value);
+    };
+
+    const handleNumberChange = (event) => {
+        setNumberController(event.target.value);
+    };
+
+    const closeDialog = () => {
+        setOpenDialog(false)
+        setNameController('')
+        setNumberController('')
+    };
+
+    const addTransporter = async () => {
+        try {
+            setLoading(true)
+            const data = await NetworkRepository.assignToTransporter(ordersId, nameController, numberController, selectedUser.id);
+            console.log('Response:', data);
+            showSnackbar('Transporter assigned successfully.', 'success');
+        } catch (error) {
+            console.error('Error:', error);
+            showSnackbar('Something went wrong. Please try again.', 'error');
+        } finally {
+            setLoading(false);
+            setOpenDialog(false);
+        }
+
+    }
 
 
     return (
@@ -153,23 +190,23 @@ export default function OrdersTableRow({
                     align="right" style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: theme.palette.common.white }}
                 >
                     <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
-                        {status === 'Booked' && (
+                        {status === 'Pending approval' && (
                             <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Accept?', 'Approved')} width='100px' color={theme.palette.success.main}>
                                 <Iconify icon="material-symbols:order-approve-rounded" />
                                 <Box sx={{ fontWeight: 'bold' }}> Accept</Box>
                             </HoverExpandButton>
                         )}
                         {
-                            status === 'Booked' && (
-                                <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Reject?', 'Reject')} width='100px' color={theme.palette.error.main} >
+                            status === 'Pending approval' && (
+                                <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Reject?', 'Rejected')} width='100px' color={theme.palette.error.main} >
                                     <Iconify icon="mdi:file-remove" />
                                     <Box sx={{ fontWeight: 'bold' }}> Reject</Box>
                                 </HoverExpandButton>
                             )
                         }
-                        
+
                         {
-                            tenderType === 'Offline'&& status === 'Bid Accepted' && (
+                            tenderType === 'Offline' && status === 'Bid Accepted' && (
                                 <HoverExpandButton onClick={() => handleOpenVehicleAdd(order)} width='130px' color={theme.palette.success.main} >
                                     <Iconify icon="mdi:truck-check" />
                                     <Box sx={{ fontWeight: 'bold' }}>Add vehicle</Box>
@@ -177,8 +214,8 @@ export default function OrdersTableRow({
                             )
                         }
                         {
-                            tenderType === 'Offline'&& status === 'Bid Accepted' && (
-                                <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Close?', 'Close')} width='170px' color={theme.palette.info.main} >
+                            tenderType === 'Offline' && status === 'Bid Accepted' && (
+                                <HoverExpandButton onClick={() => setOpenDialog(true)} width='170px' color={theme.palette.info.main} >
                                     <Iconify icon="mdi:drivers-license" />
                                     <Box sx={{ fontWeight: 'bold' }}>Assign transporter</Box>
                                 </HoverExpandButton>
@@ -195,6 +232,35 @@ export default function OrdersTableRow({
                     </Box>
                 </TableCell>
             </TableRow>
+
+            <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                <DialogTitle>Assign Transporter</DialogTitle>
+                <DialogContent >
+                    <TextField
+                        name="remarks"
+                        label="Transporter Name"
+                        value={nameController}
+                        onChange={handleNameChange}
+                        fullWidth
+                        sx={{ marginBottom: 2, marginTop: 2 }}
+                    />
+                    <TextField
+                        name="number"
+                        label="Enter transporter mobile number"
+                        inputProps={{ maxLength: 10 }}
+                        value={numberController}
+                        onChange={handleNumberChange}
+                        fullWidth
+                        sx={{ marginBottom: 2 }}
+                    />
+                    {/* Your dialog content goes here */}
+                </DialogContent>
+                <DialogActions>
+                    <LoadingButton loading={loadingButton} onClick={addTransporter}>Add</LoadingButton>
+                    <LoadingButton onClick={closeDialog}>Cancel</LoadingButton>
+                    {/* Additional action buttons if needed */}
+                </DialogActions>
+            </Dialog>
             <AlertDialog
                 content={content}
                 isDialogOpen={open}

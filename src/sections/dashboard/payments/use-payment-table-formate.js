@@ -3,10 +3,11 @@ export function usePaymentTableFormate() {
         { id: 'date', label: 'Date' },
         { id: 'paymentsId', label: 'Payments ID' },
         { id: 'amount', label: 'Amount' },
+        { id: 'paymentType', label: 'Payment Type' },
         { id: 'status', label: 'Status' },
         { id: 'millName', label: 'Mill Name' },
         { id: 'tradeName', label: 'Trader Name' }, 
-        { id: 'refNo', label: 'Referce no' },
+        { id: 'refNo', label: 'Reference No' },
         { id: '' },
     ]
 

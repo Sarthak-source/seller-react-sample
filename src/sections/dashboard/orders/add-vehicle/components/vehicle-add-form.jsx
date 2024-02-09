@@ -320,6 +320,7 @@ export default function AddVehicleForm({ orderSummary }) {
                             variant="outlined"
                             margin="dense"
                             label='Bill GST'
+                            inputProps={{ maxLength: 15 }}
                             fullWidth
                         />
 
@@ -381,6 +382,7 @@ export default function AddVehicleForm({ orderSummary }) {
                             variant="outlined"
                             margin="dense"
                             label='Shipping GST'
+                            inputProps={{ maxLength: 15 }}
                             fullWidth
                         />
                         {

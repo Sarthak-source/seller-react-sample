@@ -2,10 +2,14 @@ import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 
 import { useTheme } from '@emotion/react';
-import { Alert, Avatar, Box, Dialog, DialogTitle, Paper, Snackbar, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { fCurrency } from "src/utils/format-number";
+
+import { Alert, Avatar, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Snackbar, Stack, Table, TableBody, TableContainer, TableHead, TextField, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ApiAppConstants, ip } from 'src/app-utils/api-constants';
 import NetworkRepository from 'src/app-utils/network_repository';
@@ -34,6 +38,7 @@ export default function DispatchTableRow({
     rate,
     grade,
     qcStatus,
+    loadingInstructions
 }) {
     const [open, setOpen] = useState(null);
     const navigate = useNavigate();
@@ -43,10 +48,82 @@ export default function DispatchTableRow({
     const theme = useTheme();
     const pdfContainerRef = useRef();
     const isMounted = useRef(true); // Add this line
-    
-    const handleOpenMenu = (event) => {
-        setOpen(event.currentTarget);
+    const selectedUser = useSelector((state) => state.user.selectedUser);
+    const [content, setContent] = useState('');
+    const [statusType, setStatusType] = useState('');
+    const [openTaxDialog, setTaxDialog] = useState('');
+    const [loading, setLoading] = useState('');
+
+    const [balance, setBalance] = useState()
+
+
+    console.log('DispatchTableRow loadingInstructions', loadingInstructions)
+
+
+
+    // Check if loadingInstructions is not undefined and is an array
+    const ids = loadingInstructions?.loading_instruction && Array.isArray(loadingInstructions.loading_instruction)
+        ? loadingInstructions?.loading_instruction.map(({ id }) => id)
+        : [];
+
+    console.log(ids)
+
+    const handleOpen = async (contentType, statusArg) => {
+
+        if (statusArg === 'Approve') {
+
+            setOpen(true);
+            setContent(contentType)
+            setStatusType(statusArg)
+        } else if (statusArg === 'Issue DO') {
+            console.log(statusArg)
+            console.log(statusArg)
+            setOpen(true);
+            setContent(contentType)
+            setStatusType(statusArg)
+
+
+        } else {
+            setOpen(true);
+            setContent(contentType)
+            setStatusType(statusArg)
+        }
+    }
+
+    const handleClose = () => {
+        setTaxDialog(null);
+        setOpen(null);
     };
+
+
+    const handleConfirm = async (status) => {
+        try {
+            if (!selectedUser || !selectedUser.id) {
+                console.error('Selected user or user ID is missing');
+                return;
+            }
+
+            const data = await NetworkRepository.loadingInstructionUpdate({
+                orderId: ids,
+                qty: quantity,
+                status,
+                sellerId: selectedUser.id
+            });
+
+            console.log('make it matter', data);
+
+            if (data instanceof Error && data.response && data.response.status === 400) {
+                console.log('make it matter', data.response.data);
+                setBalance(data.response.data);
+                setTaxDialog(true);
+            }
+
+        } catch (error) {
+            console.error('Error updating loading instruction:', error);
+            setTaxDialog(true);
+        }
+    };
+
 
     const [expanded, setExpanded] = useState(false);
 
@@ -130,7 +207,31 @@ export default function DispatchTableRow({
 
     const pdfUrl = getPdfLink(subtype);
 
+    const handleAction = async () => {
 
+        const data = await NetworkRepository.loadingInstructionUpdate2({
+            remaining_balance: balance.balance.toString() === "balance",
+            credit: true,
+            orderId: ids,
+            qty: quantity,
+            status: 'Approved',
+            gstin_other_tax: '0',
+            sellerId: selectedUser.id
+        });
+
+        console.log('dio', data)
+
+        if (data) {
+            console.log('issue do',`http://${ip}/${ApiAppConstants.getDoDoc}${data.id}`)
+
+            printDoOpen(`http://${ip}/${ApiAppConstants.getDoDoc}${data.id}`)
+
+        }
+
+    }
+
+
+    console.log('balance?.balance', balance)
 
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isMailDialogOpen, setMailDialogOpen] = useState(false);
@@ -148,7 +249,7 @@ export default function DispatchTableRow({
             showSnackbar('Mail sent successfully', 'success');
         } catch (error) {
             console.error("Error converting status:", error);
-        }finally{
+        } finally {
             setMailDialogOpen(false)
         }
     };
@@ -219,6 +320,13 @@ export default function DispatchTableRow({
         }
     }
 
+    const printDoOpen = (url) => {
+        setDialogOpen(true)
+
+        handlePdf(url);
+
+    }
+
     return (
         <>
             <TableRow
@@ -226,7 +334,7 @@ export default function DispatchTableRow({
                 onMouseLeave={() => handleToggle(false)}
                 hover tabIndex={-1} role="checkbox">
                 <TableCell
-                    onClick={() => handleOpenDetails(orderNo)}
+                    onClick={() => handleOpenDetails(lrId)}
                     style={{ cursor: 'pointer' }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.borderRadius = '8px';
@@ -338,15 +446,15 @@ export default function DispatchTableRow({
                         }
                         {
                             type === 'loadingsInstruction' && (
-                                <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.success.main}>
+                                <HoverExpandButton onClick={() => handleOpen(qcStatus === 'Done' ? 'Are you sure you want to Issue DO?' : 'Are you sure you want to Approve?', qcStatus === 'Done' ? 'issued' : 'Booked')} width='110px' color={theme.palette.success.main}>
                                     <Iconify icon="material-symbols:order-approve-rounded" />
-                                    <Box sx={{ fontWeight: 'bold' }}> Approve</Box>
+                                    <Box sx={{ fontWeight: 'bold' }}>{qcStatus === 'Done' ? 'Issue DO' : 'Approve'}</Box>
                                 </HoverExpandButton>
                             )
                         }
                         {
                             type === 'loadingsInstruction' && (
-                                <HoverExpandButton onClick={handleOpenMenu} width='100px' color={theme.palette.error.main}>
+                                <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Reject?', 'Rejected')} width='100px' color={theme.palette.error.main}>
                                     <Iconify icon="basil:cancel-solid" />
                                     <Box sx={{ fontWeight: 'bold' }}> Reject</Box>
                                 </HoverExpandButton>
@@ -355,6 +463,63 @@ export default function DispatchTableRow({
                     </Box>
                 </TableCell>
             </TableRow>
+
+            <AlertDialog
+                content={content}
+                isDialogOpen={open}
+                handleConfirm={() => handleConfirm(statusType)}
+                handleClose={handleClose} />
+
+            <Dialog open={openTaxDialog} onClose={handleClose}>
+                <DialogTitle>
+                    <Stack direction="row">
+                        <Typography sx={{ mr: 2 }}>Payment pending</Typography>
+                        <Iconify icon="noto:warning" sx={{ height: 18, width: 18, mt: 0.4 }} />
+
+                    </Stack>
+                </DialogTitle>
+                <DialogContent>
+                    <Box mb={4} ml={1}>
+                        <Label color={theme.palette.error.main}>{balance?.error}</Label>
+                    </Box>
+                    <DialogContentText>
+                        <TableContainer component={Paper}>
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Order No</TableCell>
+                                        <TableCell>Vehicle No</TableCell>
+                                        <TableCell>Balance Rs</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell>
+                                            {ids.join(', ')}
+                                        </TableCell>
+                                        <TableCell>
+
+                                            <Typography key={loadingInstructions.veicle_num}>{loadingInstructions.veicle_num}</Typography>
+
+                                        </TableCell>
+                                        <TableCell>
+                                            ₹ {fCurrency(balance?.balance)}
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+
+                    </DialogContentText>
+
+
+
+                </DialogContent>
+                <DialogActions>
+                    <LoadingButton loading={loading} onClick={handleAction}>{balance?.balance === 'balance' ? 'OK' : 'CREDIT SALE'}</LoadingButton>
+                    <LoadingButton sx={{ color: 'error.main' }} onClick={handleClose}>CANCEL</LoadingButton>
+                </DialogActions>
+            </Dialog>
 
 
             <Snackbar
@@ -395,4 +560,5 @@ DispatchTableRow.propTypes = {
     rate: PropTypes.string,
     grade: PropTypes.string,
     qcStatus: PropTypes.string,
+    loadingInstructions: PropTypes.any,
 };

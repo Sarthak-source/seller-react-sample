@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import NetworkRepository from 'src/app-utils/network_repository';
+import Label from 'src/components/label';
 import Scrollbar from 'src/components/scrollbar';
 import OrdersTableRow from '../../orders/order-table-row/order-table-row';
 import { useOrderTableFormate } from '../../orders/use-order-table-formate';
@@ -86,7 +87,7 @@ export default function LoadingInstructionDetails() {
 
 
   const getImageUrlAndTitleList = (item) => {
-    console.log('item',item)
+    console.log('item', item)
     const mapping = [
       {
         key: 'dl_img_frontside',
@@ -177,7 +178,7 @@ export default function LoadingInstructionDetails() {
 
                                 millName={loadingInstructionDetailsData.mill}
                                 name={loadingInstructionDetailsData.trader}
-                                date={format(parseISO(loadinginstruction.date), 'MM/dd/yyyy')}
+                                date={format(parseISO(loadinginstruction.date), 'dd/MMM/yyyy')}
                                 vehicleNumber={loadingInstructionDetailsData.vehicle_num}
                                 quantity={loadingInstructionDetailsData.total_qty}
                                 billedTo={`${loadinginstruction.billing_address.name}\n${loadingInstructionDetailsData.billing_gstin}\n${loadinginstruction.billing_address.address}`}
@@ -199,70 +200,70 @@ export default function LoadingInstructionDetails() {
                 <Typography variant='h6'>Orders</Typography>
               </StepLabel>
               <StepContent>
-              {tenderOrderData ? (
-                <Card sx={{ marginTop: 2,  }}>
-                  <Scrollbar>
-                    <TableContainer sx={{ overflow: 'unset' }}>
-                      <Table sx={{ minWidth: 800 }}>
-                        <TableHead>
-                          {orderHeaderRow.map((label, index) => (
-                            <TableCell key={index} sx={{ height: '40px' }}>
-                              {label.label}
-                            </TableCell>
-                          ))}
-                        </TableHead>
-                        <TableBody>
-                          {
-                           tenderOrderData && tenderOrderData.map((result) => (
-                              <OrdersTableRow
-                                key={result.id}
-                                ordersId={result.id}
-                                traderName={result.trader.name}
-                                millName={result.tender_head.mill.name}
-                                date={format(parseISO(result.date), 'MM/dd/yyyy')}
-                                price={`₹ ${result.price} ${result.tender_head.product.product_type.unit}`}
-                                status={getStatusText(result.status)}
-                                tenderType={result.tender_head.tender_type}
-                                productType={result.tender_head.product.product_type.product_type}
-                                grade={
-                                  result.tender_head.product.properties.length > 0
-                                    ? result.tender_head.product.properties[0].label
-                                    : 'Not given'
-                                }
-                                season={
-                                  result.tender_head.product.properties.length > 0
-                                    ? result.tender_head.product.properties[0].value
-                                    : 'Not given'
-                                }
-                                sale={formatQty(result.qty)}
-                                loading={`${formatQuantity(
-                                  result,
-                                  'yet_to_load',
-                                  result.yet_to_load
-                                )} ${result.tender_head.product.product_type.unit}`}
-                                dispatched={`${formatQuantity(
-                                  result,
-                                  'dispatched_qty',
-                                  result.yet_to_load
-                                )} ${result.tender_head.product.product_type.unit}`}
-                                balance={`${formatQuantity(
-                                  result,
-                                  'available_qty',
-                                  result.yet_to_load
-                                )} ${result.tender_head.product.product_type.unit}`}
-                                order={result}
-                              />
+                {tenderOrderData ? (
+                  <Card sx={{ marginTop: 2, }}>
+                    <Scrollbar>
+                      <TableContainer sx={{ overflow: 'unset' }}>
+                        <Table sx={{ minWidth: 800 }}>
+                          <TableHead>
+                            {orderHeaderRow.map((label, index) => (
+                              <TableCell key={index} sx={{ height: '40px' }}>
+                                {label.label}
+                              </TableCell>
                             ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Scrollbar>
-                </Card>
-              ) : (<Typography variant="subtitle1" marginLeft={4} paddingTop={4}>This Dispatch has no orders</Typography>)}
-                
-                </StepContent>
+                          </TableHead>
+                          <TableBody>
+                            {
+                              tenderOrderData && tenderOrderData.map((result) => (
+                                <OrdersTableRow
+                                  key={result.id}
+                                  ordersId={result.id}
+                                  traderName={result.trader.name}
+                                  millName={result.tender_head.mill.name}
+                                  date={format(parseISO(result.date), 'dd/MMM/yyyy')}
+                                  price={`₹ ${result.price} ${result.tender_head.product.product_type.unit}`}
+                                  status={getStatusText(result.status)}
+                                  tenderType={result.tender_head.tender_type}
+                                  productType={result.tender_head.product.product_type.product_type}
+                                  grade={
+                                    result.tender_head.product.properties.length > 0
+                                      ? result.tender_head.product.properties[0].label
+                                      : 'Not given'
+                                  }
+                                  season={
+                                    result.tender_head.product.properties.length > 0
+                                      ? result.tender_head.product.properties[0].value
+                                      : 'Not given'
+                                  }
+                                  sale={formatQty(result.qty)}
+                                  loading={`${formatQuantity(
+                                    result,
+                                    'yet_to_load',
+                                    result.yet_to_load
+                                  )} ${result.tender_head.product.product_type.unit}`}
+                                  dispatched={`${formatQuantity(
+                                    result,
+                                    'dispatched_qty',
+                                    result.yet_to_load
+                                  )} ${result.tender_head.product.product_type.unit}`}
+                                  balance={`${formatQuantity(
+                                    result,
+                                    'available_qty',
+                                    result.yet_to_load
+                                  )} ${result.tender_head.product.product_type.unit}`}
+                                  order={result}
+                                />
+                              ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </Scrollbar>
+                  </Card>
+                ) : (<Typography variant="subtitle1" marginLeft={4} paddingTop={4}>This Dispatch has no orders</Typography>)}
 
-          
+              </StepContent>
+
+
 
             </Step>
             <Step active expanded>
@@ -270,44 +271,44 @@ export default function LoadingInstructionDetails() {
 
               <StepContent>
 
-              <Card sx={{ marginTop: 2,  }}>
-                <Scrollbar>
-                  <TableContainer sx={{ overflow: 'unset' }}>
-                    <Table sx={{ minWidth: 800 }}>
-                      <TableHead >
-                        <TableRow>
-                          {tenderHeaderRow.map((label, index) => (
-                            <TableCell key={index} sx={{ height: '40px' }}>
-                              {label.label}
-                            </TableCell>
+                <Card sx={{ marginTop: 2, }}>
+                  <Scrollbar>
+                    <TableContainer sx={{ overflow: 'unset' }}>
+                      <Table sx={{ minWidth: 800 }}>
+                        <TableHead >
+                          <TableRow>
+                            {tenderHeaderRow.map((label, index) => (
+                              <TableCell key={index} sx={{ height: '40px' }}>
+                                {label.label}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {tenderDetailsData.map((tenderDetails) => (
+                            <TenderTableRow
+                              key={tenderDetails.id}
+                              tenderId={tenderDetails.id}
+                              name={tenderDetails.mill.name}
+                              location={generateLocation(tenderDetails.mill.location, tenderDetails.mill.state.name)}
+                              date={format(parseISO(tenderDetails.date), 'dd/MMM/yyyy')}
+                              price={formatPrice(tenderDetails.price, tenderDetails.product.product_type.unit)}
+                              status={tenderDetails.status}
+                              tenderType={tenderDetails.tender_type}
+                              productType={tenderDetails.product.product_type.product_type}
+                              grade={getPropertyValue(tenderDetails.product.properties, 0, 'label', 'Not given')}
+                              season={getPropertyValue(tenderDetails.product.properties, 0, 'value', 'Not given')}
+                              total={tenderDetails.qty}
+                              sold={tenderDetails.approved_qty}
+                              balance={tenderDetails.available_qty}
+                            />
                           ))}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {tenderDetailsData.map((tenderDetails) => (
-                          <TenderTableRow
-                            key={tenderDetails.id}
-                            tenderId={tenderDetails.id}
-                            name={tenderDetails.mill.name}
-                            location={generateLocation(tenderDetails.mill.location, tenderDetails.mill.state.name)}
-                            date={format(parseISO(tenderDetails.date), 'MM/dd/yyyy')}
-                            price={formatPrice(tenderDetails.price, tenderDetails.product.product_type.unit)}
-                            status={tenderDetails.status}
-                            tenderType={tenderDetails.tender_type}
-                            productType={tenderDetails.product.product_type.product_type}
-                            grade={getPropertyValue(tenderDetails.product.properties, 0, 'label', 'Not given')}
-                            season={getPropertyValue(tenderDetails.product.properties, 0, 'value', 'Not given')}
-                            total={tenderDetails.qty}
-                            sold={tenderDetails.approved_qty}
-                            balance={tenderDetails.available_qty}
-                          />
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Scrollbar>
-              </Card>
-                
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Scrollbar>
+                </Card>
+
               </StepContent>
             </Step>
 
@@ -323,14 +324,19 @@ export default function LoadingInstructionDetails() {
                     ))}
                   </Grid>
                 ) : (
-                  <>No Quality check data</>
+                  <Label >
+                    <Typography variant="h10">No Quality check data</Typography>
+                  </Label>
                 )
               }
             </Step>
           </Stepper>
         </Stack>
       ) : (
-        <Typography variant="h10">Dispatch details data is null</Typography>
+        <Label sx={{ px: 20 }}>
+          <Typography variant="h10">Dispatch details data is null</Typography>
+
+        </Label>
       )}
     </Container>
   );

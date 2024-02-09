@@ -9,7 +9,7 @@ const OrderCreate = () => {
   const selectedUser = useSelector((state) => state.user.selectedUser);
 
   const [millValue, setMillValue] = useState({});
-  const [product, setProduct] = useState('');
+  const [product, setProduct] = useState([]);
   const [qtyUnit, setQtyUnit] = useState('');
   const [quantity, setQuantity] = useState('');
   const [rate, setRate] = useState('');
@@ -23,18 +23,15 @@ const OrderCreate = () => {
 
   const navigate = useNavigate();
 
-
   const nav = () => {
     setTimeout(() => {
       navigate(`/home/`);
     }, 2000);
   };
 
-
   const handleMillChange = (event) => {
     const newValue = event.target.value;
     setMillValue(newValue);
-    setProduct(newValue.products);
   };
 
   const handleProductChange = (newValue) => {
@@ -151,7 +148,7 @@ const OrderCreate = () => {
               onChange={handleProductChange}
               displayEmpty
               inputProps={{ 'aria-label': 'Without label' }}>
-              <MenuItem value='' disabled>
+              <MenuItem value="" disabled>
                 Select Product
               </MenuItem>
 

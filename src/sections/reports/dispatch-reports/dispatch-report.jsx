@@ -11,11 +11,13 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ip } from 'src/app-utils/api-constants';
+import Scrollbar from 'src/components/scrollbar';
 import RenderHtmlFromLink from '../render-html';
 
 
 export default function DispatchReportView() {
   const [selectedOption, setSelectedOption] = useState('');
+  const [selectedInvoice, setSelectedInvoice] = useState('');
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -23,6 +25,10 @@ export default function DispatchReportView() {
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
+  };
+
+  const handleSelectInvoice = (event) => {
+    setSelectedInvoice(event.target.value);
   };
 
   const handleFromDateChange = (date) => {
@@ -35,15 +41,12 @@ export default function DispatchReportView() {
 
   const formateDate = (date) => {
     console.log('Received date:', date);
-  
-    
-      const formattedDate = dayjs(date).format('YYYY-MM-DD');
-      console.log('Formatted date:', formattedDate);
-      return formattedDate;
-   
-  };
-  
 
+
+    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+    console.log('Formatted date:', formattedDate);
+    return formattedDate;
+  };
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen);
@@ -59,18 +62,24 @@ export default function DispatchReportView() {
     icon: PropTypes.string.isRequired,
   };
 
+  console.log('selectedInvoice',selectedInvoice)
+
+  const invoiceTypes = ['all', 'unload', 'cancelled'];
+
   return (
     <>
       {isFullScreen ? (
         <Card sx={{ p: 2, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}>
-          {selectedOption && fromDate && toDate && <FullScreen icon={<Iconify icon="bi:fullscreen-exit" />} />}
-          {selectedOption && fromDate && toDate && <RenderHtmlFromLink
+          {selectedOption && fromDate && toDate && selectedInvoice && <FullScreen icon={<Iconify icon="bi:fullscreen-exit" />} />}
+          {selectedOption && fromDate && toDate && selectedInvoice && <RenderHtmlFromLink
             link={`http://${ip}/reports/dispatch_reports/?mill_pk=${encodeURIComponent(selectedOption)}
-                 &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate((toDate)))}`} />}
+                 &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate((toDate)))}&invoice_type=${encodeURIComponent(selectedInvoice)}`} />}
         </Card>
       ) : (
         <Card sx={{ p: 2 }}>
-          <Stack direction="row" spacing={2}>
+           <Scrollbar>
+
+           <Stack direction="row" spacing={2}>
             <Stack>
               <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
                 Select mill
@@ -118,11 +127,36 @@ export default function DispatchReportView() {
                 </DemoContainer>
               </LocalizationProvider>
             </Stack>
+
+            <Stack>
+              <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
+                Invoice type
+              </Typography>
+              <Select
+                value={selectedInvoice}
+                onChange={handleSelectInvoice}
+                displayEmpty
+                style={{ width: '250px' }}
+                inputProps={{ 'aria-label': 'Without label' }}
+              >
+                <MenuItem value="" disabled>
+                  Select a Invoice type
+                </MenuItem>
+                {invoiceTypes.map((invoiceType) => (
+                  <MenuItem key={invoiceType} value={invoiceType}>
+                    {invoiceType}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Stack>
           </Stack>
-          {selectedOption && fromDate && toDate && <RenderHtmlFromLink
-            link={`http://${ip}/reports/dispatch_reports/?mill_pk=${encodeURIComponent(selectedOption)}
-                &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate((toDate)))}`} />}
-          {selectedOption && fromDate && toDate && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
+
+           </Scrollbar>
+
+          
+          {selectedOption && fromDate && toDate && selectedInvoice && <RenderHtmlFromLink
+            link={`http://${ip}/reports/dispatch_reports/?mill_pk=${encodeURIComponent(selectedOption)}&from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate((toDate)))}&invoice_type=${encodeURIComponent(selectedInvoice)}`} />}
+          {selectedOption && fromDate && toDate && selectedInvoice && <FullScreen icon={<Iconify icon="bi:fullscreen" />} />}
         </Card>
       )}
     </>

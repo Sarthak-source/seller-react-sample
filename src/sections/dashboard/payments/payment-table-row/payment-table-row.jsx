@@ -20,6 +20,7 @@ export default function PaymentsTableRow({
   amount,
   status,
   millName,
+  paymentType,
   price,
   tradeName,
   remitter,
@@ -86,6 +87,7 @@ export default function PaymentsTableRow({
         <TableCell>{date}</TableCell>
         <TableCell>{paymentsId}</TableCell>
         <TableCell>{amount}</TableCell>
+        <TableCell>{paymentType}</TableCell>
 
         <TableCell>
           <Label color={getStatusColor(status)}>{status}</Label>
@@ -158,6 +160,7 @@ PaymentsTableRow.propTypes = {
   amount: PropTypes.any,
   status: PropTypes.any,
   millName: PropTypes.any,
+  paymentType: PropTypes.any,
   price: PropTypes.any,
   tradeName: PropTypes.any,
   remitter: PropTypes.any,

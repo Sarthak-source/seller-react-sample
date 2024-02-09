@@ -15,28 +15,29 @@ import store from './redux/configure-store';
 
 // ----------------------------------------------------------------------
 
-export default function App()  {
+export default function App() {
+
   useScrollToTop();
   useEffect(() => {
     const initializeAsync = async () => {
-        try {
-            await NetworkAxiosOptions.setDynamicHeader();
-            console.log('Axios options initialized successfully');
-        } catch (error) {
-            console.error('Error initializing Axios options:', error);
-            
-        }
+      try {
+        await NetworkAxiosOptions.setDynamicHeader();
+        console.log('Axios options initialized successfully');
+      } catch (error) {
+        console.error('Error initializing Axios options:', error);
+
+      }
     };
 
     initializeAsync();
-}, []);
+  }, []);
 
   return (
     <Provider store={store}>
-    <ThemeProvider>
-      <Router />
-      <ToastContainer />
-    </ThemeProvider>
+      <ThemeProvider>
+        <Router />
+        <ToastContainer />
+      </ThemeProvider>
     </Provider>
   );
 }
