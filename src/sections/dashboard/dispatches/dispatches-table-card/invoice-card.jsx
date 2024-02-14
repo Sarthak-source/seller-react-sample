@@ -89,6 +89,7 @@ export default function InoviceCard(
 
     });
 
+
     const dataFormated = dataFiltered.map(row => ({
         type: 'invoice',
         doPk: row.delivery_order,

@@ -128,7 +128,8 @@ export default function OrderUpdateForm({ orderSummary }) {
     };
 
 
-    const handleAddressDialogClose = () => {
+    const handleAddressDialogClose = (addressType) => {
+        updateAddress(addressType);
         setShippingToDialogOpen(false);
         setBillToDialogOpen(false)
         setShippingFromDialogOpen(false)
@@ -268,9 +269,51 @@ export default function OrderUpdateForm({ orderSummary }) {
         setETransportAddress(e)
     }
 
-    const address = (gstIn, isAddressDialogOpen, onSelect) => (
+    const updateAddress = async (updateType) => {
+        try {
+
+            console.log('posting data', {
+                orderSummary: orderSummary.order.id,
+                shippingToAddress,
+                billToAddress,
+            })
+
+
+            if (updateType === 'shipping to') {
+                await NetworkRepository.orderHeadAddressUpdate(
+                    orderSummary.order.id,
+                    shippingToAddress.id,
+                    '',
+                );
+
+            } else if (updateType === 'bill to') {
+                await NetworkRepository.orderHeadAddressUpdate(
+                    orderSummary.order.id,
+                    '',
+                    billToAddress.id,
+                );
+
+            } else if (updateType === 'shipping from') {
+                console.log(updateType);
+            } else {
+                console.log(updateType);
+            }
+
+            showSnackbar(`${updateType} address updated`)
+
+
+
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+
+
+    const address = (gstIn, isAddressDialogOpen, onSelect, addressType) => (
         (
-            <Dialog open={isAddressDialogOpen} onClose={handleAddressDialogClose}>
+            <Dialog open={isAddressDialogOpen} onClose={() => handleAddressDialogClose(addressType)}>
                 <DialogTitle>Select address</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -278,7 +321,7 @@ export default function OrderUpdateForm({ orderSummary }) {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <LoadingButton onClick={handleAddressDialogClose}>
+                    <LoadingButton onClick={() => handleAddressDialogClose(addressType)}>
                         Submit
                     </LoadingButton>
                 </DialogActions>
@@ -601,9 +644,9 @@ export default function OrderUpdateForm({ orderSummary }) {
 
                 </Dialog>
 
-                {address(shippingTo, shippingToDialogOpen, setShippingToAddress)}
-                {address(billTo, billingToDialogOpen, setBillToAddress)}
-                {address(shippingFrom, shippingFromDialogOpen, setShippingFromAddress)}
+                {address(shippingTo, shippingToDialogOpen, setShippingToAddress, 'shipping to')}
+                {address(billTo, billingToDialogOpen, setBillToAddress, 'bill to')}
+                {address(shippingFrom, shippingFromDialogOpen, setShippingFromAddress, 'shipping from')}
 
 
 

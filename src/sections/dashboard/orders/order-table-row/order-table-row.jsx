@@ -190,14 +190,14 @@ export default function OrdersTableRow({
                     align="right" style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: theme.palette.common.white }}
                 >
                     <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
-                        {status === 'Pending approval' && (
+                        {status === 'Pending Approval' && (
                             <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Accept?', 'Approved')} width='100px' color={theme.palette.success.main}>
                                 <Iconify icon="material-symbols:order-approve-rounded" />
                                 <Box sx={{ fontWeight: 'bold' }}> Accept</Box>
                             </HoverExpandButton>
                         )}
                         {
-                            status === 'Pending approval' && (
+                            status === 'Pending Approval' && (
                                 <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Reject?', 'Rejected')} width='100px' color={theme.palette.error.main} >
                                     <Iconify icon="mdi:file-remove" />
                                     <Box sx={{ fontWeight: 'bold' }}> Reject</Box>
@@ -223,7 +223,7 @@ export default function OrdersTableRow({
                         }
                         {
                             status === 'Bid Accepted' && (
-                                <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Close?', 'Close')} width='100px' color={theme.palette.error.main} >
+                                <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Close?', 'Close')} width='90px' color={theme.palette.error.main} >
                                     <Iconify icon="mdi:file-remove" />
                                     <Box sx={{ fontWeight: 'bold' }}>Close</Box>
                                 </HoverExpandButton>

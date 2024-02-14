@@ -57,7 +57,7 @@ export default function DispatchTableRow({
     const [balance, setBalance] = useState()
 
 
-    console.log('DispatchTableRow loadingInstructions', loadingInstructions)
+    console.log('DispatchTableRow loadingInstructions', loadingInstructions.status)
 
 
 
@@ -222,7 +222,7 @@ export default function DispatchTableRow({
         console.log('dio', data)
 
         if (data) {
-            console.log('issue do',`http://${ip}/${ApiAppConstants.getDoDoc}${data.id}`)
+            console.log('issue do', `http://${ip}/${ApiAppConstants.getDoDoc}${data.id}`)
 
             printDoOpen(`http://${ip}/${ApiAppConstants.getDoDoc}${data.id}`)
 
@@ -322,23 +322,25 @@ export default function DispatchTableRow({
 
     const printDoOpen = (url) => {
         setDialogOpen(true)
-
         handlePdf(url);
-
     }
+
+    console.log('subtype', subtype)
 
     return (
         <>
             <TableRow
                 onMouseEnter={() => handleToggle(true)}
                 onMouseLeave={() => handleToggle(false)}
+                style={{ backgroundColor: loadingInstructions.status === 'Cancel' ? theme.palette.error.cancelled : 'inherit' }}
+
                 hover tabIndex={-1} role="checkbox">
                 <TableCell
                     onClick={() => handleOpenDetails(lrId)}
                     style={{ cursor: 'pointer' }}
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.borderRadius = '8px';
-                        e.currentTarget.style.boxShadow = '5px 5px 10px rgba(77, 182, 172,0.9)';
+                        e.currentTarget.style.borderRadius = loadingInstructions.status === 'Cancel' ? '0px' : '8px';
+                        e.currentTarget.style.boxShadow = loadingInstructions.status === 'Cancel' ? '0' : '5px 5px 10px rgba(77, 182, 172,0.9)';
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.boxShadow = 'none';
@@ -421,47 +423,67 @@ export default function DispatchTableRow({
                 </TableCell>
                 <TableCell>{rate}</TableCell>
                 <TableCell>{grade}</TableCell>
-                <TableCell onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = theme.palette.grey[200];
-                }}
+                {loadingInstructions.status !== 'Cancel' ? (  <TableCell
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor =  theme.palette.grey[200];
+                    }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = theme.palette.common.white;
                     }}
-                    align="right" style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: theme.palette.common.white }} >
-                    <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }} >
-                        {
-                            type === 'invoice' && (
-                                <HoverExpandButton onClick={printOpen} width='100px' color={theme.palette.success.main} >
-                                    <Iconify icon="lets-icons:print" />
-                                    <Box sx={{ fontWeight: 'bold' }}> Print</Box>
+                    align="right"
+                    style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: loadingInstructions.status === 'Cancel' ? theme.palette.error.cancelled : theme.palette.common.white }} >
+                    {loadingInstructions.status !== 'Cancel' && (
+
+                        <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }}  >
+                            {
+                                type === 'invoice' && (
+                                    <HoverExpandButton onClick={printOpen} width='100px' color={theme.palette.success.main} >
+                                        <Iconify icon="lets-icons:print" />
+                                        <Box sx={{ fontWeight: 'bold' }}> Print</Box>
+                                    </HoverExpandButton>
+                                )
+                            }
+                            {type === 'invoice' && (
+                                <HoverExpandButton onClick={() => setMailDialogOpen(true)} width='100px' color={theme.palette.info.main}>
+                                    <Iconify icon="fluent:mail-24-filled" />
+                                    <Box sx={{ fontWeight: 'bold' }}> Mail</Box>
                                 </HoverExpandButton>
                             )
-                        }
-                        {type === 'invoice' && (
-                            <HoverExpandButton onClick={() => setMailDialogOpen(true)} width='100px' color={theme.palette.info.main}>
-                                <Iconify icon="fluent:mail-24-filled" />
-                                <Box sx={{ fontWeight: 'bold' }}> Mail</Box>
-                            </HoverExpandButton>
-                        )
-                        }
-                        {
-                            type === 'loadingsInstruction' && (
-                                <HoverExpandButton onClick={() => handleOpen(qcStatus === 'Done' ? 'Are you sure you want to Issue DO?' : 'Are you sure you want to Approve?', qcStatus === 'Done' ? 'issued' : 'Booked')} width='110px' color={theme.palette.success.main}>
-                                    <Iconify icon="material-symbols:order-approve-rounded" />
-                                    <Box sx={{ fontWeight: 'bold' }}>{qcStatus === 'Done' ? 'Issue DO' : 'Approve'}</Box>
-                                </HoverExpandButton>
-                            )
-                        }
-                        {
-                            type === 'loadingsInstruction' && (
-                                <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Reject?', 'Rejected')} width='100px' color={theme.palette.error.main}>
-                                    <Iconify icon="basil:cancel-solid" />
-                                    <Box sx={{ fontWeight: 'bold' }}> Reject</Box>
-                                </HoverExpandButton>
-                            )
-                        }
-                    </Box>
-                </TableCell>
+                            }
+                            {
+                                type === 'loadingsInstruction' && (
+                                    <HoverExpandButton onClick={() => handleOpen(qcStatus === 'Done' ? 'Are you sure you want to Issue DO?' : 'Are you sure you want to Approve?', qcStatus === 'Done' ? 'issued' : 'Booked')} width='110px' color={theme.palette.success.main}>
+                                        <Iconify icon={qcStatus === 'Done' ? "material-symbols:order-approve-rounded" : "pajamas:issue-closed"} />
+                                        <Box sx={{ fontWeight: 'bold' }}>{qcStatus === 'Done' ? 'Issue DO' : 'Approve'}</Box>
+                                    </HoverExpandButton>
+                                )
+                            }
+                            {
+                                type === 'loadingsInstruction' && (
+                                    <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Reject?', 'Rejected')} width='100px' color={theme.palette.error.main}>
+                                        <Iconify icon="basil:cancel-solid" />
+                                        <Box sx={{ fontWeight: 'bold' }}> Reject</Box>
+                                    </HoverExpandButton>
+                                )
+                            }
+                        </Box>
+
+                    )
+
+
+                    }
+
+                </TableCell>):(
+                    <TableCell
+                    style={{ position: 'sticky', right: 0, color:  theme.palette.error.cancelled  }} 
+
+                    >
+
+                        <Label color={theme.palette.error.main}>
+                            {loadingInstructions.status}
+                        </Label>
+                    </TableCell>
+                )}
             </TableRow>
 
             <AlertDialog
@@ -499,7 +521,7 @@ export default function DispatchTableRow({
                                         </TableCell>
                                         <TableCell>
 
-                                            <Typography key={loadingInstructions.veicle_num}>{loadingInstructions.veicle_num}</Typography>
+                                            <Typography key={loadingInstructions?.veicle_num}>{loadingInstructions?.veicle_num}</Typography>
 
                                         </TableCell>
                                         <TableCell>

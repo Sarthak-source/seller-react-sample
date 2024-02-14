@@ -21,6 +21,7 @@ export const DispatchDetails = lazy(() => import('src/sections/dashboard/dispatc
 export const ProfileDetails = lazy(() => import('src/pages/profile'));
 export const ReportDetails = lazy(() => import('src/pages/reports'));
 export const QualityCheck = lazy(() => import('src/sections/quality_check/quality_check'));
+export const ScanWithVehicle = lazy(() => import('src/sections/issue-do/issue-do'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -41,6 +42,7 @@ export default function Router() {
     { path: 'self-order-create', element: <OrderCreate /> },
     { path: 'delivery-order-create', element: <DeliveryCreate /> },
     { path: 'quality-check', element: <QualityCheck /> },
+    { path: 'issue-do', element: <ScanWithVehicle /> },
     { path: 'traders', element: <TraderDetails /> },
     { path: 'profile', element: <ProfileDetails /> },
     { path: 'reports', element: <ReportDetails /> },
@@ -92,7 +94,7 @@ export default function Router() {
     },
     {
       path: '*',
-      element: <Navigate to="/404" replace />,
+      element: <Navigate to="home" replace />,
     },
   ]);
 

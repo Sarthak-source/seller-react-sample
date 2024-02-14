@@ -128,7 +128,7 @@ export default function TraderTableRow({
         onClose={handleCloseMenu}
         anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
+        slotProps={{
           sx: { width: 140 },
         }}
       >

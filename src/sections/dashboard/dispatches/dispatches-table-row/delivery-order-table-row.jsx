@@ -81,9 +81,9 @@ export default function DoOrderTableRow({
     };
 
     const handleEmailSend = async () => {
-        console.log('mailDoInvoice', doNo)
+        console.log('mailDoInvoice', doId)
         try {
-            await NetworkRepository.mailDoInvoice(false, doNo)
+            await NetworkRepository.mailDoInvoice(false, doId)
             showSnackbar('Mail sent successfully', 'success');
         } catch (error) {
             console.error("Error converting status:", error);

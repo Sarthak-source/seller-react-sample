@@ -11,7 +11,7 @@ const navConfig = [
     title: 'home',
     path: '/home',
     icon: icon('ic_analytics'),
-  }, 
+  },
   {
     title: 'reports',
     path: '/home/reports',
@@ -33,7 +33,16 @@ const navConfig = [
     path: '/home/quality-check',
     icon: icon('ic_qc'),
   },
-  
+  {
+    title: 'DO issue with vehicle',
+    path: '/home/issue-do',
+    icon: icon('ic_vehilcle'),
+  },
+  {
+    title: 'Storehouse',
+    path: '/home/issue-do',
+    icon: icon('ic_storehouse'),
+  },
   // {
   //   title: 'Not found',
   //   path: '/404',

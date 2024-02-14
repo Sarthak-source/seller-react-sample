@@ -727,6 +727,14 @@ const NetworkRepository = {
     orderPk,
     shippingAddress,
     billingAddress) => {
+
+    console.log('poster', {
+      "order_head_pk": orderPk,
+      "billing_address_pk": billingAddress,
+      "address_pk": shippingAddress
+    })
+
+
     try {
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url:
@@ -1070,6 +1078,23 @@ const NetworkRepository = {
         header: { 'authorization': auth },
         data,
       });
+
+      return apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  vehicleDo: async (vehicle_num, sellerId) => {
+    const url =
+      `${ApiAppConstants.checkDOStatus}?seller=${sellerId}&vehicle_num=${vehicle_num}`;
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url,
+        header: { 'authorization': auth },
+      });
+
 
       return apiResponse;
     } catch (e) {

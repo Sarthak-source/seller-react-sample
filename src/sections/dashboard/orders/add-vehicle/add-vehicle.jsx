@@ -57,7 +57,7 @@ export default function AddVehicle() {
 
 
     return (
-        <Container maxWidth="xl" style={{ paddingLeft: '30px', paddingRight: '30px' }}>
+        <Container maxWidth="xl" style={{ paddingLeft: '30px', paddingRight: '30px',  marginTop: 15}}>
             <Typography variant="h4" mb='2%'>Add Vehicle</Typography>
 
 

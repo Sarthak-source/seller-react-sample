@@ -439,7 +439,7 @@ export default function AddVehicleForm({ orderSummary }) {
                 open={snackbarOpen}
                 autoHideDuration={6000}
                 onClose={handleSnackbarClose}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
                 <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
                     {snackbarMessage}

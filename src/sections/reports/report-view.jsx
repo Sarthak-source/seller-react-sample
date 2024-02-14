@@ -37,9 +37,9 @@ export default function ReportView() {
     setAnchorEl(null);
   };
 
-  const menuClick =(val)=>{
-     setSelected(val)
-     handleClose()
+  const menuClick = (val) => {
+    setSelected(val)
+    handleClose()
   }
 
   const open = Boolean(anchorEl);
@@ -54,35 +54,40 @@ export default function ReportView() {
 
         <Typography variant='h4' mt={1}>Reports</Typography>
 
-        <Button sx={{gap:2}} aria-describedby={id} variant="contained" onClick={handleClick}>
+        <Button sx={{ gap: 2 }} aria-describedby={id} variant="contained" onClick={handleClick}>
+          <Iconify icon={open ? "icon-park-outline:up-c" : "icon-park-outline:down-c"} />
           {selected}
-          <Iconify icon="icon-park-outline:down-c" />
+
         </Button>
+
         <Popover
           id={id}
           open={open}
+
           anchorEl={anchorEl}
           onClose={handleClose}
+          maxWidth
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'left',
           }}
         >
-          <MenuItem onClick={() => menuClick('Warehouse reports')}>
-
+          <MenuItem gap={20} onClick={() => menuClick('Warehouse reports')}>
+            <Iconify icon="ph:warehouse-duotone" sx={{ mr: 2.5 }} />
             Warehouse reports
-           
+
           </MenuItem>
           <MenuItem onClick={() => menuClick('Dispatch reports')}>
-
+            <Iconify icon="carbon:delivery-parcel" sx={{ mr: 2.5 }} />
             Dispatch reports
-            
+
           </MenuItem>
         </Popover>
+
       </Stack>
 
 
-      
+
       {
         selected === 'Warehouse reports' && (
           <Tabs
@@ -129,7 +134,7 @@ export default function ReportView() {
               justifyContent: 'flex-start',
             }}
           >
-            <Tab label="Dispatch report" style={{ marginLeft: '-16px' }}/>
+            <Tab label="Dispatch report" style={{ marginLeft: '-16px' }} />
           </Tabs>
         )
       }

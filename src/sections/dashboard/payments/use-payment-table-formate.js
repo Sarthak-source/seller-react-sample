@@ -6,7 +6,7 @@ export function usePaymentTableFormate() {
         { id: 'paymentType', label: 'Payment Type' },
         { id: 'status', label: 'Status' },
         { id: 'millName', label: 'Mill Name' },
-        { id: 'tradeName', label: 'Trader Name' }, 
+        { id: 'tradeName', label: 'Trader Name' },
         { id: 'refNo', label: 'Reference No' },
         { id: '' },
     ]

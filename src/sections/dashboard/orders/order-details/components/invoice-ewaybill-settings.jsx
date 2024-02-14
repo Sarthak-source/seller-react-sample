@@ -9,7 +9,6 @@ import OTPComponent from 'src/sections/login/component/otp-component';
 export default function InvoiceEwaybillSetting({ orderSummary }) {
 
   const [selectedCopies, setSelectedCopies] = useState('1');
-  const [checkboxValues, setCheckboxValues] = useState(Array(6).fill(false));
   const [checkboxData, setCheckboxData] = useState([]);
   const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
   const [isDialogOpen, setDialogOpen] = useState(false);
@@ -20,7 +19,12 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState('');
   const [boe, setBoe] = useState('');
+  const initialCheckboxValues = Array.from({ length: selectedUserConfig.documents.length }, () => false);
+  const [checkboxValues, setCheckboxValues] = useState(initialCheckboxValues);
 
+  const checkboxLabels = useMemo(() =>
+    selectedUserConfig.documents.map((document) => document.name) || [],
+    [selectedUserConfig.documents]);
 
   const matchingMill = selectedUserConfig.seller.mills.find((mill) => mill.id === orderSummary.order.tender_head.mill.id);
   const millNumber = matchingMill ? matchingMill.phone_number : null;
@@ -28,6 +32,8 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
   console.log('millNumber', millNumber)
 
   const orderDocument = orderSummary.order.document;
+
+  console.log('orderDocument', orderDocument, checkboxValues)
 
 
   useEffect(() => {
@@ -39,7 +45,7 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
       }
 
       if (orderSummary.order.sub_supply_type) {
-        console.log('orderSummary.order.sub_supply_type',orderSummary.order.sub_supply_type)
+        console.log('orderSummary.order.sub_supply_type', orderSummary.order.sub_supply_type)
         setSelectedSubType(orderSummary.order.sub_supply_type);
       }
 
@@ -50,44 +56,36 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
       if (orderSummary.order.transaction_type) {
         setSelectedTransactionType(orderSummary.order.transaction_type);
       }
+     
+
+      if (orderSummary.order.document) {
+        setCheckboxData(orderSummary.order.document.map(doc => doc.id));
+      }
     }
   }, [
     orderDocument,
+    
     orderSummary.order.supply_type,
     orderSummary.order.sub_supply_type,
     orderSummary.order.document_type,
+    orderSummary.order.document,
     orderSummary.order.transaction_type,])
 
   useEffect(() => {
     if (orderDocument && orderDocument.length > 0) {
-
-
+      console.log('orderDocument.length', orderDocument)
       orderDocument.forEach((orderDoc) => {
         try {
           const id = orderDoc.id;
+          const name = orderDoc.name;
           try {
             if (id >= 1 && id <= checkboxValues.length) {
-              switch (id) {
-                case 1:
-                  setCheckboxValues(prevValues => [...prevValues.slice(0, 1), prevValues[1], ...prevValues.slice(2)]);
-                  break;
-                case 2:
-                  setCheckboxValues(prevValues => [...prevValues.slice(0, 5), prevValues[5], ...prevValues.slice(6)]);
-                  break;
-                case 3:
-                  setCheckboxValues(prevValues => [...prevValues.slice(0, 4), prevValues[4], ...prevValues.slice(5)]);
-                  break;
-                case 4:
-                  setCheckboxValues(prevValues => [prevValues[0], ...prevValues.slice(1)]);
-                  break;
-                case 5:
-                  setCheckboxValues(prevValues => [...prevValues.slice(0, 3), prevValues[3], ...prevValues.slice(4)]);
-                  break;
-                case 6:
-                  setCheckboxValues(prevValues => [...prevValues.slice(0, 2), prevValues[2], ...prevValues.slice(3)]);
-                  break;
-                default:
-                  break;
+              if (checkboxLabels.includes(name)) {
+                setCheckboxValues(prevValues => [
+                  ...prevValues.slice(0, id - 1),
+                  true,
+                  ...prevValues.slice(id)
+                ]);
               }
             }
           } catch (error) {
@@ -102,10 +100,10 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
   },
     [
       orderDocument,
-      checkboxData,
+      checkboxLabels,
       checkboxValues.length,
-
     ]);
+
 
 
 
@@ -114,12 +112,14 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
     newCheckboxValues[index] = !newCheckboxValues[index];
     setCheckboxValues(newCheckboxValues);
 
+    console.log(checkboxValues)
+
     const id = index + 1;
     const newData = newCheckboxValues[index] ? [...checkboxData, id] : checkboxData.filter((dataId) => dataId !== id);
+    console.log(checkboxData)
     setCheckboxData(newData);
   };
 
-  const checkboxLabels = selectedUserConfig.documents.map((document) => document.name) || [];
 
   const supplyTypes = useMemo(() => ({
     "I": selectedUserConfig.suply_type.I.toString(),
@@ -143,10 +143,6 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
       setLoading(false);
     }
   };
-
-
-
-
 
   useEffect(() => {
     console.log('verifyAndUpdate', result)

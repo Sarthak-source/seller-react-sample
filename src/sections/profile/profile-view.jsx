@@ -83,14 +83,13 @@ export default function ProfileView() {
 
     return (
         <Container>
-            <Stack alignItems="center" justifyContent="center" sx={{ height: 1 }}>
+            <Stack alignItems="center" justifyContent="center" sx={{ height: 1, mt: 1.5 }}>
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={6}>
                         <Card
                             sx={{
                                 p: 5,
                                 width: 1,
-
                             }}
                         >
                             <Box display="flex" flexDirection="column" alignItems="center">

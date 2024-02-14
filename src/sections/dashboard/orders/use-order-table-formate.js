@@ -13,7 +13,7 @@ export function useOrderTableFormate() {
                     statusText = "Closed";
                     break;
                 case "Cancel":
-                    statusText = "Canceled";
+                    statusText = "Closed";
                     break;
                 case "rejected":
                     statusText = "Rejected";
@@ -41,7 +41,7 @@ export function useOrderTableFormate() {
 
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
-            case 'close':
+            case 'closed':
             case 'canceled':
             case 'rejected':
                 return 'rgb(255, 0, 0)'; // Red

@@ -69,6 +69,7 @@ export const error = {
   dark: '#B71D18',
   darker: '#7A0916',
   contrastText: '#FFFFFF',
+  cancelled:`rgba(250, 0, 0, 0.1)`,
 };
 
 export const common = {
