@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Switching to branch master"
-git checkout sutra-react
+git checkout main
 
 echo "Building app"
 yarn run build
