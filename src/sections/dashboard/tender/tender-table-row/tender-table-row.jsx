@@ -169,7 +169,7 @@ export default function TenderTableRow({
               )
             }
             {status === 'Added' && (
-              <HoverExpandButton onClick={() => handleOpen(`Are you sure you wan't to reject this tender?`, 'Reject')} width='100px' color={theme.palette.error.main}>
+              <HoverExpandButton onClick={() => handleOpen(`Are you sure you wan't to reject this tender?`, 'Rejected')} width='100px' color={theme.palette.error.main}>
                 <Iconify icon="mdi:file-remove" />
                 <Box sx={{ fontWeight: 'bold' }}> Reject
                 </Box>
