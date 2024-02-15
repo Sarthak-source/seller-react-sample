@@ -92,16 +92,15 @@ export default function TenderView() {
         const fetchTenderData = async (tenderPage, status, millId) => {
             try {
                 setLoading(true);
-                console.log('tenderMillId', millId)
-                const data = await NetworkRepository.sellerTender(pagination, status, millId, selectedUser.id);
+
+                const data = await NetworkRepository.sellerTender(tenderPage, status, millId, selectedUser.id);
+                console.log('tenderMillId', data)
                 setTotalDataCount(data.count);
                 console.log('pagination', pagination, 'tenderPage', tenderPage)
 
-                if (tenderPage > pagination) {
-                    setPagination(tenderPage)
-                }
-                setTenderData(prevData => [...prevData, ...data.results]);
-                console.log('sdfsdfsdf', data.results)
+
+                setTenderData(data.results);
+                console.log('sdfsdfsdf', ...data.results, page)
             } catch (error) {
                 console.error('Error fetching tender data:', error);
             } finally {
@@ -110,6 +109,9 @@ export default function TenderView() {
         };
         fetchTenderData(page, querySteps[activeStep], selectedMill.id);
     }, [page, activeStep, querySteps, pagination, selectedMill, currentState, selectedUser.id]);
+
+
+    console.log('tenderData', tenderData)
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -142,7 +144,7 @@ export default function TenderView() {
     });
 
     const notFound = !dataFiltered.length;
-    
+
 
     const dataFormated = dataFiltered.map(row => ({
         key: row.id,
@@ -183,7 +185,7 @@ export default function TenderView() {
             ]),
         ];
 
-        
+
 
         const csvContent =
             `data:text/csv;charset=utf-8,${dataToExport.map((row) => row.join(',')).join('\n')}`;
@@ -244,7 +246,6 @@ export default function TenderView() {
                                 />
                                 <TableBody>
                                     {dataFormated
-                                        .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
                                             <TenderTableRow
                                                 key={row.id}

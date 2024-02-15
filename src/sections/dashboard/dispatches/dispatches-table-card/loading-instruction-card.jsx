@@ -54,7 +54,7 @@ export default function LoadingsInstructionCard(
                 const data = await NetworkRepository.book(dispatchesPage, text, currentStatus, millId, selectedUser.id);
                 setTotalDataCount(data.count);
                 console.log('here', data.results)
-                setDispatchesData(prevData => [...prevData, ...data.results]);
+                setDispatchesData(data.results);
             } catch (error) {
                 console.error('Error fetching Dispatches data:', error);
             } finally {
@@ -171,7 +171,6 @@ export default function LoadingsInstructionCard(
                             {!loading ? (
                                 <TableBody>
                                     {dataFormated
-                                        .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
                                             <DispatchTableRow
                                                 type='loadingsInstruction'

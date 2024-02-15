@@ -57,7 +57,7 @@ export default function DispatchTableRow({
     const [balance, setBalance] = useState()
 
 
-    console.log('DispatchTableRow loadingInstructions', loadingInstructions.status)
+    console.log('DispatchTableRow loadingInstructions', loadingInstructions?.status)
 
 
 
@@ -332,15 +332,15 @@ export default function DispatchTableRow({
             <TableRow
                 onMouseEnter={() => handleToggle(true)}
                 onMouseLeave={() => handleToggle(false)}
-                style={{ backgroundColor: loadingInstructions.status === 'Cancel' ? theme.palette.error.cancelled : 'inherit' }}
+                style={{ backgroundColor: loadingInstructions?.status === 'Cancel' ? theme.palette.error.cancelled : 'inherit' }}
 
                 hover tabIndex={-1} role="checkbox">
                 <TableCell
                     onClick={() => handleOpenDetails(lrId)}
                     style={{ cursor: 'pointer' }}
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.borderRadius = loadingInstructions.status === 'Cancel' ? '0px' : '8px';
-                        e.currentTarget.style.boxShadow = loadingInstructions.status === 'Cancel' ? '0' : '5px 5px 10px rgba(77, 182, 172,0.9)';
+                        e.currentTarget.style.borderRadius = loadingInstructions?.status === 'Cancel' ? '0px' : '8px';
+                        e.currentTarget.style.boxShadow = loadingInstructions?.status === 'Cancel' ? '0' : '5px 5px 10px rgba(77, 182, 172,0.9)';
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.boxShadow = 'none';
@@ -423,7 +423,7 @@ export default function DispatchTableRow({
                 </TableCell>
                 <TableCell>{rate}</TableCell>
                 <TableCell>{grade}</TableCell>
-                {loadingInstructions.status !== 'Cancel' ? (  <TableCell
+                {loadingInstructions?.status !== 'Cancel' ? (  <TableCell
                     onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor =  theme.palette.grey[200];
                     }}
@@ -431,8 +431,8 @@ export default function DispatchTableRow({
                         e.currentTarget.style.backgroundColor = theme.palette.common.white;
                     }}
                     align="right"
-                    style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: loadingInstructions.status === 'Cancel' ? theme.palette.error.cancelled : theme.palette.common.white }} >
-                    {loadingInstructions.status !== 'Cancel' && (
+                    style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: loadingInstructions?.status === 'Cancel' ? theme.palette.error.cancelled : theme.palette.common.white }} >
+                    {loadingInstructions?.status !== 'Cancel' && (
 
                         <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }}  >
                             {
@@ -480,7 +480,7 @@ export default function DispatchTableRow({
                     >
 
                         <Label color={theme.palette.error.main}>
-                            {loadingInstructions.status}
+                            {loadingInstructions?.status}
                         </Label>
                     </TableCell>
                 )}

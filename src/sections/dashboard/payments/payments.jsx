@@ -110,10 +110,8 @@ export default function PaymentsView() {
                 setTotalDataCount(data.count);
 
                 console.log('paymentsPage', data.results)
-                if (paymentsPage > pagination) {
-                    setPagination(paymentsPage)
-                }
-                setPaymentsData(prevData => [...prevData, ...data.results]);
+
+                setPaymentsData(data.results);
             } catch (error) {
                 console.error('Error fetching payments data:', error);
             } finally {
@@ -159,7 +157,7 @@ export default function PaymentsView() {
 
     });
 
-    
+
 
     const dataFormatted = dataFiltered.map(row => ({
         paymentsId: row.id,
@@ -168,7 +166,7 @@ export default function PaymentsView() {
         millName: row.mill.name,
         tradeName: row.trader.name,
         date: format(parseISO(row.payment_date), 'dd/MMM/yyyy'),
-        paymentType:row.payment_type.name,
+        paymentType: row.payment_type.name,
         refNo: row.ref_no,
     }));
 
@@ -264,7 +262,6 @@ export default function PaymentsView() {
                                 />
                                 <TableBody>
                                     {dataFormatted
-                                        .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
                                             <PaymentsTableRow
                                                 key={row.id}

@@ -51,7 +51,7 @@ export default function DeliveryOrderCard() {
                 const data = await NetworkRepository.deliveryOrders(dispatchesPage, text, millId, selectedUser.id);
                 console.log('here', data.results)
                 setTotalDataCount(data.count);
-                setDispatchesData(prevData => [...prevData, ...data.results]);
+                setDispatchesData(data.results);
             } catch (error) {
                 console.error('Error fetching Dispatches data:', error);
             } finally {
@@ -108,7 +108,6 @@ export default function DeliveryOrderCard() {
                             />
                             {!loading ? (<TableBody>
                                 {dataFiltered
-                                    .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                     .map((row) => (
                                         <DoOrderTableRow
                                             orderNo={row.loading_instruction[0].order_head.id}

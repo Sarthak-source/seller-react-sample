@@ -31,16 +31,23 @@ export default function DashboardView() {
     const fetchData = async () => {
       try {
         const configUserData = await NetworkRepository.sellerConfig(selectedUser.id);
-        dispatch(selectUser(configUserData.seller));
-        dispatch(selectUserConfig(configUserData));
+  
+        // Check if configUserData is not null and is an object
+        if (configUserData && typeof configUserData === 'object') {
+          dispatch(selectUser(configUserData.seller));
+          dispatch(selectUserConfig(configUserData));
+        } else {
+          console.warn("configUserData is not iterable");
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-
+  
     fetchData();
-
+  
   }, [dispatch, selectedUser.id]);
+  
 
   return (
     <Container maxWidth="xl">

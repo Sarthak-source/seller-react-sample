@@ -53,7 +53,7 @@ export default function InoviceCard(
                 const data = await NetworkRepository.invoicesReport(dispatchesPage, text, currentStatus, millId, selectedUser.id);
                 setTotalDataCount(data.count);
                 console.log('here', data.results)
-                setDispatchesData(prevData => [...prevData, ...data.results]);
+                setDispatchesData(data.results);
             } catch (error) {
                 console.error('Error fetching Dispatches data:', error);
             } finally {
@@ -172,7 +172,6 @@ export default function InoviceCard(
                                 />
                                 <TableBody>
                                     {dataFormated
-                                        .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
                                             <DispatchTableRow
                                                 type={row.type}

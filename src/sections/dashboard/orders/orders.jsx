@@ -88,10 +88,8 @@ export default function OrdersView() {
                 const data = await NetworkRepository.allOrders(status, ordersPage, millId, selectedUser.id);
                 console.log('here', data.results)
                 setTotalDataCount(data.count);
-                if (ordersPage > pagination) {
-                    setPagination(ordersPage)
-                }
-                setOrdersData(prevData => [...prevData, ...data.results]);
+                
+                setOrdersData(data.results);
             } catch (error) {
                 console.error('Error fetching Orders data:', error);
             } finally {
@@ -240,7 +238,6 @@ export default function OrdersView() {
                                 />
                                 <TableBody>
                                     {dataFormated
-                                        .slice((page - 1) * rowsPerPage, (page - 1) * rowsPerPage + rowsPerPage)
                                         .map((row) => (
                                             <OrderTableRow
                                                 key={row.ordersId}
