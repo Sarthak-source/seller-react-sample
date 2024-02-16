@@ -32,6 +32,8 @@ export default function DeliveryOrderCard() {
     const selectedMill = useSelector((state) => state.mill.selectedMill);
     const searchTerm = useSelector((state) => state.search.searchTerm);
     const selectedUser = useSelector((state) => state.user.selectedUser);
+    const currentState = useSelector((state) => state.stateRefreash.currentState);
+
 
     useEffect(() => {
         setDispatchesData([])
@@ -59,7 +61,7 @@ export default function DeliveryOrderCard() {
             }
         };
         fetchDispatchesData(page, searchTerm, selectedMill.id, selectedUser.id);
-    }, [page, selectedMill, searchTerm, selectedUser.id]);
+    }, [page, selectedMill, searchTerm, selectedUser.id,currentState]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';

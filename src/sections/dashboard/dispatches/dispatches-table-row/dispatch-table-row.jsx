@@ -478,10 +478,15 @@ export default function DispatchTableRow({
                     style={{ position: 'sticky', right: 0, color:  theme.palette.error.cancelled  }} 
 
                     >
+                        
 
-                        <Label color={theme.palette.error.main}>
-                            {loadingInstructions?.status}
+                        <Label color={theme.palette.error.main} variant='filled'>
+                            {loadingInstructions?.status==="cancel"?loadingInstructions?.status:'Canceled'}
                         </Label>
+
+                        
+
+                        
                     </TableCell>
                 )}
             </TableRow>

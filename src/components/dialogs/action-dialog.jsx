@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectState } from 'src/redux/actions/state-refresh';
 
-export default function AlertDialog({ content, isDialogOpen, handleConfirm, handleClose }) {
+export default function AlertDialog({ content, isDialogOpen, handleConfirm, handleClose, shouldDispatch = true }) {
   const dispatch = useDispatch();
   const currentState = useSelector((state) => state.stateRefreash.currentState);
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,10 @@ export default function AlertDialog({ content, isDialogOpen, handleConfirm, hand
       setLoading(true);
       handleConfirm();
       await new Promise((resolve) => setTimeout(resolve, 3000));
-      dispatch(selectState(!currentState));
+      if (shouldDispatch) {
+        dispatch(selectState(!currentState));
+      }
+
     } catch (error) {
       console.error('An error occurred:', error);
     } finally {
@@ -45,5 +48,6 @@ AlertDialog.propTypes = {
   content: PropTypes.any,
   isDialogOpen: PropTypes.bool,
   handleConfirm: PropTypes.func,
+  shouldDispatch: PropTypes.bool,
   handleClose: PropTypes.func,
 };

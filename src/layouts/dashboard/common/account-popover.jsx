@@ -64,7 +64,7 @@ export default function AccountPopover() {
     window.location.reload();
   };
 
-  const label = checked ? `` : `TEST : ${ip}`;
+  const label = checked ? `TEST : ${ip}` : ``;
 
   return (
     <>
@@ -119,7 +119,7 @@ export default function AccountPopover() {
         </Box>
 
         {label !== `` && (<LongPressableBox onLongPress={handleChange} body={
-          <Stack direction="column" alignItems="center" spacing={2} sx={{mb:2}}>
+          <Stack direction="column" alignItems="center" spacing={2} sx={{ mb: 2 }}>
 
 
             <Label>

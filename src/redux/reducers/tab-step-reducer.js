@@ -2,8 +2,15 @@
 
 import * as actionTypes from '../action-types/action-types';
 
+
+const parseDashboardTab = () => {
+    const dashboardTab = localStorage.getItem('dashboardTab');
+    const parsedDashboardTab = parseInt(dashboardTab, 10);
+    return Number.isNaN(parsedDashboardTab) ? 0 : parsedDashboardTab;
+};
+
 const initialState = {
-    dashboardTabState: 0,
+    dashboardTabState: parseDashboardTab(),
     tenderStepState: 0,
     orderStepState: 0,
     paymentStepState: 0,
@@ -13,6 +20,7 @@ const initialState = {
 const tabStepReducer = (state = initialState, action) => {
     switch (action.type) {
         case actionTypes.DASHBOARD_TAB_STATE:
+            localStorage.setItem('dashboardTab', action.payload);
             return {
                 ...state,
                 dashboardTabState: action.payload,

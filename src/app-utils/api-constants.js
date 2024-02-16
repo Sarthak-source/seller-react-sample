@@ -6,9 +6,11 @@ const prod = '172.105.55.52';
 
 const local = '192.168.78.161:8000';
 
-const ip = localStorage.getItem('isTestEnvironment') === 'true'
-    ? prod
-    : testip;
+console.log('isTestEnvironment',localStorage.getItem('isTestEnvironment'))
+
+const ip = localStorage.getItem('isTestEnvironment') === 'true'|| localStorage.getItem('isTestEnvironment') !== null
+    ? testip
+    : prod;
 
 const ApiAppConstants = {
     apiEndPoint: `http://${ip}/api/`,
@@ -71,7 +73,7 @@ const ApiAppConstants = {
     scanDOdest: 'scan_DO_dest/',
     doUnload: 'deliveryOrderUpdateStatus/',
     getDoDoc: 'get_doc/do/',
-    thermalDo:'get_doc/thermal_do/',
+    thermalDo: 'get_doc/thermal_do/',
     getInvoiceDoc: '/get_doc/invoice/',
     gatePass: '/api/gatepass/',
     addressListPost: 'addressListPost/',

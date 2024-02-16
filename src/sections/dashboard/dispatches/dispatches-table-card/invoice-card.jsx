@@ -36,6 +36,7 @@ export default function InoviceCard(
     const selectedMill = useSelector((state) => state.mill.selectedMill);
     const searchTerm = useSelector((state) => state.search.searchTerm);
     const selectedUser = useSelector((state) => state.user.selectedUser);
+    const currentState = useSelector((state) => state.stateRefreash.currentState);
 
 
 
@@ -61,7 +62,7 @@ export default function InoviceCard(
             }
         };
         fetchDispatchesData(page, searchTerm, status, selectedMill.id);
-    }, [page, status, selectedMill, searchTerm, selectedUser.id]);
+    }, [page, status, selectedMill, searchTerm, selectedUser.id,currentState]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';

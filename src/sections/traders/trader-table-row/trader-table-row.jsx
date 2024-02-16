@@ -6,17 +6,14 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  IconButton,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  MenuItem,
-  Popover,
   Stack,
   TableCell,
   TableRow,
-  Typography,
+  Typography
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
@@ -116,13 +113,13 @@ export default function TraderTableRow({
         <TableCell>
           <Label color={getStatusColor(status)}>{status}</Label>
         </TableCell>
-        <TableCell align="right">
+        {/* <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
-        </TableCell>
+        </TableCell> */}
       </TableRow>
-      <Popover
+      {/* <Popover
         open={!!openMenu}
         anchorEl={openMenu}
         onClose={handleCloseMenu}
@@ -140,7 +137,7 @@ export default function TraderTableRow({
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
-      </Popover>
+      </Popover> */}
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Mills associated with this trader</DialogTitle>

@@ -27,9 +27,11 @@ export default function LoginView() {
   const [loadingOPT, setShowloadingOPT] = useState(false);
   const [showOpt, setShowOtp] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [checked, setChecked] = useState(localStorage.getItem('isTestEnvironment') === 'true');
+  const isTestEnvironment = localStorage.getItem('isTestEnvironment');
 
-  console.log(localStorage.getItem('isTestEnvironment'))
+  const [checked, setChecked] = useState(isTestEnvironment === 'true');
+
+  console.log('isTestEnvironment',isTestEnvironment,ip)
 
   const handlePhoneNumberChange = (event) => {
     setPhoneNumber(event.target.value);
@@ -69,7 +71,7 @@ export default function LoginView() {
     }
   }
 
-  const label = checked ? `` : `TEST : ${ip}`;
+  const label = checked ? `TEST : ${ip}` : ``;
 
 
   const renderForm = (
