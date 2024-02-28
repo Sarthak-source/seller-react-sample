@@ -7,10 +7,10 @@ const prod = '172.105.55.52';
 const local = '192.168.78.161:8000';
 
 console.log('isTestEnvironment',localStorage.getItem('isTestEnvironment'))
+const isTestEnvironment = localStorage.getItem('isTestEnvironment');
 
-const ip = localStorage.getItem('isTestEnvironment') === 'true'|| localStorage.getItem('isTestEnvironment') !== null
-    ? testip
-    : prod;
+const ip = isTestEnvironment === 'true' ? testip : prod;
+
 
 const ApiAppConstants = {
     apiEndPoint: `http://${ip}/api/`,

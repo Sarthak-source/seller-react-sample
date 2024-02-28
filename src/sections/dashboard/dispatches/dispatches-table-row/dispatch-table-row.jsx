@@ -9,7 +9,7 @@ import { Alert, Avatar, Box, Dialog, DialogActions, DialogContent, DialogContent
 import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ApiAppConstants, ip } from 'src/app-utils/api-constants';
 import NetworkRepository from 'src/app-utils/network_repository';
@@ -18,6 +18,7 @@ import AlertDialog from 'src/components/dialogs/action-dialog';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { selectState } from 'src/redux/actions/state-refresh';
 import { useDispatchTableFuctions } from './use-dispatch-table-fuctions';
 
 export default function DispatchTableRow({
@@ -54,7 +55,10 @@ export default function DispatchTableRow({
     const [openTaxDialog, setTaxDialog] = useState('');
     const [loading, setLoading] = useState('');
 
-    const [balance, setBalance] = useState()
+    const [balance, setBalance] = useState();
+
+    const dispatch = useDispatch();
+    const currentState = useSelector((state) => state.stateRefreash.currentState);
 
 
     console.log('DispatchTableRow loadingInstructions', loadingInstructions?.status)
@@ -233,11 +237,15 @@ export default function DispatchTableRow({
 
     console.log('balance?.balance', balance)
 
+    console.log('statusType', statusType, qcStatus, subtype)
+
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isMailDialogOpen, setMailDialogOpen] = useState(false);
 
     const handleDialogClose = () => {
         setDialogOpen(false);
+        setTaxDialog(null);
+        dispatch(selectState(!currentState));
         setMailDialogOpen(false);
         setPdfData(null)
     };
@@ -423,9 +431,9 @@ export default function DispatchTableRow({
                 </TableCell>
                 <TableCell>{rate}</TableCell>
                 <TableCell>{grade}</TableCell>
-                {loadingInstructions?.status !== 'Cancel' ? (  <TableCell
+                {loadingInstructions?.status !== 'Cancel' ? (<TableCell
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor =  theme.palette.grey[200];
+                        e.currentTarget.style.backgroundColor = theme.palette.grey[200];
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = theme.palette.common.white;
@@ -469,24 +477,15 @@ export default function DispatchTableRow({
                         </Box>
 
                     )
-
-
                     }
 
-                </TableCell>):(
+                </TableCell>) : (
                     <TableCell
-                    style={{ position: 'sticky', right: 0, color:  theme.palette.error.cancelled  }} 
-
+                        style={{ position: 'sticky', right: 0, color: theme.palette.error.cancelled }}
                     >
-                        
-
                         <Label color={theme.palette.error.main} variant='filled'>
-                            {loadingInstructions?.status==="cancel"?loadingInstructions?.status:'Canceled'}
+                            {loadingInstructions?.status === "cancel" ? loadingInstructions?.status : 'Canceled'}
                         </Label>
-
-                        
-
-                        
                     </TableCell>
                 )}
             </TableRow>
@@ -494,6 +493,7 @@ export default function DispatchTableRow({
             <AlertDialog
                 content={content}
                 isDialogOpen={open}
+                runConfirm={qcStatus !== 'Done'}
                 handleConfirm={() => handleConfirm(statusType)}
                 handleClose={handleClose} />
 
