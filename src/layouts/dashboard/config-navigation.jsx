@@ -34,13 +34,13 @@ const navConfig = [
     icon: icon('ic_qc'),
   },
   {
-    title: 'DO issue with vehicle',
-    path: '/home/issue-do',
+    title: 'Genarate Invoice',
+    path: '/home/generate-invoice',
     icon: icon('ic_vehilcle'),
   },
   {
     title: 'Storehouse',
-    path: '/home/issue-do',
+    path: '/home/',
     icon: icon('ic_storehouse'),
   },
   // {

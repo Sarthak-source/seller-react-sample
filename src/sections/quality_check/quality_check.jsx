@@ -15,12 +15,16 @@ const QualityCheck = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState(0);
+    const fileInputRef = useRef(null); // Create a ref for the file input element
+
 
 
     const [otp, setOtp] = useState('');
 
     const [openFront, setFront] = useState();
     const [openBack, setBack] = useState();
+
+    const [openImage, setImageDialog] = useState(false);
 
     const videoRefFrontImage = useRef();
     const videoRefBackImage = useRef();
@@ -43,6 +47,7 @@ const QualityCheck = () => {
     const handleDialogClose = () => {
         setFront(false)
         setBack(false)
+        setImageDialog(false)
     }
 
     const streamVideo = async (open, setUrl, setStream, videoRef) => {
@@ -108,7 +113,7 @@ const QualityCheck = () => {
                 if (driverNumberController.length !== 10 || Number.isNaN(Number(driverNumberController))) {
                     alert("Enter a valid number")
                 } else {
-                    const sendDriverOtp = await NetworkRepository.sendOtpDriver(driverNumberController, vehicleNumberController,selectedUser.id)
+                    const sendDriverOtp = await NetworkRepository.sendOtpDriver(driverNumberController, vehicleNumberController, selectedUser.id)
                     console.log('sendDriverOtp', sendDriverOtp)
                     setDriverDetails(sendDriverOtp)
 
@@ -168,13 +173,47 @@ const QualityCheck = () => {
         };
 
         fetchData();
-    }, [navigate,selectedUser.id]); // The empty dependency array means this effect runs once after the initial render
+    }, [navigate, selectedUser.id]); // The empty dependency array means this effect runs once after the initial render
 
 
     console.log('vehicleCheck', vehicleCheck)
-
-
     console.log('otp', otp)
+    console.log('otp', otp)
+    console.log('dl front', capturedDLFrontImage)
+
+
+    const imageChoiceDialog = (whichImage, cameraFunction, galleryFunction) => (
+        <Dialog open={openImage} onClose={handleDialogClose}>
+            <>
+                <Button type="button" onClick={() => cameraFunction()}>
+                    {whichImage} Image from Camera
+                </Button>
+
+                <input
+                    type="file"
+                    accept="image/jpeg;base64"  // Specify accepted file types (images)
+                    onChange={(event) => galleryFunction(event.target.files[0])} // Pass the event and the setSelectedImage function
+                    style={{ display: 'none' }} // Hide the input element
+                    ref={fileInputRef} // Ref to the input element for programmatically triggering file selection
+                />
+
+                <Button type="button" onClick={() => fileInputRef.current.click()}> {/* Use ref to trigger file input click */}
+                    {whichImage} Image from Gallery
+                </Button>
+            </>
+        </Dialog>
+    );
+
+
+
+    const handleGallerySelection = (selectedFile, setImage) => {
+        if (selectedFile) {
+            const imageUrl = URL.createObjectURL(selectedFile);
+            setImage(imageUrl);
+            setImageDialog(false); // Close the image selection dialog
+        }
+    };
+
 
 
     return (
@@ -235,6 +274,8 @@ const QualityCheck = () => {
                 {activeStep === 1 && (
                     <>
 
+
+
                         <Box sx={{ width: "70%", alignSelf: 'center', mx: 'auto' }}>
                             <OTPComponent usedIn='qc' resultSet={setOtp} />
                         </Box>
@@ -258,7 +299,7 @@ const QualityCheck = () => {
 
                         <Stack direction='row' sx={{ justifyContent: 'space-between', mt: 2 }} gap={1}>
                             <Box sx={{ border: '1px solid #d1d1cf', borderRadius: '8px' }}>
-                                <Button type="button" onClick={() => streamVideo(setFront, setCapturedDLFrontImage, setStreamDLFrontImage, videoRefFrontImage)}>
+                                <Button type="button" onClick={() => setImageDialog(true)}>
                                     Capture DL front Image
                                 </Button>
                                 {capturedDLFrontImage !== null ? (
@@ -284,7 +325,7 @@ const QualityCheck = () => {
                                 )}
                             </Box>
                             <Box sx={{ border: '1px solid #d1d1cf', borderRadius: '8px' }}>
-                                <Button type="button" onClick={() => streamVideo(setBack, setCapturedDLBackImage, setStreamDLBackImage, videoRefBackImage)}>
+                                <Button type="button" onClick={() => setImageDialog(true)}>
                                     Capture DL back Image
                                 </Button>
 
@@ -320,6 +361,7 @@ const QualityCheck = () => {
 
                 {activeStep === 2 && (
                     <Stack>
+
                         <Stack direction='row' sx={{ justifyContent: 'space-between', mt: 2 }} gap={1}>
                             <Box sx={{ border: '1px solid #d1d1cf', borderRadius: '8px' }}>
                                 <Button type="button" onClick={() => streamVideo(setFront, setCapturedDLFrontImage, setStreamDLFrontImage, videoRefFrontImage)}>
@@ -414,7 +456,6 @@ const QualityCheck = () => {
                                     </Box>
                                 ) : (
 
-
                                     <Dialog open={openBack} onClose={handleDialogClose} >
                                         <>
                                             <video ref={videoRefBackImage} autoPlay playsInline style={{ display: capturedDLBackImage ? 'none' : 'block', maxWidth: '100%', borderRadius: '8px' }}>
@@ -454,6 +495,10 @@ const QualityCheck = () => {
                     </Stack>
                 )}
             </Card>
+
+            {imageChoiceDialog('Capture DL front', () => streamVideo(setFront, setCapturedDLFrontImage, setStreamDLFrontImage, videoRefFrontImage), (selectedImage) => handleGallerySelection(selectedImage, setCapturedDLFrontImage))}
+            {imageChoiceDialog('Capture DL back', () => streamVideo(setBack, setCapturedDLBackImage, setStreamDLBackImage, videoRefBackImage), (selectedImage) => handleGallerySelection(selectedImage, setCapturedDLBackImage))}
+
         </Stack>
     );
 };

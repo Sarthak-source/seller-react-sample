@@ -126,7 +126,7 @@ export default function ScanWithVehicle() {
             >
                 <Toolbar>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Issue DO with Vehicle number
+                        Enter vehicle number to generate invoice
                     </Typography>
                 </Toolbar>
 

@@ -42,7 +42,7 @@ export default function Router() {
     { path: 'self-order-create', element: <OrderCreate /> },
     { path: 'delivery-order-create', element: <DeliveryCreate /> },
     { path: 'quality-check', element: <QualityCheck /> },
-    { path: 'issue-do', element: <ScanWithVehicle /> },
+    { path: 'generate-invoice', element: <ScanWithVehicle /> },
     { path: 'traders', element: <TraderDetails /> },
     { path: 'profile', element: <ProfileDetails /> },
     { path: 'reports', element: <ReportDetails /> },

@@ -74,6 +74,9 @@ export default function DispatchTableRow({
 
     const handleOpen = async (contentType, statusArg) => {
 
+
+        console.log('handleOpen',statusArg)
+
         if (statusArg === 'Approve') {
 
             setOpen(true);
@@ -459,10 +462,19 @@ export default function DispatchTableRow({
                             )
                             }
                             {
-                                type === 'loadingsInstruction' && (
+                                type === 'loadingsInstruction' && subtype !== 'Booked' && (
                                     <HoverExpandButton onClick={() => handleOpen(qcStatus === 'Done' ? 'Are you sure you want to Issue DO?' : 'Are you sure you want to Approve?', qcStatus === 'Done' ? 'issued' : 'Booked')} width='110px' color={theme.palette.success.main}>
                                         <Iconify icon={qcStatus === 'Done' ? "material-symbols:order-approve-rounded" : "pajamas:issue-closed"} />
                                         <Box sx={{ fontWeight: 'bold' }}>{qcStatus === 'Done' ? 'Issue DO' : 'Approve'}</Box>
+                                    </HoverExpandButton>
+                                )
+                            }
+
+                            {
+                                type === 'loadingsInstruction' && subtype === 'Booked' && qcStatus === 'Done' && (
+                                    <HoverExpandButton onClick={() => handleOpen('Are you sure you want to Issue DO?', 'Issued')} width='110px' color={theme.palette.success.main}>
+                                        <Iconify icon="material-symbols:order-approve-rounded" />
+                                        <Box sx={{ fontWeight: 'bold' }}>Issue DO</Box>
                                     </HoverExpandButton>
                                 )
                             }
