@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import fullScreenReducer from './reducers/full-screen-reducer';
 import millReducer from './reducers/mill-reducer';
 import orderReducer from './reducers/order-reducer';
 import searchReducer from './reducers/search-reducer';
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   traders: traderReducer,
   stateRefreash: stateRefreshReducer,
   tabSteps: tabStepReducer,
+  fullScreen: fullScreenReducer,
 });
 
 

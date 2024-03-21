@@ -18,14 +18,14 @@ import { setSearchTerm } from 'src/redux/actions/search-action';
 
 // ----------------------------------------------------------------------
 
-export default function TableToolbar({ numSelected, label, onDownload, showIcons = true }) {
+export default function TableToolbar({ numSelected, label, onDownload, onFullScreen, showIcons = true }) {
   const [open, setOpen] = useState(null);
   const dispatch = useDispatch();
   const selectedUser = useSelector((state) => state.user.selectedUser);
   const selectedMill = useSelector((state) => state.mill.selectedMill);
   const searchTerm = useSelector((state) => state.search.searchTerm);
 
-  useEffect(() => {dispatch(setSearchTerm(''))},[dispatch,label])
+  useEffect(() => { dispatch(setSearchTerm('')) }, [dispatch, label])
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -124,7 +124,14 @@ export default function TableToolbar({ numSelected, label, onDownload, showIcons
                   <Iconify icon="ic:round-filter-list" color="primary.main" />
                 )}
               </IconButton>
+              
             </Tooltip>
+
+            <Tooltip title="Full screen">
+                <IconButton onClick={onFullScreen}>
+                  <Iconify icon="ic:round-fullscreen" color='primary.main' />
+                </IconButton>
+              </Tooltip>
           </Stack>
         )
       )}
@@ -158,5 +165,6 @@ TableToolbar.propTypes = {
   numSelected: PropTypes.number,
   onDownload: PropTypes.func,
   label: PropTypes.string,
+  onFullScreen: PropTypes.func,
   showIcons: PropTypes.bool,
 };

@@ -47,23 +47,15 @@ export default function ReportView() {
 
   return (
     <Container maxWidth="xl">
-
-
-
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2} >
-
         <Typography variant='h4' mt={1}>Reports</Typography>
-
         <Button sx={{ gap: 2 }} aria-describedby={id} variant="contained" onClick={handleClick}>
           <Iconify icon={open ? "icon-park-outline:up-c" : "icon-park-outline:down-c"} />
           {selected}
-
         </Button>
-
         <Popover
           id={id}
           open={open}
-
           anchorEl={anchorEl}
           onClose={handleClose}
           maxWidth
@@ -75,19 +67,13 @@ export default function ReportView() {
           <MenuItem gap={20} onClick={() => menuClick('Warehouse reports')}>
             <Iconify icon="ph:warehouse-duotone" sx={{ mr: 2.5 }} />
             Warehouse reports
-
           </MenuItem>
           <MenuItem onClick={() => menuClick('Dispatch reports')}>
             <Iconify icon="carbon:delivery-parcel" sx={{ mr: 2.5 }} />
             Dispatch reports
-
           </MenuItem>
         </Popover>
-
       </Stack>
-
-
-
       {
         selected === 'Warehouse reports' && (
           <Tabs
@@ -115,7 +101,6 @@ export default function ReportView() {
           </Tabs>
         )
       }
-
       {
         selected === 'Dispatch reports' && (
           <Tabs
@@ -155,9 +140,6 @@ export default function ReportView() {
           {tabNew === 0 && <DispatchReportView />}
         </>
       )}
-
-
-
     </Container>
   );
 }

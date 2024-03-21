@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { setFullScreen } from 'src/redux/actions/full-screen-action';
 import { selectTenderStep } from 'src/redux/actions/tab-step-action';
 import { useRouter } from 'src/routes/hooks';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
@@ -54,6 +55,9 @@ export default function TenderView() {
     const [isMouseOver, setIsMouseOver] = useState(true);
     const currentState = useSelector((state) => state.stateRefreash.currentState);
     const selectedUser = useSelector((state) => state.user.selectedUser);
+
+
+
 
 
     const handleStepSize = (isOver) => {
@@ -198,33 +202,52 @@ export default function TenderView() {
         link.click();
     };
 
+    const [isFullScreen, setIsFullScreen] = useState(true);
+
+
+    const fullScreen = () => {
+        dispatch(setFullScreen(!isFullScreen));
+        setIsFullScreen(!isFullScreen)
+    }
+
     return (
         <>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-                <Typography variant="h4">Tenders</Typography>
-                <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenTender}>
-                    Add tenders
-                </Button>
-            </Stack>
-            <Box sx={{ width: 1, transform: transformValue, transition: 'transform 0.3s ease', }}
-                onMouseEnter={() => handleStepSize(true)}
-                onMouseLeave={() => handleStepSize(false)}>
-                <Stepper activeStep={activeStep} connector={<QontoConnector />} alternativeLabel style={{ marginBottom: '3%' }}
-                >
-                    {steps.map((label, index) => (
-                        <Step key={`${label}${index}`}>
-                            <StepLabel
-                                style={{ cursor: 'pointer' }}
 
-                                onClick={() => handleStepClick(index)}>
-                                <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
-                                    {label}
-                                </Box>
-                            </StepLabel>
-                        </Step>
-                    ))}
-                </Stepper>
-            </Box>
+
+            {isFullScreen && (
+
+                <>
+
+                    <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+                        <Typography variant="h4">Tenders</Typography>
+                        <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenTender}>
+                            Add tenders
+                        </Button>
+                    </Stack>
+                    <Box sx={{ width: 1, transform: transformValue, transition: 'transform 0.3s ease', }}
+                        onMouseEnter={() => handleStepSize(true)}
+                        onMouseLeave={() => handleStepSize(false)}>
+                        <Stepper activeStep={activeStep} connector={<QontoConnector />} alternativeLabel style={{ marginBottom: '3%' }}
+                        >
+                            {steps.map((label, index) => (
+                                <Step key={`${label}${index}`}>
+                                    <StepLabel
+                                        style={{ cursor: 'pointer' }}
+
+                                        onClick={() => handleStepClick(index)}>
+                                        <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
+                                            {label}
+                                        </Box>
+                                    </StepLabel>
+                                </Step>
+                            ))}
+                        </Stepper>
+                    </Box>
+
+                </>
+
+            )}
+
 
             {!loading ? (
                 <Card>
@@ -232,10 +255,12 @@ export default function TenderView() {
                         numSelected={0}
                         onDownload={handleExportCSV}
                         label='Search tenders..'
+                        onFullScreen={() => fullScreen()}
+
                     />
                     <Scrollbar>
-                        <TableContainer sx={{ overflow: 'unset' }}>
-                            <Table sx={{ minWidth: 800 }}>
+                        <TableContainer sx={{ height: isFullScreen ? 'auto' : 300, overflow: 'auto' }}>
+                            <Table stickyHeader sx={{ minWidth: 800 }}>
                                 <SharedTableHead
                                     order={order}
                                     orderBy={orderBy}

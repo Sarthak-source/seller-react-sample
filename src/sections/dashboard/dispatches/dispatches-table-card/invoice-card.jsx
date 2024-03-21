@@ -7,7 +7,10 @@ import TablePagination from '@mui/material/TablePagination';
 import { format, parseISO } from 'date-fns';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFullScreen } from 'src/redux/actions/full-screen-action'; // Move this import statement above
+
+
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import NetworkRepository from '../../../../app-utils/network_repository'; // Adjust the path
@@ -18,6 +21,10 @@ import TableToolbar from '../../table-toolbar';
 import { applyFilter, emptyRows, getComparator } from '../../utils';
 import DispatchTableRow from '../dispatches-table-row/dispatch-table-row';
 import { useDispatchesTableFormat } from '../use-dispatches-table-formate';
+
+
+
+// Rest of the component code...
 
 export default function InoviceCard(
     { status }
@@ -38,6 +45,7 @@ export default function InoviceCard(
     const selectedUser = useSelector((state) => state.user.selectedUser);
     const currentState = useSelector((state) => state.stateRefreash.currentState);
 
+    const dispatch = useDispatch();
 
 
     useEffect(() => {
@@ -62,7 +70,7 @@ export default function InoviceCard(
             }
         };
         fetchDispatchesData(page, searchTerm, status, selectedMill.id);
-    }, [page, status, selectedMill, searchTerm, selectedUser.id,currentState]);
+    }, [page, status, selectedMill, searchTerm, selectedUser.id, currentState]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -144,33 +152,41 @@ export default function InoviceCard(
 
 
 
+    const [isFullScreen, setIsFullScreen] = useState(true);
 
+
+    const fullScreen = () => {
+        dispatch(setFullScreen(!isFullScreen));
+        setIsFullScreen(!isFullScreen)
+    }
 
     console.log('ivoice', dataFiltered)
 
     const notFound = !dataFiltered.length;
     return (
         <>
-            {!loading ? (
-                <Card>
-                    <TableToolbar
-                        numSelected={selected.length}
-                        identifier='InoviceCard'
-                        label='Search dispatches..'
-                        onDownload={handleExportCSV}
-                    />
-                    <Scrollbar>
-                        <TableContainer sx={{ overflow: 'unset' }}>
-                            <Table sx={{ minWidth: 800 }}>
-                                <SharedTableHead
-                                    order={order}
-                                    orderBy={orderBy}
-                                    rowCount={dataFormated.length}
-                                    numSelected={selected.length}
-                                    onRequestSort={handleSort}
 
-                                    headLabel={invoiceHeaderRow}
-                                />
+            <Card>
+                <TableToolbar
+                    numSelected={selected.length}
+                    identifier='InoviceCard'
+                    label='Search dispatches..'
+                    onDownload={handleExportCSV}
+                />
+                <Scrollbar>
+                    <TableContainer sx={{ overflow: 'unset' }}>
+                        <Table sx={{ minWidth: 800 }}>
+                            <SharedTableHead
+                                order={order}
+                                orderBy={orderBy}
+                                rowCount={dataFormated.length}
+                                numSelected={selected.length}
+                                onRequestSort={handleSort}
+
+                                headLabel={invoiceHeaderRow}
+                            />
+
+                            {!loading ? (
                                 <TableBody>
                                     {dataFormated
                                         .map((row) => (
@@ -200,26 +216,31 @@ export default function InoviceCard(
                                     />
                                     {notFound && <TableNoData query={searchTerm} />}
                                 </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Scrollbar>
+                            ) : (
 
-                    <TablePagination
-                        page={page}
-                        component="div"
-                        count={dataFiltered.length}
-                        nextIconButtonProps={{ disabled: page >= totalPages }}
-                        backIconButtonProps={{ disabled: !(page > 1) }}
-                        rowsPerPage={rowsPerPage}
-                        onPageChange={handleChangePage}
-                        rowsPerPageOptions={[15, 30, 45]}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Card>) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-                    <SkeletonLoader />
-                </Box>
-            )}
+                                <Box sx={{ display: 'flex', justifyContent: 'center', marginLeft: 2, alignItems: 'center', height: '250px', transform: 'scaleX(90)' }}>
+                                    <SkeletonLoader />
+                                </Box>
+
+                            )}
+                        </Table>
+                    </TableContainer>
+                </Scrollbar>
+
+                <TablePagination
+                    page={page}
+                    component="div"
+                    count={dataFiltered.length}
+                    nextIconButtonProps={{ disabled: page >= totalPages }}
+                    backIconButtonProps={{ disabled: !(page > 1) }}
+                    rowsPerPage={rowsPerPage}
+                    onPageChange={handleChangePage}
+                    rowsPerPageOptions={[15, 30, 45]}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            </Card>
+
+
         </>
     );
 }

@@ -44,11 +44,10 @@ export default function SharedTableHead({
             key={headCell.id}
             align={headCell.align || 'left'}
             sortDirection={orderBy === headCell.id ? order : false}
-            sx={{ 
-              width: headCell.width, 
-              minWidth: headCell.minWidth, 
+            sx={{
+              width: headCell.width,
+              minWidth: headCell.minWidth,
               ...(index === headLabel.length - 1 && {
-                position: 'sticky',
                 right: 0,
                 zIndex: 0,
                 backgroundColor: theme.palette.grey[200], // Add background color if needed
@@ -62,7 +61,7 @@ export default function SharedTableHead({
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={onSort(headCell.id)}
             >
-              <Typography variant="subtitle1" fontWeight='bold' fontSize={14}>
+              <Typography variant="subtitle1" fontWeight='bold' fontSize={14} sx={{ position: 'sticky',}}>
                 {headCell.label}
               </Typography>
               {orderBy === headCell.id ? (

@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { setFullScreen } from 'src/redux/actions/full-screen-action';
 import { selectOrderStep } from 'src/redux/actions/tab-step-action';
 import { useRouter } from 'src/routes/hooks';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
@@ -188,6 +189,14 @@ export default function OrdersView() {
     const handleOpenSelfOrder = () => {
         router.replace('/home/self-order-create');
     };
+
+    const [isFullScreen, setIsFullScreen] = useState(true);
+
+
+    const fullScreen = () => {
+        dispatch(setFullScreen(!isFullScreen));
+        setIsFullScreen(!isFullScreen)
+    }
 
     return (
         <>

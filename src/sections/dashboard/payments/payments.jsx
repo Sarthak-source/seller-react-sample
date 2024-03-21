@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { setFullScreen } from 'src/redux/actions/full-screen-action';
 import { selectPaymentStep } from 'src/redux/actions/tab-step-action';
 import NetworkRepository from '../../../app-utils/network_repository'; // Adjust the path
 import { QontoConnector } from '../stepper-line';
@@ -194,6 +195,14 @@ export default function PaymentsView() {
         document.body.appendChild(link);
         link.click();
     };
+
+    const [isFullScreen, setIsFullScreen] = useState(true);
+
+
+    const fullScreen = () => {
+        dispatch(setFullScreen(!isFullScreen));
+        setIsFullScreen(!isFullScreen)
+    }
 
 
     const notFound = !dataFiltered.length;

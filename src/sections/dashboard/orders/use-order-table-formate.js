@@ -89,7 +89,7 @@ export function useOrderTableFormate() {
         { id: 'productType', label: 'Product' },
         { id: 'grade', label: 'Grade' },
         { id: 'season', label: 'Season' },
-        { id: 'sale', label: 'Sale' },
+        { id: 'sale', label: 'Order Qty' },
         { id: 'loading', label: 'Loading' },
         { id: 'dispatched', label: 'Dispatched' },
         { id: 'balance', label: 'Balance', align: 'center' },

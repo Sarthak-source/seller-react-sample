@@ -1101,8 +1101,22 @@ const NetworkRepository = {
       alert(e.toString());
       return e.toString();
     }
-  }
+  },
 
+
+  dispatchReport: async (millPk, fromDate, toDate, invoiceType) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.dispatchReports}?mill_pk=${millPk}&from_date=${fromDate}&to_date=${toDate}&invoice_type=${invoiceType}`,
+        header: { 'authorization': auth },
+      })
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
 }
 
 

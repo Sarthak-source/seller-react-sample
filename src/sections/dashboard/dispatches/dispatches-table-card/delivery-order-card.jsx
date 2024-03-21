@@ -6,9 +6,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import { format, parseISO } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { setFullScreen } from 'src/redux/actions/full-screen-action';
 import NetworkRepository from '../../../../app-utils/network_repository'; // Adjust the path
 import TableEmptyRows from '../../table-empty-rows';
 import SharedTableHead from '../../table-head';
@@ -33,6 +34,7 @@ export default function DeliveryOrderCard() {
     const searchTerm = useSelector((state) => state.search.searchTerm);
     const selectedUser = useSelector((state) => state.user.selectedUser);
     const currentState = useSelector((state) => state.stateRefreash.currentState);
+    const dispatch = useDispatch();
 
 
     useEffect(() => {
@@ -88,6 +90,14 @@ export default function DeliveryOrderCard() {
     });
 
     console.log('derlivery', dataFiltered)
+
+    const [isFullScreen, setIsFullScreen] = useState(true);
+
+
+    const fullScreen = () => {
+        dispatch(setFullScreen(!isFullScreen));
+        setIsFullScreen(!isFullScreen)
+    }
 
     const notFound = !dataFiltered.length;
     return (

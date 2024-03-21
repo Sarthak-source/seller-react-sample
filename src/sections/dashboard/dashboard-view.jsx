@@ -22,6 +22,9 @@ export default function DashboardView() {
   const selectedUser = useSelector((state) => state.user.selectedUser);
   const dispatch = useDispatch();
 
+  const fullScreenState = useSelector((state) => state.fullScreen.fullScreenState);
+
+
   const selectTabState = (event, newValue) => {
     dispatch(selectDashboardTab(newValue));
     setTab(newValue)
@@ -31,7 +34,7 @@ export default function DashboardView() {
     const fetchData = async () => {
       try {
         const configUserData = await NetworkRepository.sellerConfig(selectedUser.id);
-  
+
         // Check if configUserData is not null and is an object
         if (configUserData && typeof configUserData === 'object') {
           dispatch(selectUser(configUserData.seller));
@@ -43,39 +46,51 @@ export default function DashboardView() {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchData();
-  
+
   }, [dispatch, selectedUser.id]);
-  
+
+
+  console.log('fullScreenState', fullScreenState)
+
 
   return (
     <Container maxWidth="xl">
-      <Tabs
-        value={tab}
-        onChange={selectTabState}
-        textColor="primary"
-        indicatorColor="primary"
 
-        style={{
-          marginBottom: '2px',
-          marginTop: -8,
-          display: 'flex',
-          width: "100%",
-          justifyContent: 'flex-start',
-          position: 'fixed',
-          zIndex: 2,
-          backgroundColor: '#f9fafb',
-        }}
-      >
-        <Tab label="Tenders" style={{ marginLeft: '-18px' }} />
-        <Tab label="Orders" />
-        <Tab label="Payments" />
-        <Tab label="Dispatches" />
-      </Tabs>
+      {/* {fullScreenState && (
+        <>Hi</>
+      )} */}
+
+      {fullScreenState && (
+        <Tabs
+          value={tab}
+          onChange={selectTabState}
+          textColor="primary"
+          indicatorColor="primary"
+
+          style={{
+            marginBottom: '2px',
+            marginTop: -8,
+            display: 'flex',
+            width: "100%",
+            justifyContent: 'flex-start',
+            position: 'fixed',
+            zIndex: 2,
+            
+            backgroundColor: '#f9fafb',
+          }}
+        >
+          <Tab label="Tenders" style={{ marginLeft: '-18px' }} />
+          <Tab label="Orders" />
+          <Tab label="Payments" />
+          <Tab label="Dispatches" />
+        </Tabs>
+
+      )}
 
       <Box sx={{
-        paddingTop: '50px'
+        paddingTop: fullScreenState? '50px':'0px'
       }}>
         {tab === 0 && <TenderView />}
         {tab === 1 && <OrdersView />}

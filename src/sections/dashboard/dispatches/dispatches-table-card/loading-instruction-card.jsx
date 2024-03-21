@@ -7,7 +7,8 @@ import TablePagination from '@mui/material/TablePagination';
 import { format, parseISO } from 'date-fns';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setFullScreen } from 'src/redux/actions/full-screen-action';
 
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
@@ -39,6 +40,8 @@ export default function LoadingsInstructionCard(
     const searchTerm = useSelector((state) => state.search.searchTerm);
     const selectedUser = useSelector((state) => state.user.selectedUser);
     const currentState = useSelector((state) => state.stateRefreash.currentState);
+
+    const dispatch = useDispatch();
 
 
     useEffect(() => {
@@ -148,6 +151,14 @@ export default function LoadingsInstructionCard(
         document.body.appendChild(link);
         link.click();
     };
+
+    const [isFullScreen, setIsFullScreen] = useState(true);
+
+
+    const fullScreen = () => {
+        dispatch(setFullScreen(!isFullScreen));
+        setIsFullScreen(!isFullScreen)
+    }
 
 
 

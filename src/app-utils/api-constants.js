@@ -90,7 +90,8 @@ const ApiAppConstants = {
     vehicle2: 'vehiclesListView',
     loadingInstructionPost: 'loadingInstructionPost/',
     sellers: 'sellers/',
-    location: 'location/'
+    location: 'location/',
+    dispatchReports: 'dispatch_reports/',
 };
 
 export { ApiAppConstants, auth, ip, testip };
