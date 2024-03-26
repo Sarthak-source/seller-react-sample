@@ -13,6 +13,7 @@ import { bgBlur } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
 
+import { useSelector } from 'react-redux';
 import MyBreadcrumbs from 'src/components/bread-crumbs/bread-crumbs';
 import AccountPopover from './common/account-popover';
 import Searchbar from './common/searchbar';
@@ -23,6 +24,8 @@ export default function Header({ onOpenNav, openNav }) {
   const theme = useTheme();
 
   const lgUp = useResponsive('up', 'lg');
+  const isFullScreen = useSelector((state) => state.fullScreen.fullScreenState);
+
 
   const renderContent = (
     <>
@@ -46,34 +49,40 @@ export default function Header({ onOpenNav, openNav }) {
 
   );
 
-  return (
-
-    <AppBar
-      sx={{
-        boxShadow: 'none',
-        height: HEADER.H_MOBILE,
-        zIndex: theme.zIndex.appBar + 1,
-        ...bgBlur({
-          color: theme.palette.background.default,
-        }),
-        transition: theme.transitions.create(['height'], {
-          duration: theme.transitions.duration.shorter,
-        }),
-        ...(lgUp && {
-          width: openNav ? `calc(100% - ${NAV.WIDTH}px)` : "100%",
-          height: HEADER.H_DESKTOP,
-        }),
-      }}
-    >
-      <Toolbar
+  return (<>
+    {isFullScreen && (
+      <AppBar
         sx={{
-          height: 1,
-          px: { lg: 5 },
+          boxShadow: 'none',
+          height: HEADER.H_MOBILE,
+          zIndex: theme.zIndex.appBar + 1,
+          ...bgBlur({
+            color: theme.palette.background.default,
+          }),
+          transition: theme.transitions.create(['height'], {
+            duration: theme.transitions.duration.shorter,
+          }),
+          ...(lgUp && {
+            width: openNav ? `calc(100% - ${NAV.WIDTH}px)` : "100%",
+            height: HEADER.H_DESKTOP,
+          }),
         }}
       >
-        {renderContent}
-      </Toolbar>
-    </AppBar>
+        <Toolbar
+          sx={{
+            height: 1,
+            px: { lg: 5 },
+          }}
+        >
+          {renderContent}
+        </Toolbar>
+      </AppBar>
+
+    )}
+
+  </>
+
+
   );
 }
 

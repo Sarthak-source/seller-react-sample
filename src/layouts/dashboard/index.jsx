@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import Box from '@mui/material/Box';
 
+import { useSelector } from 'react-redux';
 import Header from './header';
 import Main from './main';
 import Nav from './nav';
@@ -11,6 +12,8 @@ import Nav from './nav';
 
 export default function DashboardLayout({ children }) {
   const [openNav, setOpenNav] = useState(false);
+  const isFullScreen = useSelector((state) => state.fullScreen.fullScreenState);
+
 
   const handleOpenNav = () => {
     setOpenNav(prevOpenNav => !prevOpenNav);
@@ -18,7 +21,8 @@ export default function DashboardLayout({ children }) {
 
   return (
     <>
-    <Header onOpenNav={handleOpenNav} openNav={openNav} />
+      {isFullScreen && (
+        <Header onOpenNav={handleOpenNav} openNav={openNav} />)}
       <Box
         sx={{
           minHeight: 1,
@@ -26,7 +30,8 @@ export default function DashboardLayout({ children }) {
           flexDirection: { xs: 'column', lg: 'row' },
         }}
       >
-        <Nav openNav={openNav} onCloseNav={() => setOpenNav(false)} />
+
+        {isFullScreen && (<Nav openNav={openNav} onCloseNav={() => setOpenNav(false)} />)}
         <Main>{children}</Main>
       </Box>
     </>

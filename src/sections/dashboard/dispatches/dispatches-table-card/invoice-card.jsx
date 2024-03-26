@@ -167,14 +167,16 @@ export default function InoviceCard(
         <>
 
             <Card>
+                
                 <TableToolbar
                     numSelected={selected.length}
                     identifier='InoviceCard'
                     label='Search dispatches..'
                     onDownload={handleExportCSV}
+                    onFullScreen={() => fullScreen()}
                 />
                 <Scrollbar>
-                    <TableContainer sx={{ overflow: 'unset' }}>
+                    <TableContainer sx={{ height: isFullScreen ? 'auto' : '70vh', overflow: 'auto' }}>
                         <Table sx={{ minWidth: 800 }}>
                             <SharedTableHead
                                 order={order}
@@ -182,7 +184,6 @@ export default function InoviceCard(
                                 rowCount={dataFormated.length}
                                 numSelected={selected.length}
                                 onRequestSort={handleSort}
-
                                 headLabel={invoiceHeaderRow}
                             />
 

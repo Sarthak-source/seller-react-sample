@@ -215,42 +215,44 @@ export default function TenderView() {
 
 
             {isFullScreen && (
-
                 <>
-
                     <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                         <Typography variant="h4">Tenders</Typography>
                         <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenTender}>
                             Add tenders
                         </Button>
                     </Stack>
-                    <Box sx={{ width: 1, transform: transformValue, transition: 'transform 0.3s ease', }}
-                        onMouseEnter={() => handleStepSize(true)}
-                        onMouseLeave={() => handleStepSize(false)}>
-                        <Stepper activeStep={activeStep} connector={<QontoConnector />} alternativeLabel style={{ marginBottom: '3%' }}
-                        >
-                            {steps.map((label, index) => (
-                                <Step key={`${label}${index}`}>
-                                    <StepLabel
-                                        style={{ cursor: 'pointer' }}
-
-                                        onClick={() => handleStepClick(index)}>
-                                        <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
-                                            {label}
-                                        </Box>
-                                    </StepLabel>
-                                </Step>
-                            ))}
-                        </Stepper>
-                    </Box>
 
                 </>
 
             )}
 
 
+
+
+            <Box sx={{ width: 1, transform: transformValue, transition: 'transform 0.3s ease', }}
+                onMouseEnter={() => handleStepSize(true)}
+                onMouseLeave={() => handleStepSize(false)}>
+                <Stepper activeStep={activeStep} connector={<QontoConnector />} alternativeLabel style={{ marginTop: '2.5%', marginBottom: '1.5%' }}
+                >
+                    {steps.map((label, index) => (
+                        <Step key={`${label}${index}`}>
+                            <StepLabel
+                                style={{ cursor: 'pointer' }}
+
+                                onClick={() => handleStepClick(index)}>
+                                <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
+                                    {label}
+                                </Box>
+                            </StepLabel>
+                        </Step>
+                    ))}
+                </Stepper>
+            </Box>
             {!loading ? (
                 <Card>
+
+
                     <TableToolbar
                         numSelected={0}
                         onDownload={handleExportCSV}
@@ -259,8 +261,10 @@ export default function TenderView() {
 
                     />
                     <Scrollbar>
-                        <TableContainer sx={{ height: isFullScreen ? 'auto' : 300, overflow: 'auto' }}>
+
+                        <TableContainer sx={{ height: isFullScreen ? 'auto' : '70vh', overflow: 'auto' }}>
                             <Table stickyHeader sx={{ minWidth: 800 }}>
+
                                 <SharedTableHead
                                     order={order}
                                     orderBy={orderBy}
@@ -269,6 +273,7 @@ export default function TenderView() {
                                     onRequestSort={handleSort}
                                     headLabel={tenderHeaderRow}
                                 />
+
                                 <TableBody>
                                     {dataFormated
                                         .map((row) => (

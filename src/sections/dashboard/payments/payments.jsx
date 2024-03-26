@@ -60,6 +60,8 @@ export default function PaymentsView() {
 
     const { paymentHeaderRow } = usePaymentTableFormate();
 
+
+
     useEffect(() => {
         setPage(1)
         setPaymentsData([])
@@ -158,8 +160,6 @@ export default function PaymentsView() {
 
     });
 
-
-
     const dataFormatted = dataFiltered.map(row => ({
         paymentsId: row.id,
         amount: row.amount,
@@ -209,7 +209,7 @@ export default function PaymentsView() {
 
     return (
         <>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+           {isFullScreen && ( <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                 <Typography variant="h4">Payments</Typography>
 
                 {isDateOpen ?
@@ -232,34 +232,38 @@ export default function PaymentsView() {
                         </Button>
                     )
                 }
-            </Stack>
-            <Box
+            </Stack> )}
+            <Box sx={{ width: 1, transform: transformValue, transition: 'transform 0.3s ease', }}
                 onMouseEnter={() => handleStepSize(true)}
-                onMouseLeave={() => handleStepSize(false)}
-                sx={{ width: 1, transform: transformValue, transition: 'transform 0.3s ease', }}>
-                <Stepper activeStep={activeStep} connector={<QontoConnector />} alternativeLabel style={{ marginBottom: '3%' }}>
+                onMouseLeave={() => handleStepSize(false)}>
+                <Stepper activeStep={activeStep} connector={<QontoConnector />} alternativeLabel style={{ marginTop: '2.5%', marginBottom: '1.5%' }}
+                >
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
                             <StepLabel
                                 style={{ cursor: 'pointer' }}
-                                onClick={() => handleStepClick(index)}
-                            >
-                                <Box sx={{ width: 1, transform: 'scale(0.85)' }}>{label}</Box>
+
+                                onClick={() => handleStepClick(index)}>
+                                <Box sx={{ width: 1, transform: 'scale(0.85)' }}>
+                                    {label}
+                                </Box>
                             </StepLabel>
                         </Step>
                     ))}
                 </Stepper>
             </Box>
+
             {!loading ? (
                 <Card>
+
                     <TableToolbar
                         numSelected={selected.length}
-
+                        onFullScreen={() => fullScreen()}
                         onDownload={handleExportCSV}
                         label='Search payments..'
                     />
                     <Scrollbar>
-                        <TableContainer sx={{ overflow: 'unset' }}>
+                        <TableContainer sx={{ height: isFullScreen ? 'auto' : '70vh', overflow: 'auto' }}>
                             <Table sx={{ minWidth: 800 }}>
                                 <SharedTableHead
                                     order={order}

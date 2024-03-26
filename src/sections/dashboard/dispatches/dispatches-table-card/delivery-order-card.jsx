@@ -63,7 +63,7 @@ export default function DeliveryOrderCard() {
             }
         };
         fetchDispatchesData(page, searchTerm, selectedMill.id, selectedUser.id);
-    }, [page, selectedMill, searchTerm, selectedUser.id,currentState]);
+    }, [page, selectedMill, searchTerm, selectedUser.id, currentState]);
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -103,12 +103,14 @@ export default function DeliveryOrderCard() {
     return (
         <>
             <Card>
+                
                 <TableToolbar
                     numSelected={selected.length}
                     label='Search dispatches..'
+                    onFullScreen={() => fullScreen()}
                 />
                 <Scrollbar>
-                    <TableContainer sx={{ overflow: 'unset' }}>
+                    <TableContainer sx={{ height: isFullScreen ? 'auto' : '70vh', overflow: 'auto' }}>
                         <Table sx={{ minWidth: 800 }}>
                             <SharedTableHead
                                 order={order}

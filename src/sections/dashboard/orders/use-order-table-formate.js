@@ -4,6 +4,20 @@ export function useOrderTableFormate() {
 
     const formatPrice = (price, unit) => `₹ ${fCurrency(price)} /${unit}`;
 
+    const getPropertyValue = (properties, property, defaultValue) => {
+        console.log('properties', properties)
+
+        const newPropertyMap = {
+            [properties[0]?.label]: properties[0]?.value,
+            [properties[1]?.label]: properties[1]?.value,
+        };
+
+        console.log('properties', newPropertyMap)
+
+        return newPropertyMap[property] === undefined ? defaultValue : newPropertyMap[property];
+    }
+
+
     function getStatusText(status) {
         try {
             let statusText;
@@ -102,6 +116,7 @@ export function useOrderTableFormate() {
         formatQty,
         formatQuantity,
         getStatusColor,
+        getPropertyValue,
         orderHeaderRow,
     };
 }

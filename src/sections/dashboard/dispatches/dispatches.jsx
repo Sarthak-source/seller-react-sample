@@ -25,6 +25,8 @@ export default function DispatchesView() {
     const [transformValue, setTransformValue] = useState('scale(0.75)');
     const [isMouseOver, setIsMouseOver] = useState(true);
 
+   const isFullScreen= useSelector((state) => state.fullScreen.fullScreenState);
+
     const handleStepSize = (isOver) => {
         setIsMouseOver(isOver);
         setTransformValue(!isMouseOver ? 'scale(0.85)' : 'scale(0.75)');
@@ -41,12 +43,12 @@ export default function DispatchesView() {
 
     return (
         <>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+           {isFullScreen && ( <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                 <Typography variant="h4">Dispatches</Typography>
                 {activeStep === 2 && <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenInternal}>
                     Add Internal Do
                 </Button>}
-            </Stack>
+            </Stack>)}
             <Box
                 onMouseEnter={() => handleStepSize(true)}
                 onMouseLeave={() => handleStepSize(false)}

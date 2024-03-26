@@ -166,13 +166,15 @@ export default function LoadingsInstructionCard(
     return (
         <>
             <Card>
+                
                 <TableToolbar
                     numSelected={selected.length}
+                    onFullScreen={() => fullScreen()}
                     label='Search dispatches..'
                     onDownload={handleExportCSV}
                 />
                 <Scrollbar>
-                    <TableContainer sx={{ overflow: 'unset' }}>
+                    <TableContainer sx={{ height: isFullScreen ? 'auto' : '70vh', overflow: 'auto' }}>
                         <Table sx={{ minWidth: 800 }}>
                             <SharedTableHead
                                 order={order}

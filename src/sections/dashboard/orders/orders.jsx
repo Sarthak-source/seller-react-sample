@@ -62,7 +62,7 @@ export default function OrdersView() {
         setTransformValue(!isMouseOver ? 'scale(0.85)' : 'scale(0.75)');
     };
 
-    const { formatPrice, getStatusText, formatQty, formatQuantity, orderHeaderRow } = useOrderTableFormate();
+    const { formatPrice, getStatusText, formatQty, formatQuantity, getPropertyValue, orderHeaderRow } = useOrderTableFormate();
     const totalPages = Math.ceil(totalDataCount / rowsPerPage);
 
     const selectedMill = useSelector((state) => state.mill.selectedMill);
@@ -89,7 +89,7 @@ export default function OrdersView() {
                 const data = await NetworkRepository.allOrders(status, ordersPage, millId, selectedUser.id);
                 console.log('here', data.results)
                 setTotalDataCount(data.count);
-                
+
                 setOrdersData(data.results);
             } catch (error) {
                 console.error('Error fetching Orders data:', error);
@@ -146,8 +146,8 @@ export default function OrdersView() {
         status: getStatusText(row.status),
         tenderType: row.tender_head.tender_type,
         productType: row.tender_head.product.product_type.product_type,
-        grade: row.tender_head.product.properties.length > 0 ? row.tender_head.product.properties[0].label : 'Not given',
-        season: row.tender_head.product.properties.length > 0 ? row.tender_head.product.properties[0].value : 'Not given',
+        grade: row.tender_head.product.properties.length > 0 ? getPropertyValue(row.tender_head.product.properties, 'Grade', 'Grade not given') : 'Not given',
+        season: row.tender_head.product.properties.length > 0 ? getPropertyValue(row.tender_head.product.properties, 'Season', 'Season Not given') : 'Not given',
         sale: formatQty(row.qty),
         loading: `${formatQuantity(row, 'yet_to_load', row.yet_to_load)} ${row.tender_head.product.product_type.unit}`,
         dispatched: `${formatQuantity(row, 'dispatched_qty', row.dispatched_qty)} ${row.tender_head.product.product_type.unit}`,
@@ -200,12 +200,13 @@ export default function OrdersView() {
 
     return (
         <>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+           {isFullScreen && (  <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                 <Typography variant="h4">Orders</Typography>
                 <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenSelfOrder}>
                     Self order
                 </Button>
-            </Stack>
+            </Stack>)}
+
             <Box sx={{
                 width: 1,
                 transform: transformValue,
@@ -214,7 +215,7 @@ export default function OrdersView() {
                 onMouseEnter={() => handleStepSize(true)}
                 onMouseLeave={() => handleStepSize(false)}
             >
-                <Stepper activeStep={activeStep} alternativeLabel connector={<QontoConnector />} style={{ marginBottom: '3%' }}>
+                <Stepper activeStep={activeStep} alternativeLabel connector={<QontoConnector />} style={{ marginTop: '2.5%', marginBottom: '1.5%' }}>
                     {steps.map((label, index) => (
                         <Step key={`${label}${index}`}>
                             <StepLabel
@@ -227,15 +228,19 @@ export default function OrdersView() {
                     ))}
                 </Stepper>
             </Box>
+
             {!loading ? (
                 <Card>
+
+
                     <TableToolbar
                         numSelected={selected.length}
                         onDownload={handleExportCSV}
+                        onFullScreen={() => fullScreen()}
                         label='Search orders..'
                     />
                     <Scrollbar>
-                        <TableContainer sx={{ overflow: 'unset' }}>
+                        <TableContainer sx={{ height: isFullScreen ? 'auto' : '70vh', overflow: 'auto' }}>
                             <Table sx={{ minWidth: 800 }}>
                                 <SharedTableHead
                                     order={order}

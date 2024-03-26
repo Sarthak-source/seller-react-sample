@@ -1,15 +1,19 @@
 import { Card, Fab, MenuItem, Select, Stack, Typography } from '@mui/material';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import dayjs from 'dayjs';
+import moment from 'moment';
 import PropTypes from 'prop-types';
+import Iconify from 'src/components/iconify';
+
+import { DatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ip } from 'src/app-utils/api-constants';
-import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import RenderTableFromJson from '../render-html-from-json';
+
 
 export default function DispatchReportView() {
   const [selectedOption, setSelectedOption] = useState('');
@@ -31,12 +35,12 @@ export default function DispatchReportView() {
     if (fromDate && date.diff(fromDate, 'days') > 0) {
       alert('From date cannot be greater than to date.');
       setFromDate(null);
-    } if (toDate && toDate.diff(date, 'months') > 1) {
-      alert('From date must be within two months from the to date.');
+    } if (toDate && toDate.diff(date, 'days') > 30) {
+      alert('From date must be within one months from the to date.');
       setFromDate(null);
 
-    } else if (fromDate && date.diff(fromDate, 'months') > 1) {
-      alert('To date must be within two months from the from date.');
+    } else if (fromDate && date.diff(fromDate, 'days') > 30) {
+      alert('To date must be within one months from the from date.');
       setFromDate(null);
 
     } else {
@@ -46,22 +50,30 @@ export default function DispatchReportView() {
 
 
   const handleToDateChange = (date) => {
+    const today = moment();
     if (fromDate && date.diff(fromDate, 'days') < 0) {
       alert('To date cannot be less than From date.');
       setToDate(null);
-
-    } else if (fromDate && date.diff(fromDate, 'months') > 1) {
-      alert('To date must be within two months from the from date.');
+    } else if (fromDate && date.diff(fromDate, 'days') > 30) {
+      alert('To date must be within one month from the from date.');
       setToDate(null);
-
-    } else if (toDate && fromDate.diff(date, 'months') > 1) {
-      alert('From date must be within two months from the to date.');
+    } else if (fromDate && fromDate.diff(date, 'days') > 30) {
+      alert('From date must be within one month from the to date.');
       setToDate(null);
-
+    } else if (date.diff(today, 'days') > 0) {
+      alert('To date cannot be greater than today\'s date.');
+      setToDate(null);
     } else {
       setToDate(date);
     }
   };
+
+  const now = new Date();
+  const yesterdayBegin = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+  const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+  const [value, onChange] = useState([yesterdayBegin, todayEnd]);
+
 
   const formateDate = (date) => {
     const formattedDate = dayjs(date).format('YYYY-MM-DD');
@@ -128,6 +140,16 @@ export default function DispatchReportView() {
                       ))}
                     </Select>
                   </Stack>
+                  {/* <DateRangePicker
+                    calendarAriaLabel="Toggle calendar"
+                    clearAriaLabel="Clear value"
+                    dayAriaLabel="Day"
+                    monthAriaLabel="Month"
+                    nativeInputAriaLabel="Date"
+                    onChange={onChange}
+                    value={value}
+                    yearAriaLabel="Year"
+                  /> */}
                   <Stack>
                     <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
                       From date
@@ -189,7 +211,7 @@ export default function DispatchReportView() {
               invoiceType={selectedInvoice}
             />
           )}
-                    {selectedOption && fromDate && toDate && selectedInvoice && (
+          {selectedOption && fromDate && toDate && selectedInvoice && (
             <FullScreen icon={<Iconify icon="bi:fullscreen" />} />
           )}
         </Card>
