@@ -1105,6 +1105,7 @@ const NetworkRepository = {
 
 
   dispatchReport: async (millPk, fromDate, toDate, invoiceType) => {
+    console.log('dfsdfsdfsdfsdf',`${ApiAppConstants.dispatchReports}?mill_pk=${millPk}&from_date=${fromDate}&to_date=${toDate}&invoice_type=${invoiceType}`)
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url:

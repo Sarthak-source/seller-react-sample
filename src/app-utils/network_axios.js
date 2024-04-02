@@ -60,7 +60,7 @@ const NetworkAxiosOptions = {
     },
 
     async getAxiosHttpMethod({ url, header, full = true }) {
-        console.log(url);
+        console.log('ddfdfdfdfdf',url);
         const fullUrl = full ? `${this.endPointUrl}${url}` : url;
         try {
             const response = await this.axiosOptions.get(fullUrl, { headers: header || this.cacheOptions });

@@ -94,7 +94,7 @@ export default function DispatchReportView() {
     icon: PropTypes.string.isRequired,
   };
 
-  const invoiceTypes = ['all', 'unload', 'cancelled'];
+  const invoiceTypes = { 'all': 'All', 'unload': 'Valid', 'cancelled': 'Cancelled' };
 
   console.log(`http://${ip}/reports/dispatch_reports/?mill_pk=${encodeURIComponent(selectedOption)}
   &from_date=${encodeURIComponent(formateDate(fromDate))}&to_date=${encodeURIComponent(formateDate((toDate)))}&invoice_type=${encodeURIComponent(selectedInvoice)}`);
@@ -190,11 +190,11 @@ export default function DispatchReportView() {
                       inputProps={{ 'aria-label': 'Without label' }}
                     >
                       <MenuItem value="" disabled>
-                        Select a Invoice type
+                        Select an Invoice type
                       </MenuItem>
-                      {invoiceTypes.map((invoiceType) => (
-                        <MenuItem key={invoiceType} value={invoiceType}>
-                          {invoiceType}
+                      {Object.entries(invoiceTypes).map(([key, invoiceValue]) => (
+                        <MenuItem key={key} value={key}>
+                          {invoiceValue}
                         </MenuItem>
                       ))}
                     </Select>
