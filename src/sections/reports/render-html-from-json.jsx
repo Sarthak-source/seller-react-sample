@@ -1,3 +1,4 @@
+import { useTheme } from '@emotion/react';
 import { Box, Button, ButtonGroup, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Paper, Select, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
@@ -6,46 +7,48 @@ import NetworkRepository from 'src/app-utils/network_repository';
 const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
   const [jsonData, setJsonData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const theme = useTheme();
+
   const [columnVisibility, setColumnVisibility] = useState({
-    tenderNum: false,
-    orderNum: false,
-    dispatchDate: false,
-    dispatchFrom: false,
-    dispatchTo: false,
-    billTo: false,
-    invoiceQty: false,
-    totalAmount: false,
-    totalTaxAmount: false,
-    totalInvoiceValue: false,
-    lrNo: false,
-    customerPONo: false,
-    vehicleNo: false,
+    slNo:true,
+    tenderNum: true,
+    orderNum: true,
+    dispatchDate: true,
+    dispatchFrom: true,
+    dispatchTo: true,
+    billTo: true,
+    invoiceQty: true,
+    totalAmount: true,
+    totalTaxAmount: true,
+    totalInvoiceValue: true,
+    lrNo: true,
+    customerPONo: true,
+    vehicleNo: true,
     customerInvoiceNo: false,
     bagsCount: false,
     grossWeight: false,
     tareWeight: false,
-    netWeight: false,
+    netWeight: true,
     bagWeight: false,
     actualMaterialWeight: false,
     driverName: false,
     driverNo: false,
-    transporterName: false,
-    millName: false,
-    deliveryOrderNo: false,
-    invoiceNo: false,
+    transporterName: true,
+    millName: true,
+    deliveryOrderNo: true,
+    invoiceNo: true,
     remarks: false,
-    ewaybill: false,
-    cgst: false,
-    igst: false,
-    sgst: false,
-    tcs:false,
-    product: false,
+    ewaybill: true,
+    cgst: true,
+    igst: true,
+    sgst: true,
+    tcs: true,
+    product: true,
     sealNo: false,
     // Add more columns here if needed
   });
 
-  const [selectedColumns, setSelectedColumns] = useState([]);
-
+  const [selectedColumns, setSelectedColumns] = useState(Object.keys(columnVisibility).filter(key => columnVisibility[key]));
 
   useEffect(() => {
     const fetchJson = async () => {
@@ -110,6 +113,8 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
 
   const renderTableHeader = (key, item) => {
     switch (key) {
+      case 'slNo':
+        return 'Sl No'
       case 'tenderNum':
         return 'Tender Num';
       case 'orderNum':
@@ -174,8 +179,7 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
         return 'IGST';
       case 'sgst':
         return 'SGST';
-
-        case 'tcs':
+      case 'tcs':
         return 'TCS';
       case 'sealNo':
         return 'Seal No';
@@ -185,8 +189,10 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
   };
 
 
-  const renderTableCell = (key, item) => {
+  const renderTableCell = (key, item,index) => {
     switch (key) {
+      case 'slNo':
+      return index;
       case 'tenderNum':
         return item.loading_instruction?.tender_num;
       case 'orderNum':
@@ -245,15 +251,15 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
         return item.ewb_no;
       case 'cgst':
         return item.invoice_items
-        ?.cgst;
+          ?.cgst;
       case 'igst':
         return item.invoice_items
-        ?.igst;
+          ?.igst;
       case 'sgst':
         return item.invoice_items
-        ?.sgst;
-        case 'tcs':
-          return item.delivery_order?.tcs;
+          ?.sgst;
+      case 'tcs':
+        return item.delivery_order?.tcs;
       case 'product':
         return item.loading_instruction?.product;
       case 'sealNo':
@@ -281,10 +287,19 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
     <Paper elevation={3} style={{ margin: '16px 0', maxHeight: '100%', overflow: 'auto' }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-start', pr: '16px', pt: '16px' }}>
         <ButtonGroup variant="outlined" aria-label="outlined button group" size='small'>
-          <FormControl sx={{ m: 1, width: 300 }}>
+          <FormControl sx={{ m: 1, minWidth: 300, maxWidth: 300 }}>
             <InputLabel id="demo-multiple-chip-label">Select Columns</InputLabel>
             <Box sx={{ maxHeight: 70, overflowY: 'scroll' }}>
               <Select
+                MenuProps={{
+                  sx: {
+                    "&& .Mui-selected": {
+                      backgroundColor: theme.palette.primary.main,
+                      color: 'white',
+                    }
+                  }
+                }}
+                sx={{ minWidth: 300 }}
                 labelId="demo-multiple-chip-label"
                 id="demo-multiple-chip"
                 multiple
@@ -300,7 +315,6 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
                     </Box>
                   </Box>
                 )}
-                sx={{ width: '100%' }}
               >
                 {Object.keys(columnVisibility).map((columnKey) => (
                   <MenuItem key={columnKey} value={columnKey}>
@@ -335,7 +349,7 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
                   {Object.entries(columnVisibility).map(([key, visible]) =>
                     visible && (
                       <td key={`${index}-${key}`} style={{ border: '1px solid black', padding: '8px', borderSpacing: 0 }}>
-                        {renderTableCell(key, item) ?? '-'}
+                        {renderTableCell(key, item,index+1) ?? '-'}
                       </td>
                     )
                   )}
