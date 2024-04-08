@@ -110,8 +110,8 @@ export default function DeliveryOrderCard() {
                     onFullScreen={() => fullScreen()}
                 />
                 <Scrollbar>
-                    <TableContainer sx={{ height: isFullScreen ? 'auto' : '70vh', overflow: 'auto' }}>
-                        <Table sx={{ minWidth: 800 }}>
+                    <TableContainer sx={{ height:  '70vh', overflow: 'auto' }}>
+                        <Table stickyHeader sx={{ minWidth: 800 }}>
                             <SharedTableHead
                                 order={order}
                                 orderBy={orderBy}

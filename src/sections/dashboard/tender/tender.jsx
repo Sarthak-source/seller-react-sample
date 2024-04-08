@@ -262,7 +262,7 @@ export default function TenderView() {
                     />
                     <Scrollbar>
 
-                        <TableContainer sx={{ height: isFullScreen ? 'auto' : '70vh', overflow: 'auto' }}>
+                        <TableContainer sx={{ height:  '70vh', overflow: 'auto' }}>
                             <Table stickyHeader sx={{ minWidth: 800 }}>
 
                                 <SharedTableHead
