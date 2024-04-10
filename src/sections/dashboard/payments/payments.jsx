@@ -89,17 +89,28 @@ export default function PaymentsView() {
     };
 
     const handleDateChange = (date) => {
-        setPaymentsData([]);
-        const formattedDate = date.toDate().toLocaleDateString('en-IN', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
-        setSelectedDate(formattedDate);
+
+
+        if (selectedDate !== '') {
+            setSelectedDate('')
+        } else {
+            setPaymentsData([]);
+            const formattedDate = date.toDate().toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+            });
+            setSelectedDate(formattedDate);
+        }
     };
 
     const openDate = () => {
-        setIsDateOpen(!isDateOpen); // Toggle the value of isDateOpen
+
+        if (selectedDate !== '') {
+            setSelectedDate('')
+        } else {
+            setIsDateOpen(!isDateOpen);
+        }
     }
 
     console.log(paymentsData);
@@ -209,7 +220,7 @@ export default function PaymentsView() {
 
     return (
         <>
-           {isFullScreen && ( <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+            {isFullScreen && (<Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                 <Typography variant="h4">Payments</Typography>
 
                 {isDateOpen ?
@@ -232,7 +243,7 @@ export default function PaymentsView() {
                         </Button>
                     )
                 }
-            </Stack> )}
+            </Stack>)}
             <Box sx={{ width: 1, transform: transformValue, transition: 'transform 0.3s ease', }}
                 onMouseEnter={() => handleStepSize(true)}
                 onMouseLeave={() => handleStepSize(false)}>
@@ -263,7 +274,7 @@ export default function PaymentsView() {
                         label='Search payments..'
                     />
                     <Scrollbar>
-                        <TableContainer sx={{ height:  '70vh', overflow: 'auto' }}>
+                        <TableContainer sx={{ height: '70vh', overflow: 'auto' }}>
                             <Table stickyHeader sx={{ minWidth: 800 }}>
                                 <SharedTableHead
                                     order={order}

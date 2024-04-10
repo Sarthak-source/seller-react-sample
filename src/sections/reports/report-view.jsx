@@ -7,6 +7,7 @@ import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import Iconify from 'src/components/iconify';
 import DispatchReportView from './dispatch-reports/dispatch-report';
+import OrderReportView from './order-reports/order-report';
 import ProductWiseReportView from './product-wise-report/product-wise-report';
 import SeasonWiseReportView from './season-wise-report/season-wise-report';
 import StockReportView from './stock-report/stock-report';
@@ -120,6 +121,7 @@ export default function ReportView() {
             }}
           >
             <Tab label="Dispatch report" style={{ marginLeft: '-16px' }} />
+            <Tab label="Order report"  />
           </Tabs>
         )
       }
@@ -138,6 +140,7 @@ export default function ReportView() {
       {selected === 'Dispatch reports' && (
         <>
           {tabNew === 0 && <DispatchReportView />}
+          {tabNew === 1 && <OrderReportView />}
         </>
       )}
     </Container>

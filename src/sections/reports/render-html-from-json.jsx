@@ -1,16 +1,19 @@
 import { useTheme } from '@emotion/react';
 import { Box, Button, ButtonGroup, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Paper, Select, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
-import NetworkRepository from 'src/app-utils/network_repository';
+import { useEffect, useRef, useState } from 'react';
 
-const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
+const RenderTableFromJson = ({
+  renderTableHeader,
+  renderTableCell,
+  fetchData
+}) => {
   const [jsonData, setJsonData] = useState(null);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
 
   const [columnVisibility, setColumnVisibility] = useState({
-    slNo:true,
+    slNo: true,
     tenderNum: true,
     orderNum: true,
     dispatchDate: true,
@@ -43,6 +46,7 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
     igst: true,
     sgst: true,
     tcs: true,
+    price:true,
     product: true,
     sealNo: false,
     // Add more columns here if needed
@@ -53,7 +57,7 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
   useEffect(() => {
     const fetchJson = async () => {
       try {
-        const response = await NetworkRepository.dispatchReport(millPk, fromDate, toDate, invoiceType);
+        const response = await fetchData();
         setJsonData(response);
       } catch (error) {
         console.error('Error fetching JSON:', error);
@@ -63,7 +67,7 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
     };
 
     fetchJson();
-  }, [millPk, fromDate, toDate, invoiceType]);
+  }, [fetchData]);
 
   const toggleColumnVisibility = (columnKey) => {
     console.log('columnKey', columnKey);
@@ -111,163 +115,6 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
     return csvData;
   };
 
-  const renderTableHeader = (key, item) => {
-    switch (key) {
-      case 'slNo':
-        return 'Sl No'
-      case 'tenderNum':
-        return 'Tender Num';
-      case 'orderNum':
-        return 'Order Num';
-      case 'dispatchDate':
-        return 'Dispatch Date';
-      case 'dispatchFrom':
-        return 'Dispatch From';
-      case 'dispatchTo':
-        return 'Dispatch To';
-      case 'billTo':
-        return 'Bill To';
-      case 'invoiceQty':
-        return 'Invoice Qty';
-      case 'totalAmount':
-        return 'Total Amount';
-      case 'totalTaxAmount':
-        return 'Total Tax Amount';
-      case 'totalInvoiceValue':
-        return 'Total Invoice Value';
-      case 'lrNo':
-        return 'LR No';
-      case 'customerPONo':
-        return 'Customer PO No';
-      case 'vehicleNo':
-        return 'Vehicle No';
-      case 'customerInvoiceNo':
-        return 'Customer Invoice No';
-      case 'bagsCount':
-        return 'Bags Count';
-      case 'grossWeight':
-        return 'Gross Weight';
-      case 'tareWeight':
-        return 'Tare Weight';
-      case 'netWeight':
-        return 'Net Weight';
-      case 'bagWeight':
-        return 'Bag Weight';
-      case 'actualMaterialWeight':
-        return 'Actual Material Weight';
-      case 'driverName':
-        return 'Driver Name';
-      case 'driverNo':
-        return 'Driver No';
-      case 'transporterName':
-        return 'Transporter Name';
-      case 'millName':
-        return 'Mill Name';
-      case 'deliveryOrderNo':
-        return 'Delivery Order No';
-      case 'invoiceNo':
-        return 'Invoice No';
-      case 'remarks':
-        return 'Remarks';
-      case 'ewaybill':
-        return 'Eway Bill';
-      case 'product':
-        return 'Product';
-      case 'cgst':
-        return 'CGST';
-      case 'igst':
-        return 'IGST';
-      case 'sgst':
-        return 'SGST';
-      case 'tcs':
-        return 'TCS';
-      case 'sealNo':
-        return 'Seal No';
-      default:
-        return null;
-    }
-  };
-
-
-  const renderTableCell = (key, item,index) => {
-    switch (key) {
-      case 'slNo':
-      return index;
-      case 'tenderNum':
-        return item.loading_instruction?.tender_num;
-      case 'orderNum':
-        return item.loading_instruction?.order_num;
-      case 'dispatchDate':
-        return item.invoice_date ? new Date(item.invoice_date).toLocaleDateString() : item.invoice_date
-      case 'dispatchFrom':
-        return item.dispatch_from;
-      case 'dispatchTo':
-        return item.dispatch_to;
-      case 'billTo':
-        return item.bill_to;
-      case 'invoiceQty':
-        return item.total_qty;
-      case 'totalAmount':
-        return item.total_amount;
-      case 'totalTaxAmount':
-        return item.total_tax_amount;
-      case 'totalInvoiceValue':
-        return item.total_invoice_amount;
-      case 'lrNo':
-        return item.loading_instruction?.lr_num;
-      case 'customerPONo':
-        return item.loading_instruction?.po_num;
-      case 'vehicleNo':
-        return item.vehicle_num;
-      case 'customerInvoiceNo':
-        return item.invoice_num;
-      case 'bagsCount':
-        return item.delivery_order?.bag_count;
-      case 'grossWeight':
-        return item.delivery_order?.gross_weight;
-      case 'tareWeight':
-        return item.delivery_order?.tare_weight;
-      case 'netWeight':
-        return item.delivery_order?.net_weight;
-      case 'bagWeight':
-        return item.delivery_order?.bag_weight;
-      case 'actualMaterialWeight':
-        return item.delivery_order?.actual_material_weight;
-      case 'driverName':
-        return item.loading_instruction?.driver;
-      case 'driverNo':
-        return item.loading_instruction?.mobile;
-      case 'transporterName':
-        return item.loading_instruction?.transporter;
-      case 'millName':
-        return item.mill;
-      case 'deliveryOrderNo':
-        return item.delivery_order?.do_num;
-      case 'invoiceNo':
-        return item.invoice_num;
-      case 'remarks':
-        return item.loading_instruction?.remark;
-      case 'ewaybill':
-        return item.ewb_no;
-      case 'cgst':
-        return item.invoice_items
-          ?.cgst;
-      case 'igst':
-        return item.invoice_items
-          ?.igst;
-      case 'sgst':
-        return item.invoice_items
-          ?.sgst;
-      case 'tcs':
-        return item.delivery_order?.tcs;
-      case 'product':
-        return item.loading_instruction?.product;
-      case 'sealNo':
-        return item.delivery_order?.seal_no;
-      default:
-        return null;
-    }
-  };
   const handleChange = (event) => {
     console.log(event);
     const selectedColumn = event.target.value;
@@ -283,11 +130,28 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
     toggleColumnVisibility(columnKey);
   };
 
+  const tableRef = useRef(null);
+
+  const generatePDF = () => {
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+      const htmlContent = tableRef.current.outerHTML;
+      newWindow.document.write(htmlContent);
+      newWindow.document.close();
+      newWindow.document.getElementsByTagName('html')[0].style = 'width: 594mm; height: 841mm;'; // A1 size in landscape orientation
+
+      newWindow.print();
+    } else {
+      console.error('Failed to open new window for PDF generation.');
+    }
+  };
+
+
+
   return (
     <Paper elevation={3} style={{ margin: '16px 0', maxHeight: '100%', overflow: 'auto' }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-start', pr: '16px', pt: '16px' }}>
-        <ButtonGroup variant="outlined" aria-label="outlined button group" size='small'>
-          <FormControl sx={{ m: 1, minWidth: 300, maxWidth: 300 }}>
+      <FormControl sx={{ m: 1, mx:'30px', maxWidth: '70vw',  }}>
             <InputLabel id="demo-multiple-chip-label">Select Columns</InputLabel>
             <Box sx={{ maxHeight: 70, overflowY: 'scroll' }}>
               <Select
@@ -299,7 +163,7 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
                     }
                   }
                 }}
-                sx={{ minWidth: 300 }}
+                sx={{ minWidth: '70vw' }}
                 labelId="demo-multiple-chip-label"
                 id="demo-multiple-chip"
                 multiple
@@ -322,16 +186,17 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
                   </MenuItem>
                 ))}
               </Select>
-
             </Box>
-
           </FormControl>
+        <ButtonGroup variant="outlined" aria-label="outlined button group" size='small'>
+          
+          <Button sx={{ maxHeight: 55, mt: 0.8 }} onClick={generatePDF}>PDF</Button>
           <Button sx={{ maxHeight: 55, mt: 0.8 }} onClick={downloadCSV}>EXCEL</Button>
         </ButtonGroup>
       </Box>
       {!loading ? (
         <Typography variant="body1" sx={{ px: '30px', mb: '20px' }}>
-          <table style={{ borderSpacing: 0 }}>
+          <table ref={tableRef} style={{ borderSpacing: 0 }}>
             <thead>
               <tr>
                 {Object.entries(columnVisibility).map(([key, visible]) =>
@@ -349,7 +214,7 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
                   {Object.entries(columnVisibility).map(([key, visible]) =>
                     visible && (
                       <td key={`${index}-${key}`} style={{ border: '1px solid black', padding: '8px', borderSpacing: 0 }}>
-                        {renderTableCell(key, item,index+1) ?? '-'}
+                        {renderTableCell(key, item, index + 1) ?? '-'}
                       </td>
                     )
                   )}
@@ -368,15 +233,9 @@ const RenderTableFromJson = ({ millPk, fromDate, toDate, invoiceType }) => {
 };
 
 RenderTableFromJson.propTypes = {
-  millPk: PropTypes.any,
-  fromDate: PropTypes.any,
-  toDate: PropTypes.any,
-  invoiceType: PropTypes.any,
+  renderTableHeader: PropTypes.func.isRequired,
+  renderTableCell: PropTypes.func.isRequired,
+  fetchData: PropTypes.any
 }
 
 export default RenderTableFromJson;
-
-
-
-
-

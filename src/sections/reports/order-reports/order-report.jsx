@@ -11,13 +11,12 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ip } from 'src/app-utils/api-constants';
-import NetworkRepository from 'src/app-utils/network_repository';
 import Scrollbar from 'src/components/scrollbar';
 import RenderTableFromJson from '../render-html-from-json';
 import useRenderFunctions from '../use-report-formate';
 
 
-export default function DispatchReportView() {
+export default function OrderReportView() {
   const [selectedOption, setSelectedOption] = useState('');
   const [selectedInvoice, setSelectedInvoice] = useState('');
   const [fromDate, setFromDate] = useState(null);
@@ -110,9 +109,10 @@ export default function DispatchReportView() {
           {selectedOption && fromDate && toDate && selectedInvoice && <FullScreen icon={<Iconify icon="bi:fullscreen-exit" />} />}
           {selectedOption && fromDate && toDate && selectedInvoice && (
             <RenderTableFromJson
-              fetchData={() => NetworkRepository.dispatchReport(selectedOption, formateDate(fromDate), formateDate(toDate), selectedInvoice)}
-              renderTableHeader={renderTableHeader}
-              renderTableCell={renderTableCell}
+              millPk={selectedOption}
+              fromDate={formateDate(fromDate)}
+              toDate={formateDate(toDate)}
+              invoiceType={selectedInvoice}
             />
           )}
         </Card>
@@ -145,7 +145,7 @@ export default function DispatchReportView() {
                   </Stack>
                   <Stack>
                     <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
-                      From date
+                      Select date
                     </Typography>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer sx={{ mt: -1.2 }} components={['DatePicker']}>
@@ -157,50 +157,19 @@ export default function DispatchReportView() {
                       </DemoContainer>
                     </LocalizationProvider>
                   </Stack>
-                  <Stack>
-                    <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
-                      To Date
-                    </Typography>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer sx={{ mt: -1.2 }} components={['DatePicker']}>
-                        <DatePicker
-                          value={toDate}
-                          onChange={handleToDateChange}
-                          format="DD-MMM-YYYY"
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-                  </Stack>
-                  <Stack>
-                    <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
-                      Invoice type
-                    </Typography>
-                    <Select
-                      value={selectedInvoice}
-                      onChange={handleSelectInvoice}
-                      displayEmpty
-                      style={{ width: '250px' }}
-                      inputProps={{ 'aria-label': 'Without label' }}
-                    >
-                      <MenuItem value="" disabled>
-                        Select an Invoice type
-                      </MenuItem>
-                      {Object.entries(invoiceTypes).map(([key, invoiceValue]) => (
-                        <MenuItem key={key} value={key}>
-                          {invoiceValue}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </Stack>
+                  
                 </Stack>
               </Scrollbar>
             </Scrollbar>
           </Scrollbar>
           {selectedOption && fromDate && toDate && selectedInvoice && (
             <RenderTableFromJson
-              fetchData={() => NetworkRepository.dispatchReport(selectedOption, formateDate(fromDate), formateDate(toDate), selectedInvoice)}
+              millPk={selectedOption}
+              fromDate={formateDate(fromDate)}
+              toDate={formateDate(toDate)}
               renderTableHeader={renderTableHeader}
               renderTableCell={renderTableCell}
+              invoiceType={selectedInvoice}
             />
           )}
           {selectedOption && fromDate && toDate && selectedInvoice && (
