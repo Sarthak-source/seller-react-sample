@@ -1,24 +1,27 @@
 import { useTheme } from '@emotion/react';
 import { LoadingButton } from '@mui/lab';
-import { Box, Card, Container, Dialog, DialogTitle, Paper, Stack, TextField, Toolbar, Typography } from '@mui/material';
+import { Box, Button, Card, Container, Dialog, DialogTitle, Paper, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ip } from 'src/app-utils/api-constants';
 import NetworkRepository from 'src/app-utils/network_repository';
 import HoverExpandButton from 'src/components/buttons/expanded-button';
 import Iconify from 'src/components/iconify';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { storeState } from 'src/redux/actions/store-actions';
+import { useRouter } from 'src/routes/hooks';
 
 export default function ScanWithVehicle() {
     const theme = useTheme();
     const [vehicleNumber, setVehicleNumber] = useState('');
     const pdfContainerRef = useRef();
     const isMounted = useRef(true); // Add this line
+    const [responseData, setResponseData] = useState(null);
     const selectedUser = useSelector((state) => state.user.selectedUser);
     const [loading, setLoading] = useState(false);
     const [pdfData, setPdfData] = useState(null);
     const [isDialogOpen, setDialogOpen] = useState(false);
-
+    const router = useRouter();
 
     const handleDialogClose = () => {
         setDialogOpen(false);
@@ -36,8 +39,8 @@ export default function ScanWithVehicle() {
         } else {
             try {
                 setLoading(true)
-                // Assuming networkRepository.vehicleDo makes an HTTP request
                 const response = await NetworkRepository.vehicleDo(vehicleNumber, selectedUser.id,);
+                setResponseData(response);
                 handlePdf(`http://${ip}/get_doc/thermal_do/${response.id}?flag=1`);
                 setDialogOpen(true)
                 // Navigate to PDF viewer page passing required props
@@ -51,6 +54,15 @@ export default function ScanWithVehicle() {
         }
     };
 
+    const dispatch = useDispatch();
+
+    const handleNext = () => {
+        dispatch(storeState(responseData, false));
+        router.replace('/home/generate-invoice/store-house');
+    }
+
+    console.log('Vehicle Number', responseData)
+
     const pdfPopUp = (dialogOpen) => (
 
         (
@@ -61,6 +73,9 @@ export default function ScanWithVehicle() {
                     <Stack sx={{ height: '10px' }} direction="row" spacing={2} alignItems="center" justifyContent="space-between">
                         <Typography variant="h6">View PDF</Typography>
                         <Box display="flex" justifyContent="space-between" sx={{ gap: 1, height: '30px' }} >
+                            <Button onClick={handleNext} color="primary">
+                                Next
+                            </Button>
                             <HoverExpandButton onClick={handleDialogClose} width='90px' color={theme.palette.error.main}>
                                 <Iconify icon="basil:cancel-solid" />
                                 <Typography sx={{ fontWeight: 'bold', fontSize: 14 }}>Close</Typography>
@@ -134,7 +149,6 @@ export default function ScanWithVehicle() {
                     <TextField
                         label="Vehicle Number"
                         value={vehicleNumber}
-
                         onChange={handleVehicleNumberChange}
                         fullWidth
                         variant="outlined"

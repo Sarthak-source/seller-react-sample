@@ -1105,7 +1105,7 @@ const NetworkRepository = {
 
 
   dispatchReport: async (millPk, fromDate, toDate, invoiceType) => {
-    console.log('dfsdfsdfsdfsdf',`${ApiAppConstants.dispatchReports}?mill_pk=${millPk}&from_date=${fromDate}&to_date=${toDate}&invoice_type=${invoiceType}`)
+    console.log('dfsdfsdfsdfsdf', `${ApiAppConstants.dispatchReports}?mill_pk=${millPk}&from_date=${fromDate}&to_date=${toDate}&invoice_type=${invoiceType}`)
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url:
@@ -1118,6 +1118,44 @@ const NetworkRepository = {
       return e.toString();
     }
   },
+
+  ordersReports: async (date, millId, sellerId) => {
+    try {
+      const ordersUrl = `${ApiAppConstants.orderListView}?seller=${sellerId}&date=${date}&mill_pk=${millId || ''}`;
+
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: ordersUrl,
+        header: { authorization: auth },
+      });
+
+      console.log('Orders Response:', apiResponse.data);
+
+      return apiResponse;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error.toString();
+    }
+  },
+
+
+  productData: async (mill, product) => {
+    console.log('productData',mill, product);
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.apiEndPoint}${ApiAppConstants.productData}?&mill=${mill}&product=${product}`,
+        header: { authorization: auth },
+      });
+
+
+      console.log('apiResponse',apiResponse)
+
+
+      return apiResponse;
+    } catch (e) {
+      return e.toString();
+    }
+  }
 }
 
 

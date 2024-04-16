@@ -24,7 +24,7 @@ export default function DispatchReportView() {
   const [toDate, setToDate] = useState(null);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const selectedUser = useSelector((state) => state.user.selectedUser);
-  const { renderTableHeader, renderTableCell } = useRenderFunctions(); // Use the custom hook
+  const { renderTableHeader, renderTableCell,dispatchColumns } = useRenderFunctions(); // Use the custom hook
 
 
   const handleSelectChange = (event) => {
@@ -113,6 +113,7 @@ export default function DispatchReportView() {
               fetchData={() => NetworkRepository.dispatchReport(selectedOption, formateDate(fromDate), formateDate(toDate), selectedInvoice)}
               renderTableHeader={renderTableHeader}
               renderTableCell={renderTableCell}
+              columns={dispatchColumns}
             />
           )}
         </Card>
@@ -201,6 +202,7 @@ export default function DispatchReportView() {
               fetchData={() => NetworkRepository.dispatchReport(selectedOption, formateDate(fromDate), formateDate(toDate), selectedInvoice)}
               renderTableHeader={renderTableHeader}
               renderTableCell={renderTableCell}
+              columns={dispatchColumns}
             />
           )}
           {selectedOption && fromDate && toDate && selectedInvoice && (

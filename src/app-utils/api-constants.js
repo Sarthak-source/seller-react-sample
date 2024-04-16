@@ -92,6 +92,7 @@ const ApiAppConstants = {
     sellers: 'sellers/',
     location: 'location/',
     dispatchReports: 'dispatch_reports/',
+    productData : 'get_product_data/',
 };
 
 export { ApiAppConstants, auth, ip, testip };

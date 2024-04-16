@@ -1,6 +1,12 @@
+import { format, parseISO } from "date-fns";
+import { useOrderTableFormate } from "../dashboard/orders/use-order-table-formate";
 
 
 const useRenderFunctions = () => {
+
+  const { formatPrice, formatQuantity } = useOrderTableFormate();
+
+
   const renderTableHeader = (key) => {
     switch (key) {
       case 'slNo':
@@ -79,6 +85,82 @@ const useRenderFunctions = () => {
         return null;
     }
   };
+
+
+  const renderOrderTableHeader = (key, unit) => {
+    switch (key) {
+      case 'slNo':
+        return 'Sl No'
+      case 'party':
+        return 'Party';
+      case 'orderNum':
+        return 'Order Num';
+      case 'rate':
+        return `Rate per ${unit}`;
+      case 'orderQty':
+        return `Order Qty in ${unit}`;
+      case 'dispatchQty':
+        return `Dispatch Qty in ${unit}`;
+      case 'balanceQty':
+        return `Balance Qty in ${unit}`;
+      case 'date':
+        return 'Date';
+      default:
+        return null;
+    }
+  };
+
+  const dispatchColumns = {
+    slNo: true,
+    tenderNum: true,
+    orderNum: true,
+    dispatchDate: true,
+    dispatchFrom: true,
+    dispatchTo: true,
+    billTo: true,
+    invoiceQty: true,
+    totalAmount: true,
+    totalTaxAmount: true,
+    totalInvoiceValue: true,
+    lrNo: true,
+    customerPONo: true,
+    vehicleNo: true,
+    customerInvoiceNo: false,
+    bagsCount: false,
+    grossWeight: false,
+    tareWeight: false,
+    netWeight: true,
+    bagWeight: false,
+    actualMaterialWeight: false,
+    driverName: false,
+    driverNo: false,
+    transporterName: true,
+    millName: true,
+    deliveryOrderNo: true,
+    invoiceNo: true,
+    remarks: false,
+    ewaybill: true,
+    cgst: true,
+    igst: true,
+    sgst: true,
+    tcs: true,
+    price: true,
+    product: true,
+    sealNo: false,
+  }
+
+
+  const orderColumns = {
+    slNo: true,
+    party: true,
+    orderNum: true,
+    rate: true,
+    orderQty: true,
+    dispatchQty: true,
+    balanceQty: true,
+    date: true,
+  }
+
 
 
   const renderTableCell = (key, item, index) => {
@@ -163,8 +245,39 @@ const useRenderFunctions = () => {
     }
   };
 
+  const renderOrderTableCell = (key, item, index) => {
+    switch (key) {
+      case 'slNo':
+        return index;
+      case 'party':
+        return item.trader.name;
+      case 'orderNum':
+        return item.id;
+      case 'rate':
+        return item.price;
+      case 'orderQty':
+        return `${formatQuantity(item, 'qty', item.qty)}`;
+      case 'dispatchQty':
+        return `${formatQuantity(item, 'dispatched_qty', item.dispatched_qty)}`;
+      case 'balanceQty':
+        return `${formatQuantity(item, 'available_qty', item.yet_to_load)}`;
+      case 'date':
+        return format(parseISO(item.date), 'dd/MMM/yyyy');
+      default:
+        return '-';
+    }
+  };
 
-  return { renderTableHeader, renderTableCell };
+
+
+  return {
+    renderTableHeader,
+    renderTableCell,
+    renderOrderTableHeader,
+    renderOrderTableCell,
+    dispatchColumns,
+    orderColumns
+  };
 };
 
 export default useRenderFunctions;

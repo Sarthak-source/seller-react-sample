@@ -22,6 +22,10 @@ export const ProfileDetails = lazy(() => import('src/pages/profile'));
 export const ReportDetails = lazy(() => import('src/pages/reports'));
 export const QualityCheck = lazy(() => import('src/sections/quality_check/quality_check'));
 export const ScanWithVehicle = lazy(() => import('src/sections/issue-do/issue-do'));
+export const StoreHouse = lazy(() => import('src/sections/issue-do/store-house'));
+export const SummaryScreen = lazy(() => import('src/sections/issue-do/summary'));
+
+
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -43,6 +47,8 @@ export default function Router() {
     { path: 'delivery-order-create', element: <DeliveryCreate /> },
     { path: 'quality-check', element: <QualityCheck /> },
     { path: 'generate-invoice', element: <ScanWithVehicle /> },
+    { path: 'generate-invoice/store-house', element: <StoreHouse /> },
+    { path: 'generate-invoice/store-house/summary', element:<SummaryScreen/>},
     { path: 'traders', element: <TraderDetails /> },
     { path: 'profile', element: <ProfileDetails /> },
     { path: 'reports', element: <ReportDetails /> },
