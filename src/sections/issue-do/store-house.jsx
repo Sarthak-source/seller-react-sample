@@ -240,65 +240,54 @@ function StoreHouse() {
 
 
     const addLot = () => {
-
-        if (isQtyChangable === true) {
-            setLotQty(25.0);
+        if ( Number.isNaN(selectedQty) || selectedQty === 0 || selectedQty === null  ) {
+            alert("Enter Lot Quantity");
+            return;
         }
-
-        if (selectedQty === 0) {
-            // Use a toast library or other notification method in React
-            alert("Enter Lot Quantity", lotQty);
-        }
-
+    
         if (selectedQty > totalQuanity) {
-            // Use a toast library or other notification method in React
-            alert("Enter Valid Lot Quantity", lotQty);
+            alert("Enter Valid Lot Quantity");
+            return;
         }
-
-        console.log('totalQuanity', (selectedQty + lotQty) <= totalQuanity, 'selectedQty:', selectedQty, 'lotQty:', lotQty, 'totalQuanity:', totalQuanity);
-        console.log('selectedQty:', selectedQty);
-        console.log('lotQty:', lotQty);
-        console.log('totalQuanity:', totalQuanity);
-        console.log('totalQuanity:', lotQty === totalQuanity && skipLoading === false);
-
-        if (selectedQty !== 0) {
-            if (lotQty <= totalQuanity) {
-
-                const newLot = {
-                    storeName: selectedStorehouse.name,
-                    name: selectedLot.name,
-                    store_pk: selectedStorehouse.id,
-                    lot_pk: selectedLot.id,
-                    qty: isQtyChangable === true ? 25.0 : parseFloat(selectedQty),
-                    product_pk: selectedStore.storeState.loading_instruction[0]?.order_head?.tender_head?.product?.id && `${selectedStore.storeState.loading_instruction[0].order_head.tender_head.product.id}`,
-                    product_name: selectedStore.storeState.loading_instruction[0]?.order_head?.tender_head?.product?.code && `${selectedStore.storeState.loading_instruction[0].order_head.tender_head.product.code}`,
-                };
-
-                setTypedLot(newLot);
-
-
-                if (!lotExits) {
-                    setLot(prevSelectedLot => [...prevSelectedLot, newLot]);
-                    console.log('lot', lot);
-                    // Clear state variables
-                    setStoreValue({});
-                    if (useConfigData === false) {
-                        setStoreHouse([]);
-                    }
-
-                    setLotName('');
-                    setLotID('');
-                    console.log(lot);
-
-                } else {
-                    alert("Lot exists");
-                }
-
-            } else {
-                alert(`Quantity Mismatch: Enter valid quantity, Selected Quanity: ${selectedQty}, Lot Quanity: ${lotQty}, Total Quanity: ${totalQuanity}`);
-            }
+    
+        if (lotQty + parseFloat(selectedQty) > totalQuanity) {
+            alert(`Quantity Mismatch: Enter valid quantity, Selected Quantity: ${selectedQty}, Lot Quantity: ${lotQty}, Total Quantity: ${totalQuanity}`);
+            return;
         }
+        
+    
+        const newLot = {
+            storeName: selectedStorehouse.name,
+            name: selectedLot.name,
+            store_pk: selectedStorehouse.id,
+            lot_pk: selectedLot.id,
+            qty: isQtyChangable === true ? 25.0 : parseFloat(selectedQty),
+            product_pk: selectedStore.storeState.loading_instruction[0]?.order_head?.tender_head?.product?.id && `${selectedStore.storeState.loading_instruction[0].order_head.tender_head.product.id}`,
+            product_name: selectedStore.storeState.loading_instruction[0]?.order_head?.tender_head?.product?.code && `${selectedStore.storeState.loading_instruction[0].order_head.tender_head.product.code}`,
+        };
+
+        
+    
+        const isLotExist = lot.some(l => l.lot_pk === newLot.lot_pk && l.product_pk === newLot.product_pk);
+        if (isLotExist) {
+            alert("Lot exists");
+            return;
+        }
+    
+        setLot([...lot, newLot]);
+        setLotQty(prevLotQty => prevLotQty + newLot.qty);
+    
+        // Clear state variables
+        setStoreValue({});
+        if (useConfigData === false) {
+            setStoreHouse([]);
+        }
+        setSelectedQty(0);
+        setTypedLot({});
+    
+        console.log('lot', lot);
     };
+    
 
     return (
         <>

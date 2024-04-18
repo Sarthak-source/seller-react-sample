@@ -59,7 +59,7 @@ export default function DispatchTableRow({
 
     const dispatch = useDispatch();
     const currentState = useSelector((state) => state.stateRefreash.currentState);
-
+    
 
     console.log('DispatchTableRow loadingInstructions', loadingInstructions?.status)
 
