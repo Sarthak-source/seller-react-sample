@@ -59,6 +59,8 @@ const useRenderFunctions = () => {
         return 'Transporter Name';
       case 'millName':
         return 'Mill Name';
+      case 'traderName':
+        return 'Trader Name';
       case 'deliveryOrderNo':
         return 'Delivery Order No';
       case 'invoiceNo':
@@ -136,6 +138,7 @@ const useRenderFunctions = () => {
     driverNo: false,
     transporterName: true,
     millName: true,
+    traderName: true,
     deliveryOrderNo: true,
     invoiceNo: true,
     remarks: false,
@@ -215,6 +218,8 @@ const useRenderFunctions = () => {
         return item.loading_instruction?.transporter;
       case 'millName':
         return item.mill;
+      case 'traderName':
+        return item.trader_name;
       case 'deliveryOrderNo':
         return item.delivery_order?.do_num;
       case 'invoiceNo':

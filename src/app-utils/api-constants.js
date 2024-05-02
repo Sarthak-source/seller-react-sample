@@ -6,7 +6,7 @@ const prod = '172.105.55.52';
 
 const local = '192.168.1.23:8000';
 
-console.log('isTestEnvironment',localStorage.getItem('isTestEnvironment'))
+console.log('isTestEnvironment', localStorage.getItem('isTestEnvironment'))
 const isTestEnvironment = localStorage.getItem('isTestEnvironment');
 
 const ip = isTestEnvironment === 'true' ? testip : prod;
@@ -92,7 +92,8 @@ const ApiAppConstants = {
     sellers: 'sellers/',
     location: 'location/',
     dispatchReports: 'dispatch_reports/',
-    productData : 'get_product_data/',
+    productData: 'get_product_data/',
+    invoicestats: 'invoice_stats/',
 };
 
 export { ApiAppConstants, auth, ip, testip };

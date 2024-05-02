@@ -54,6 +54,11 @@ export default function TenderTableRow({
     navigate(`/home/tender-details/${tenderId}`); // Use navigate to go to the details page
   };
 
+
+  const handleAddTenderToSap = () => {
+    navigate(`add-tender-to-sap`);
+  }
+
   const handleOpen = (contentType, statusArg) => {
     setOpen(true);
     setContent(contentType)
@@ -76,7 +81,7 @@ export default function TenderTableRow({
 
   const handleConfirm = async (statusConfirm) => {
     try {
-      const data = await NetworkRepository.tenderUpdate(tenderId, statusConfirm,selectedUser.id);
+      const data = await NetworkRepository.tenderUpdate(tenderId, statusConfirm, selectedUser.id);
       console.log('Response:', data);
       // Show success Snackbar or any other desired action
       showSnackbar('Tender updated successfully.', 'success');
@@ -181,6 +186,11 @@ export default function TenderTableRow({
                 <Box sx={{ fontWeight: 'bold' }}> Close</Box>
               </HoverExpandButton>
             )}
+            <HoverExpandButton onClick={() => handleAddTenderToSap()} width='130px' color={theme.palette.success.main}>
+              <Iconify icon="logos:sap" />
+              <Box sx={{ fontWeight: 'bold' }}> Add to SAP</Box>
+            </HoverExpandButton>
+
           </Box>
         </TableCell>
       </TableRow>

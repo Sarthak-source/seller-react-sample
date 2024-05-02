@@ -119,7 +119,7 @@ const RenderTableFromJson = ({
 
   return (
     <Paper elevation={3} style={{ margin: '16px 0', maxHeight: '100%', overflow: 'auto' }}>
-      {loading !== 'OrderReportView' && (
+      {usedIn !== 'OrderReportView' && (
         <Box sx={{ display: 'flex', justifyContent: 'flex-start', pr: '16px', pt: '16px' }}>
           <FormControl sx={{ m: 1, mx: '30px', maxWidth: '70vw', }}>
             <InputLabel id="demo-multiple-chip-label">Select Columns</InputLabel>

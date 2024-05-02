@@ -1,48 +1,72 @@
-import PropTypes from 'prop-types';
-
+import { Button, Dialog } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-
+import Stack from '@mui/material/Stack';
+import { addDays } from 'date-fns';
+import { id } from 'date-fns/locale';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { DateRangePicker } from 'react-date-range';
+import 'react-date-range/dist/styles.css'; // main css file
+import 'react-date-range/dist/theme/default.css'; // theme css file
 import Chart, { useChart } from 'src/components/chart';
-
-// ----------------------------------------------------------------------
 
 export default function AppWebsiteVisits({ title, subheader, chart, ...other }) {
   const { labels, colors, series, options } = chart;
-
+  const [selectedRange, setSelectedRange] = useState({
+    startDate: new Date(),
+    endDate: addDays(new Date(), 7),
+    key: 'selection'
+  });
+  const [selectedLabel, setSelectedLabel] = useState(labels[0]); // Initial selected label
+  const [open, setOpen] = useState(false); // State for dialog visibility
   const chartOptions = useChart({
-    colors,
-    plotOptions: {
-      bar: {
-        columnWidth: '16%',
+    chart: {
+      type: 'line',
+      toolbar: {
+        show: false,
       },
     },
-    fill: {
-      type: series.map((i) => i.fill),
-    },
-    labels,
     xaxis: {
       type: 'datetime',
-    },
-    tooltip: {
-      shared: true,
-      intersect: false,
-      y: {
-        formatter: (value) => {
-          if (typeof value !== 'undefined') {
-            return `${value.toFixed(0)} visits`;
-          }
-          return value;
+      labels: {
+        datetimeFormatter: {
+          year: 'yyyy',
+          month: 'MMM',
         },
       },
     },
-    ...options,
+    yaxis: {
+      title: {
+        text: 'Quantity',
+      },
+    },
+    tooltip: {
+      x: {
+        format: 'MMM yyyy',
+      },
+    },
   });
 
+  const handleDateRangeChange = (ranges) => {
+    setSelectedRange(ranges.selection);
+  };
+
   return (
-    <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
+    <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',}} {...other} >
+      <CardHeader
+        title={title}
+        subheader={subheader}
+        action={
+          <Stack spacing={2}>
+            <Button variant="outlined" onClick={() => setOpen(true)}>
+              Select Date Range
+            </Button>
+
+          </Stack>
+        }
+      />
 
       <Box sx={{ p: 3, pb: 1 }}>
         <Chart
@@ -54,6 +78,24 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
           height={364}
         />
       </Box>
+
+      <Dialog open={open} onClose={() => setOpen(false)} sx={{ width: '80vw' }} PaperProps={{
+        sx: {
+          width: "100%",
+          maxWidth: "80vw!important",
+        },
+      }}>
+        <DateRangePicker
+          locale={id}
+          onChange={handleDateRangeChange}
+          showSelectionPreview
+          moveRangeOnFirstSelection={false}
+          months={2}
+          ranges={[selectedRange]}
+          direction="horizontal"
+          onClose={() => setOpen(false)}
+        />
+      </Dialog>
     </Card>
   );
 }

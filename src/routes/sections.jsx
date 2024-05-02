@@ -4,8 +4,10 @@ import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 import DashboardLayout from 'src/layouts/dashboard';
 import { DashboardView } from 'src/sections/dashboard';
 import DeliveryCreate from 'src/sections/dashboard/dispatches/add-internal-do/add-internal-do';
+import SalesOrderForm from 'src/sections/dashboard/orders/add-to-sap/add-to-sap';
 import OrderCreate from 'src/sections/dashboard/orders/self-order/add-self-order';
 import TenderCreate from 'src/sections/dashboard/tender/add-tender/add-tender';
+import SalesContractForm from 'src/sections/dashboard/tender/add-to-sap/add-to-sap';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -39,7 +41,9 @@ export default function Router() {
     { path: 'products', element: <ProductsPage /> },
     { path: 'blog', element: <BlogPage /> },
     { path: 'tender-details/:id', element: <TenderDetails /> },
+    { path: 'add-tender-to-sap', element: <SalesContractForm /> },
     { path: 'order-details/:data', element: <OrderDetails /> },
+    { path: 'add-order-to-sap', element: <SalesOrderForm /> },
     { path: 'loading-instruction-details/:id', element: <DispatchDetails /> },
     { path: 'add-vehicle/:data', element: <AddVehicle /> },
     { path: 'tender-create', element: <TenderCreate /> },
@@ -48,10 +52,11 @@ export default function Router() {
     { path: 'quality-check', element: <QualityCheck /> },
     { path: 'generate-invoice', element: <ScanWithVehicle /> },
     { path: 'generate-invoice/store-house', element: <StoreHouse /> },
-    { path: 'generate-invoice/store-house/summary', element:<SummaryScreen/>},
+    { path: 'generate-invoice/store-house/summary', element: <SummaryScreen /> },
     { path: 'traders', element: <TraderDetails /> },
     { path: 'profile', element: <ProfileDetails /> },
     { path: 'reports', element: <ReportDetails /> },
+
   ];
 
   const routes = useRoutes([

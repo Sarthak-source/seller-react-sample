@@ -55,6 +55,10 @@ export default function OrdersTableRow({
         navigate(`/home/add-vehicle/${ordersId}`); // Use navigate to go to the details page
     };
 
+    const handleAddOrderToSap = () => {
+        navigate(`add-order-to-sap`);
+    }
+
 
     const [content, setContent] = useState('');
     const [statusType, setStatusType] = useState('');
@@ -229,6 +233,10 @@ export default function OrdersTableRow({
                                 </HoverExpandButton>
                             )
                         }
+                        <HoverExpandButton onClick={() => handleAddOrderToSap()} width='130px' color={theme.palette.success.main}>
+                            <Iconify icon="logos:sap" />
+                            <Box sx={{ fontWeight: 'bold' }}> Add to SAP</Box>
+                        </HoverExpandButton>
                     </Box>
                 </TableCell>
             </TableRow>
