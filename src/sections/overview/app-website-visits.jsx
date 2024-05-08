@@ -1,29 +1,21 @@
-import { Button, Dialog } from '@mui/material';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import Stack from '@mui/material/Stack';
-import { addDays } from 'date-fns';
-import { id } from 'date-fns/locale';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { DateRangePicker } from 'react-date-range';
 import 'react-date-range/dist/styles.css'; // main css file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import Chart, { useChart } from 'src/components/chart';
 
 export default function AppWebsiteVisits({ title, subheader, chart, ...other }) {
-  const { labels, colors, series, options } = chart;
-  const [selectedRange, setSelectedRange] = useState({
-    startDate: new Date(),
-    endDate: addDays(new Date(), 7),
-    key: 'selection'
-  });
+  const { labels, colors, series, options, invoiceData } = chart;
+
   const [selectedLabel, setSelectedLabel] = useState(labels[0]); // Initial selected label
-  const [open, setOpen] = useState(false); // State for dialog visibility
+
+  // Configure chart options
   const chartOptions = useChart({
     chart: {
-      type: 'line',
+      type: 'line', // Set the chart type to line
       toolbar: {
         show: false,
       },
@@ -34,6 +26,8 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
         datetimeFormatter: {
           year: 'yyyy',
           month: 'MMM',
+          day: 'dd',
+          hour: 'HH',
         },
       },
     },
@@ -49,53 +43,61 @@ export default function AppWebsiteVisits({ title, subheader, chart, ...other }) 
     },
   });
 
-  const handleDateRangeChange = (ranges) => {
-    setSelectedRange(ranges.selection);
-  };
+  const formattedInvoiceData = invoiceData ? invoiceData.map(({ date, invoice_qty }) => {
+    let currentDate;
+    // Check if the date is in "YYYY-MM-DD" format or "12 AM"
+    if (date.includes("-")) {
+      // Date is in "YYYY-MM-DD" format
+      currentDate = new Date(date);
+    } else {
+      // Date is in "12 AM" format, set it to 6 AM
+      currentDate = new Date();
+      const hour = parseInt(date.replace(/\D/g, ''), 10);
+      currentDate.setHours(hour, 0, 0, 0);
+    }
+    return {
+      x: currentDate.getTime(),
+      y: invoice_qty,
+    };
+  }) : [];
+
+
+  const maxQuantity = Math.max(...formattedInvoiceData.map(dataPoint => dataPoint.y));
+
+  const highlightedData = formattedInvoiceData.map(dataPoint => ({
+    x: dataPoint.x,
+    y: dataPoint.y,
+    fillColor: dataPoint.y === maxQuantity ? '#00CC00' : null,
+    strokeColor: dataPoint.y === maxQuantity ? '#00CC00' : null,
+    strokeWidth: dataPoint.y === maxQuantity ? 0 : 2,
+  }));
+
+  if (formattedInvoiceData.length > 0 && formattedInvoiceData.length <= 24) {
+    chartOptions.xaxis.labels.datetimeFormatter.hour = 'HH';
+  }
+
+  console.log('maxQuantity', maxQuantity);
 
   return (
-    <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',}} {...other} >
+    <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }} {...other}>
       <CardHeader
         title={title}
         subheader={subheader}
-        action={
-          <Stack spacing={2}>
-            <Button variant="outlined" onClick={() => setOpen(true)}>
-              Select Date Range
-            </Button>
-
-          </Stack>
-        }
       />
 
       <Box sx={{ p: 3, pb: 1 }}>
         <Chart
           dir="ltr"
           type="line"
-          series={series}
+          series={[{
+            data: highlightedData, name: 'Invoice Quantity', type: 'column',
+            fill: 'solid',
+          }]}
           options={chartOptions}
           width="100%"
           height={364}
         />
       </Box>
-
-      <Dialog open={open} onClose={() => setOpen(false)} sx={{ width: '80vw' }} PaperProps={{
-        sx: {
-          width: "100%",
-          maxWidth: "80vw!important",
-        },
-      }}>
-        <DateRangePicker
-          locale={id}
-          onChange={handleDateRangeChange}
-          showSelectionPreview
-          moveRangeOnFirstSelection={false}
-          months={2}
-          ranges={[selectedRange]}
-          direction="horizontal"
-          onClose={() => setOpen(false)}
-        />
-      </Dialog>
     </Card>
   );
 }

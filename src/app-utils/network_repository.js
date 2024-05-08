@@ -1155,7 +1155,37 @@ const NetworkRepository = {
     } catch (e) {
       return e.toString();
     }
-  }
+  },
+
+  getInvoiceStats: async (from, to,mill) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url:
+          `${ApiAppConstants.invoiceStats}?from_date=${from}&to_date=${to}&mill=${mill}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  getInvoiceStatsForDate: async (date, mill) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.invoiceStats}?date=${date}&mill=${mill}`,
+        header: { authorization: auth },
+      });
+  
+      return await apiResponse; 
+    } catch (e) {
+      alert(e.toString());
+      return e.toString(); 
+    }
+  },
+  
 }
 
 

@@ -2,16 +2,22 @@
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
+import 'react-date-range/dist/styles.css'; // main css file
+import 'react-date-range/dist/theme/default.css';
+import NetworkRepository from 'src/app-utils/network_repository';
 
+import { Button, Card, CardHeader, Dialog, FormControl, InputLabel, MenuItem, Select, Skeleton, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material';
+import { addDays, format } from 'date-fns';
+import { id } from 'date-fns/locale';
 
-import { Card, CardHeader, FormControl, InputLabel, MenuItem, Select, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchTraderData, fetchTraderDataStart } from 'src/redux/actions/traders';
+import { DateRangePicker } from 'react-date-range';
+import { useSelector } from 'react-redux';
 import { fShortenNumberIndian } from 'src/utils/format-number';
 import AppCurrentVisits from '../app-current-visits';
 import LineChart from '../app-line-chart';
 import AppNewsUpdate from '../app-news-update';
+
 import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
 
@@ -21,6 +27,13 @@ import AppWidgetSummary from '../app-widget-summary';
 
 export default function AppView() {
   const selectedUser = useSelector((state) => state.user.selectedUser);
+  const [open, setOpen] = useState(false); // State for dialog visibility
+
+  const [loading, setLoading] = useState(false); // State for dialog visibility
+
+
+
+
 
   const fakeData = [
     { id: '1', employee: 'Garden Court Distilleries Private Limited', occupation: 'Sha Pratapchand Pukraj And Company', projects: 260.00, performance: fShortenNumberIndian(3710 * 260.00) },
@@ -52,36 +65,9 @@ export default function AppView() {
 
   const [selectedValue, setSelectedValue] = useState('');
 
-  const handleChangeDrop = (event) => {
-    setSelectedValue(event.target.value);
-  };
-
-  const quantity = [10850, 10150, 4400, 2140, 1160, 0, 0, 0, 0, 0]
-
-  const series = [44, 90];
-
-  const dispatch = useDispatch();
-  const traders = useSelector((state) => state.traders.traderData);
+  ;
 
 
-  const [traderData, setTraderData] = useState(traders);
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (Array.isArray(traderData) && traderData.length === 0) {
-          dispatch(fetchTraderDataStart());
-          await dispatch(fetchTraderData(2));
-        }
-      } catch (error) {
-        console.error('Error fetching trader data:', error);
-      }
-    };
-
-    fetchData();
-    setTraderData(traders);
-  }, [dispatch, traderData, traders, selectedUser.id]);
 
   const [value, setValue] = useState(0);
 
@@ -89,11 +75,77 @@ export default function AppView() {
     setValue(newValue);
   };
 
+  const [selectedRange, setSelectedRange] = useState({
+    startDate: new Date(),
+    endDate: addDays(new Date(), 7),
+    key: 'selection'
+  });
+
+  const handleDateRangeChange = (ranges) => {
+    setSelectedRange(ranges.selection);
+  };
+
+  const [data, setData] = useState({});
+
+
+  // Function to fetch invoice stats for a single date
+  const fetchInvoiceStatsForDate = async (date) => {
+    setLoading(true);
+    try {
+      const formattedDate = format(date, "yyyy-MM-dd");
+      const invoiceStats = await NetworkRepository.getInvoiceStatsForDate(formattedDate, '');
+      console.log('sdfsdfsdfsdfsdfsdfsd',invoiceStats);
+      setData(invoiceStats);
+    } catch (error) {
+      console.error('Error fetching invoice stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to fetch invoice stats for a date range
+  const fetchInvoiceStatsForRange = async (startDate, endDate) => {
+    setLoading(true);
+    try {
+      const formattedStartDate = format(startDate, "yyyy-MM-dd");
+      const formattedEndDate = format(endDate, "yyyy-MM-dd");
+      const invoiceStats = await NetworkRepository.getInvoiceStats(formattedStartDate, formattedEndDate, '');
+      setData(invoiceStats);
+    } catch (error) {
+      console.error('Error fetching invoice stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // useEffect to fetch data based on the selected range
+  useEffect(() => {
+    if (selectedRange.startDate === selectedRange.endDate) {
+      console.log('sdfsdfsdfsdfsdfsdfsdf');
+      fetchInvoiceStatsForDate(selectedRange.startDate); // Fetch stats for single date
+    } else {
+      fetchInvoiceStatsForRange(selectedRange.startDate, selectedRange.endDate); // Fetch stats for date range
+    }
+  }, [selectedRange]);
+
+
+  useEffect(() => { }, [
+    data])
+
+
+  console.log('data', data);
+
+
   return (
     <Container maxWidth="xl">
-      <Typography variant="h4" sx={{ mb: 5, mt: 1 }} >
-        Hi, {selectedUser.name && selectedUser.name.charAt(0).toUpperCase() + selectedUser.name.slice(1)} 👋
-      </Typography>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5} mt={1}>
+        <Typography variant="h4">
+          Hi, {selectedUser.name && selectedUser.name.charAt(0).toUpperCase() + selectedUser.name.slice(1)} 👋
+        </Typography>
+        <Button variant="outlined" onClick={() => setOpen(true)}>
+          Select Date Range ({format(selectedRange.startDate, 'MMM/dd/yyyy')} - {format(selectedRange.endDate, 'MMM/dd/yyyy')})
+        </Button>
+      </Stack>
 
       <Tabs value={value} onChange={handleChange} textColor="primary"
         indicatorColor="primary"
@@ -104,7 +156,7 @@ export default function AppView() {
           display: 'flex',
           width: "100%",
           justifyContent: 'flex-start',
-          
+
           zIndex: -2,
           backgroundColor: '#f9fafb',
         }}
@@ -118,89 +170,98 @@ export default function AppView() {
 
       {value === 0 && (
         <Grid container spacing={5} mt={0.2}>
+
           <Grid xs={12} sm={6} md={4} >
-            <AppWidgetSummary
+            {!loading ? (<AppWidgetSummary
               title="Total Dispatch quantity"
-              total={28700}
+              total={data.totals?.total_invoice_qty}
               unit='QTL'
               color="success"
               icon={
                 <img src="/assets/dashboard/dispatches-quantity.svg" alt="" />
               }
             />
+            ) : (
+              <Skeleton variant="rectangular" width="100%" height={150} sx={{ borderRadius: '8px' }} />
+
+            )}
           </Grid>
           <Grid xs={12} sm={6} md={4}>
-            <AppWidgetSummary
-              title="Dispatches"
-              total={96}
+            {!loading ? (
+              <AppWidgetSummary
+                title="Dispatches"
+                total={data.totals?.total_count}
 
-              color="info"
-              icon={<img src="/assets/dashboard/dispatches-on-truck.svg" alt="" />}
-            />
+                color="info"
+                icon={<img src="/assets/dashboard/dispatches-on-truck.svg" alt="" />}
+              />) : (<Skeleton variant="rectangular" width="100%" height={150} sx={{ borderRadius: '8px' }} />)}
           </Grid>
 
           <Grid xs={12} sm={6} md={4}>
             <AppWidgetSummary
               title="Total Sale amount"
               useShotHand
-              total={106100000}
+              total={data.totals?.total_invoice_amount}
               color="warning"
               icon={<img src="/assets/dashboard/sales-report.svg" alt="" />}
             />
           </Grid>
 
           <Grid xs={12} md={8} lg={8}>
-            <AppWebsiteVisits
-              title="Dispatches"
-              subheader=""
-              chart={{
-                labels: [
-                  '2023',
-                  '2024',
-                  '2025',
-                  '2026',
-                  // Add more dates here as needed
-                ],
-                series: [
-                  {
-                    name: 'Quantity',
-                    type: 'column',
-                    fill: 'solid',
-                    data: [
+            {!loading ? (
+              <AppWebsiteVisits
+                title="Dispatches"
+                subheader=""
+                chart={{
+                  labels: [
+                    '2023',
+                    '2024',
+                    '2025',
+                    '2026',
+                    // Add more dates here as needed
+                  ],
+                  series: [
+                    {
+                      name: 'Quantity',
+                      type: 'column',
+                      fill: 'solid',
+                      data: [
+                        // Data for '05/25/2024'
+                        [new Date(2024, 4, 23).getTime(), 90],
+                        // Data for '05/26/2024'
+                        [new Date(2024, 4, 24).getTime(), 110],
+                        // Data for '05/27/2024'
+                        [new Date(2024, 4, 25).getTime(), 60],
+                        // Data for '05/28/2024'
+                        [new Date(2024, 4, 26).getTime(), 150],
+                        // Data for '05/29/2024'
+                        [new Date(2024, 4, 27).getTime(), 100],
+                        // Data for '05/30/2024'
+                        [new Date(2024, 4, 28).getTime(), 82],
 
-                      // Data for '05/25/2024'
-                      [new Date(2024, 4, 23).getTime(), 90],
-                      // Data for '05/26/2024'
-                      [new Date(2024, 4, 24).getTime(), 110],
-                      // Data for '05/27/2024'
-                      [new Date(2024, 4, 25).getTime(), 60],
-                      // Data for '05/28/2024'
-                      [new Date(2024, 4, 26).getTime(), 150],
-                      // Data for '05/29/2024'
-                      [new Date(2024, 4, 27).getTime(), 100],
-                      // Data for '05/30/2024'
-                      [new Date(2024, 4, 28).getTime(), 82],
-
-                      [new Date(2024, 4, 29).getTime(), 170],
-                      // Add more data arrays for additional dates as needed
-                    ],
-                  },
-                  // Add more series as needed
-                ],
-              }}
-            />
+                        [new Date(2024, 4, 29).getTime(), 170],
+                        // Add more data arrays for additional dates as needed
+                      ],
+                    },
+                    // Add more series as needed
+                  ],
+                  invoiceData: data.details // Assuming PromiseResult.details holds the invoice data
+                }}
+              />
+            ) : (<Skeleton variant="rectangular" width="100%" height="100%" sx={{ borderRadius: '8px' }} />)}
           </Grid>
+
           <Grid xs={12} md={4} lg={4}>
-            <AppNewsUpdate
+            {data && data?.trader_data && (<AppNewsUpdate
               title="Top 10 Traders"
-              list={traderData.slice(0, 10).map((trader, index) => ({
-                id: trader.id || '',
+              list={data?.trader_data?.slice(0, 10).map((trader, index) => ({
+                id: trader?.invoice_count || '',
                 title: trader.phone_number || '',
-                description: trader.name || '',
+                description: trader?.trader || '',
                 image: `/assets/images/covers/cover_${index + 1}.jpg`,
-                postedAt: quantity[index],
+                postedAt: trader?.invoice_qty,
               }))}
-            />
+            />)}
           </Grid>
 
           <Grid xs={12} md={8} lg={8}>
@@ -461,6 +522,23 @@ export default function AppView() {
         </Grid>
 
       )}
+      <Dialog open={open} onClose={() => setOpen(false)} sx={{ width: '80%' }} PaperProps={{
+        sx: {
+          width: "80%",
+          maxWidth: "80%!important",
+        },
+      }}>
+        <DateRangePicker
+          locale={id}
+          onChange={handleDateRangeChange}
+          showSelectionPreview
+          moveRangeOnFirstSelection={false}
+          months={2}
+          ranges={[selectedRange]}
+          direction="horizontal"
+          onClose={() => setOpen(false)}
+        />
+      </Dialog>
     </Container>
   );
 }
