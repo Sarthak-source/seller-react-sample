@@ -223,7 +223,7 @@ const useRenderFunctions = () => {
       case 'deliveryOrderNo':
         return item.delivery_order?.do_num;
       case 'invoiceNo':
-        return `${item?.invoice_prefix}${item?.invoice_num}`;
+        return `${item?.invoice_prefix}${item?.invoice_num !== "0" ? item?.invoice_num : item?.dc_num}`;
       case 'remarks':
         return item.loading_instruction?.remark;
       case 'ewaybill':

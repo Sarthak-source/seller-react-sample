@@ -94,6 +94,8 @@ const ApiAppConstants = {
     dispatchReports: 'dispatch_reports/',
     productData: 'get_product_data/',
     invoiceStats: 'invoice_stats/',
+    recentInvoices: 'recent_invoices/',
+    productDashboard:'product_dashboard/',
 };
 
 export { ApiAppConstants, auth, ip, testip };

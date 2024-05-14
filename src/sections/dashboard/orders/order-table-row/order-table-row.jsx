@@ -233,10 +233,10 @@ export default function OrdersTableRow({
                                 </HoverExpandButton>
                             )
                         }
-                        <HoverExpandButton onClick={() => handleAddOrderToSap()} width='130px' color={theme.palette.success.main}>
+                        {/* <HoverExpandButton onClick={() => handleAddOrderToSap()} width='130px' color={theme.palette.success.main}>
                             <Iconify icon="logos:sap" />
                             <Box sx={{ fontWeight: 'bold' }}> Add to SAP</Box>
-                        </HoverExpandButton>
+                        </HoverExpandButton> */}
                     </Box>
                 </TableCell>
             </TableRow>

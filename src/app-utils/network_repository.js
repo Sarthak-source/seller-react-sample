@@ -1139,7 +1139,7 @@ const NetworkRepository = {
 
 
   productData: async (mill, product) => {
-    console.log('productData',mill, product);
+    console.log('productData', mill, product);
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url:
@@ -1148,7 +1148,7 @@ const NetworkRepository = {
       });
 
 
-      console.log('apiResponse',apiResponse)
+      console.log('apiResponse', apiResponse)
 
 
       return apiResponse;
@@ -1157,7 +1157,7 @@ const NetworkRepository = {
     }
   },
 
-  getInvoiceStats: async (from, to,mill) => {
+  getInvoiceStats: async (from, to, mill) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url:
@@ -1178,14 +1178,41 @@ const NetworkRepository = {
         url: `${ApiAppConstants.invoiceStats}?date=${date}&mill=${mill}`,
         header: { authorization: auth },
       });
-  
-      return await apiResponse; 
+
+      return await apiResponse;
     } catch (e) {
       alert(e.toString());
-      return e.toString(); 
+      return e.toString();
     }
   },
-  
+
+  getRecentInvoices: async (mill, from, to) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.recentInvoices}?&mill=${mill}&from_date=${from}&to_date=${to}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  getProductDashboard: async (mill, year, month, product) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.productDashboard}?mill=${mill}&year=${year}&month=${month}&product=${product}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
 }
 
 

@@ -6,8 +6,8 @@ import 'react-date-range/dist/styles.css'; // main css file
 import 'react-date-range/dist/theme/default.css';
 import NetworkRepository from 'src/app-utils/network_repository';
 
-import { Button, Card, CardHeader, Dialog, FormControl, InputLabel, MenuItem, Select, Skeleton, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material';
-import { addDays, format } from 'date-fns';
+import { Button, Card, CardHeader, Dialog, MenuItem, Select, Skeleton, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material';
+import { format, subDays } from 'date-fns';
 import { id } from 'date-fns/locale';
 
 import { useEffect, useState } from 'react';
@@ -15,9 +15,9 @@ import { DateRangePicker } from 'react-date-range';
 import { useSelector } from 'react-redux';
 import { fShortenNumberIndian } from 'src/utils/format-number';
 import AppCurrentVisits from '../app-current-visits';
-import LineChart from '../app-line-chart';
 import AppNewsUpdate from '../app-news-update';
 
+import LineChart from '../app-line-chart';
 import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
 
@@ -27,113 +27,128 @@ import AppWidgetSummary from '../app-widget-summary';
 
 export default function AppView() {
   const selectedUser = useSelector((state) => state.user.selectedUser);
-  const [open, setOpen] = useState(false); // State for dialog visibility
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState('');
+  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedValue, setSelectedValue] = useState('');
+  const [value, setValue] = useState(0);
+  const [selectedRange, setSelectedRange] = useState({
+    startDate: subDays(new Date(), 7),
+    endDate: new Date(),
+    key: 'selection'
+  });
+  const [data, setData] = useState({});
+  const [recentInvoiceData, setRecentInvoiceDataData] = useState({});
+  const [recentProductDashboard, setRecentProductDashboard] = useState({});
 
-  const [loading, setLoading] = useState(false); // State for dialog visibility
-
-
-
-
-
-  const fakeData = [
-    { id: '1', employee: 'Garden Court Distilleries Private Limited', occupation: 'Sha Pratapchand Pukraj And Company', projects: 260.00, performance: fShortenNumberIndian(3710 * 260.00) },
-    { id: '2', employee: 'Geeta Sugars', occupation: 'Provimi Animal Nutrition India Pvt Ltd. ', projects: 350.00, performance: 35.00 },
-    { id: '3', employee: 'Balaji Sugars Sales And Marketing Private Limited', occupation: 'Reliance Retail Ltd', projects: 420.00, performance: 3390.00 },
-    { id: '4', employee: 'Padam Sugar & Co', occupation: 'Garden Court Distilleries Private Limited', projects: 270.00, performance: 3680.00 },
-    { id: '5', employee: 'Del Monte Foods Private Limited', occupation: 'Del Monte Foods Private Limited', projects: 350.00, performance: 3540.00 },
-
-  ];
-
-  const fakeDataCity = [
-    { id: '1', employee: 'Jamkhandi', occupation: 'Bagalkot', projects: 300000.00, performance: 19 },
-    { id: '2', employee: 'Ratnagiri', occupation: 'Ratnagiri', projects: 250000.00, performance: 739 },
-    { id: '3', employee: 'Kakinada (Urban)', occupation: 'East Godavari', projects: 166640, performance: 597 },
-    { id: '4', employee: 'Mangalore', occupation: 'Dakshina Kannada', projects: 149526.00, performance: 512 },
-    { id: '5', employee: 'Gorakhpur', occupation: 'Gorakhpur', projects: 1248250.0, performance: 434 },
-
-  ];
-
-  const options = {
-    chart: {
-      type: 'donut',
-    },
-    labels: ['weaky', ''],
-    legend: {
-      show: false,
-    }
+  const handleSelectChange = (event) => {
+    setSelectedOption(event.target.value);
   };
 
-  const [selectedValue, setSelectedValue] = useState('');
-
-  ;
-
-
-
-  const [value, setValue] = useState(0);
+  const handleProductChange = (event) => {
+    setSelectedProduct(event.target.value);
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const [selectedRange, setSelectedRange] = useState({
-    startDate: new Date(),
-    endDate: addDays(new Date(), 7),
-    key: 'selection'
-  });
-
   const handleDateRangeChange = (ranges) => {
     setSelectedRange(ranges.selection);
   };
 
-  const [data, setData] = useState({});
-
-
-  // Function to fetch invoice stats for a single date
-  const fetchInvoiceStatsForDate = async (date) => {
-    setLoading(true);
-    try {
-      const formattedDate = format(date, "yyyy-MM-dd");
-      const invoiceStats = await NetworkRepository.getInvoiceStatsForDate(formattedDate, '');
-      console.log('sdfsdfsdfsdfsdfsdfsd',invoiceStats);
-      setData(invoiceStats);
-    } catch (error) {
-      console.error('Error fetching invoice stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Function to fetch invoice stats for a date range
-  const fetchInvoiceStatsForRange = async (startDate, endDate) => {
-    setLoading(true);
-    try {
-      const formattedStartDate = format(startDate, "yyyy-MM-dd");
-      const formattedEndDate = format(endDate, "yyyy-MM-dd");
-      const invoiceStats = await NetworkRepository.getInvoiceStats(formattedStartDate, formattedEndDate, '');
-      setData(invoiceStats);
-    } catch (error) {
-      console.error('Error fetching invoice stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // useEffect to fetch data based on the selected range
   useEffect(() => {
+    const fetchInvoiceStatsForDate = async (date) => {
+      setLoading(true);
+      try {
+        const formattedDate = format(date, "yyyy-MM-dd");
+        const invoiceStats = await NetworkRepository.getInvoiceStatsForDate(formattedDate, selectedOption.toString());
+        setData(invoiceStats);
+      } catch (error) {
+        console.error('Error fetching invoice stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchInvoiceStatsForRange = async (startDate, endDate) => {
+      setLoading(true);
+      try {
+        const formattedStartDate = format(startDate, "yyyy-MM-dd");
+        const formattedEndDate = format(endDate, "yyyy-MM-dd");
+        const invoiceStats = await NetworkRepository.getInvoiceStats(formattedStartDate, formattedEndDate, selectedOption.toString());
+        setData(invoiceStats);
+      } catch (error) {
+        console.error('Error fetching invoice stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (selectedRange.startDate === selectedRange.endDate) {
-      console.log('sdfsdfsdfsdfsdfsdfsdf');
-      fetchInvoiceStatsForDate(selectedRange.startDate); // Fetch stats for single date
+      fetchInvoiceStatsForDate(selectedRange.startDate);
     } else {
-      fetchInvoiceStatsForRange(selectedRange.startDate, selectedRange.endDate); // Fetch stats for date range
+      fetchInvoiceStatsForRange(selectedRange.startDate, selectedRange.endDate);
     }
-  }, [selectedRange]);
+  }, [selectedRange, selectedOption]);
+
+  useEffect(() => {
+    const fetchLatestInvoice = async () => {
+      setLoading(true);
+
+      try {
+        const formattedStartDate = format(selectedRange.startDate, "yyyy-MM-dd");
+        const formattedEndDate = format(selectedRange.endDate, "yyyy-MM-dd");
+        const invoiceStats = await NetworkRepository.getRecentInvoices(selectedOption.toString(), formattedStartDate, formattedEndDate);
+        setRecentInvoiceDataData(invoiceStats);
+      } catch (error) {
+        console.error('Error fetching invoice stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLatestInvoice();
+  }, [selectedOption, selectedRange]);
+
+  useEffect(() => {
+    const fetchProductDashboard = async () => {
+      setLoading(true);
+      try {
+        const invoiceStats = await NetworkRepository.getProductDashboard(selectedProduct.toString() ?? '0', '', '', '');
+        setRecentProductDashboard(invoiceStats);
+      } catch (error) {
+        console.error('Error fetching invoice stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (selectedProduct !== '') {
+      fetchProductDashboard();
+    }
 
 
-  useEffect(() => { }, [
-    data])
+
+  }, [selectedProduct]);
+
+
+
+  useEffect(() => { }, [data])
 
 
   console.log('data', data);
+
+  console.log('recentInvoiceData', recentInvoiceData)
+
+  console.log('recentProductDashboard', recentProductDashboard);
+
+  console.log('selectedProduct', selectedProduct)
+
+  const seriesData = recentInvoiceData?.products_data?.map(item => ({
+    label: item.product__code,
+    value: item.total_quantity // Assuming you want to use total_quantity as the value
+  }));
 
 
   return (
@@ -142,9 +157,71 @@ export default function AppView() {
         <Typography variant="h4">
           Hi, {selectedUser.name && selectedUser.name.charAt(0).toUpperCase() + selectedUser.name.slice(1)} 👋
         </Typography>
-        <Button variant="outlined" onClick={() => setOpen(true)}>
-          Select Date Range ({format(selectedRange.startDate, 'MMM/dd/yyyy')} - {format(selectedRange.endDate, 'MMM/dd/yyyy')})
-        </Button>
+        <Stack direction="row" sx={{ transform: 'scale(0.8)', mb: 1, mr: -9.5 }} >
+          <Stack >
+            <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
+              Select mill
+            </Typography>
+            <Select
+              value={selectedOption}
+              onChange={handleSelectChange}
+              displayEmpty
+              style={{ width: '250px' }}
+              inputProps={{ 'aria-label': 'Without label' }}
+            >
+              <MenuItem value="" disabled>
+                Select a mill
+              </MenuItem>
+              {selectedUser.mills.map((mill) => (
+                <MenuItem key={mill.id} value={mill.id}>
+                  {mill.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </Stack>
+          <Stack pl={1}>
+            
+            {selectedOption && (
+
+              <>
+               <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
+              Select product
+            </Typography>
+              <Select
+                value={selectedProduct}
+                onChange={handleProductChange}
+                displayEmpty
+                style={{ width: '250px' }}
+                inputProps={{ 'aria-label': 'Without label' }}
+              >
+                <MenuItem value="" >
+                  All
+                </MenuItem>
+                {selectedUser.mills
+                  .find((mill) => mill.id === selectedOption)
+                  ?.products.map((product) => (
+                    <MenuItem key={product.id} value={product.id}>
+                      {product.product_type.product_type} {`(${product.code === '' ? 'none' : product.code})`}
+
+                    </MenuItem>
+                  ))}
+              </Select>
+              </>
+             
+            )}
+
+
+          </Stack>
+          <Stack pl={1}>
+            <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
+              Select date
+            </Typography>
+            <Button sx={{ minWidth: 200, minHeight: 53 }} variant="outlined" onClick={() => setOpen(true)}>
+              {format(selectedRange.startDate, 'MMM/dd/yyyy')} - {format(selectedRange.endDate, 'MMM/dd/yyyy')}
+            </Button>
+          </Stack>
+
+        </Stack>
       </Stack>
 
       <Tabs value={value} onChange={handleChange} textColor="primary"
@@ -172,7 +249,8 @@ export default function AppView() {
         <Grid container spacing={5} mt={0.2}>
 
           <Grid xs={12} sm={6} md={4} >
-            {!loading ? (<AppWidgetSummary
+            {!loading ? (
+            <AppWidgetSummary
               title="Total Dispatch quantity"
               total={data.totals?.total_invoice_qty}
               unit='QTL'
@@ -191,20 +269,19 @@ export default function AppView() {
               <AppWidgetSummary
                 title="Dispatches"
                 total={data.totals?.total_count}
-
                 color="info"
                 icon={<img src="/assets/dashboard/dispatches-on-truck.svg" alt="" />}
               />) : (<Skeleton variant="rectangular" width="100%" height={150} sx={{ borderRadius: '8px' }} />)}
           </Grid>
 
           <Grid xs={12} sm={6} md={4}>
-            <AppWidgetSummary
+            {!loading ? (<AppWidgetSummary
               title="Total Sale amount"
               useShotHand
               total={data.totals?.total_invoice_amount}
               color="warning"
               icon={<img src="/assets/dashboard/sales-report.svg" alt="" />}
-            />
+            />) : (<Skeleton variant="rectangular" width="100%" height={150} sx={{ borderRadius: '8px' }} />)}
           </Grid>
 
           <Grid xs={12} md={8} lg={8}>
@@ -225,23 +302,7 @@ export default function AppView() {
                       name: 'Quantity',
                       type: 'column',
                       fill: 'solid',
-                      data: [
-                        // Data for '05/25/2024'
-                        [new Date(2024, 4, 23).getTime(), 90],
-                        // Data for '05/26/2024'
-                        [new Date(2024, 4, 24).getTime(), 110],
-                        // Data for '05/27/2024'
-                        [new Date(2024, 4, 25).getTime(), 60],
-                        // Data for '05/28/2024'
-                        [new Date(2024, 4, 26).getTime(), 150],
-                        // Data for '05/29/2024'
-                        [new Date(2024, 4, 27).getTime(), 100],
-                        // Data for '05/30/2024'
-                        [new Date(2024, 4, 28).getTime(), 82],
 
-                        [new Date(2024, 4, 29).getTime(), 170],
-                        // Add more data arrays for additional dates as needed
-                      ],
                     },
                     // Add more series as needed
                   ],
@@ -252,17 +313,24 @@ export default function AppView() {
           </Grid>
 
           <Grid xs={12} md={4} lg={4}>
-            {data && data?.trader_data && (<AppNewsUpdate
-              title="Top 10 Traders"
-              list={data?.trader_data?.slice(0, 10).map((trader, index) => ({
-                id: trader?.invoice_count || '',
-                title: trader.phone_number || '',
-                description: trader?.trader || '',
-                image: `/assets/images/covers/cover_${index + 1}.jpg`,
-                postedAt: trader?.invoice_qty,
-              }))}
-            />)}
+            {!loading ? (
+              data && data?.trader_data && (
+                <AppNewsUpdate
+                  title="Top 10 Traders"
+                  list={data?.trader_data?.slice(0, 10).map((trader, index) => ({
+                    id: trader?.invoice_count || '',
+                    title: trader.phone_number || '',
+                    description: trader?.trader || '',
+                    image: `/assets/images/covers/cover_${index + 1}.jpg`,
+                    postedAt: trader?.invoice_qty,
+                  }))}
+                />
+              )
+            ) : (
+              <Skeleton variant="rectangular" width="100%" height="100%" sx={{ borderRadius: '8px' }} />
+            )}
           </Grid>
+
 
           <Grid xs={12} md={8} lg={8}>
             <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', }}>
@@ -280,13 +348,13 @@ export default function AppView() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {fakeData.map((row) => (
+                    {recentInvoiceData?.recent_invoices?.map((row) => (
                       <TableRow key={row.id}>
                         <TableCell>{row.id}</TableCell>
-                        <TableCell>{row.employee}</TableCell>
-                        <TableCell>{row.occupation}</TableCell>
-                        <TableCell>{row.projects}</TableCell>
-                        <TableCell>{row.performance}</TableCell>
+                        <TableCell>{row.billing_address.name}</TableCell>
+                        <TableCell>{row.shipping_address.name}</TableCell>
+                        <TableCell>{row.total_qty}</TableCell>
+                        <TableCell>{fShortenNumberIndian(row.total_amount)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -302,15 +370,12 @@ export default function AppView() {
             <AppCurrentVisits
               title="Product sales"
               chart={{
-                series: [
-
-                  { label: 'S1-30', value: 5435 },
-                  { label: 'S2-30', value: 1443 },
-                  { label: 'M-30', value: 4443 },
-                ],
+                series: seriesData || [],
               }}
             />
           </Grid>
+
+
 
           <Grid xs={12} lg={16}>
             <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', }}>
@@ -329,13 +394,13 @@ export default function AppView() {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {fakeDataCity.map((row) => (
+                      {recentInvoiceData?.top_destinations?.map((row, index) => (
                         <TableRow key={row.id}>
-                          <TableCell>{row.id}</TableCell>
-                          <TableCell >{row.employee}</TableCell>
-                          <TableCell>{row.occupation}</TableCell>
-                          <TableCell>{row.performance}</TableCell>
-                          <TableCell>{row.projects}</TableCell>
+                          <TableCell>{(index + 1)}</TableCell>
+                          <TableCell >{row.city}</TableCell>
+                          <TableCell>{row.state}</TableCell>
+                          <TableCell>{row.dispatch_count}</TableCell>
+                          <TableCell>{row.total_qty}</TableCell>
 
                         </TableRow>
                       ))}
@@ -343,13 +408,8 @@ export default function AppView() {
                   </Table>
                 </TableContainer>
               </Card>
-
-
-
             </Card>
-
           </Grid>
-
           {/* <Grid xs={12} md={6} lg={8}>
           <AppConversionRates
             title="Conversion Rates"
@@ -447,97 +507,89 @@ export default function AppView() {
           />
         </Grid> */}
 
-
-
-
-
         </Grid>)}
       {value === 1 && (
-        <Grid container spacing={5} mt={0.2} >
+        selectedProduct !== '' ? (
+          <Grid container spacing={5} mt={0.2}>
+            <Grid xs={12} md={8} lg={8}>
+              <LineChart productData={recentProductDashboard} />
+            </Grid>
+            <Grid xs={12} md={4} lg={4}>
+              <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
 
-          <Grid xs={12} md={8} lg={8}>
-            <LineChart />
+                <Typography mx={2} my={2}>Storehouses</Typography>
+                {/* <FormControl fullWidth>
+                  <InputLabel id="select-label" sx={{ ml: 5, mt: 2 }}>Select Option</InputLabel>
+                  <Select
+                    labelId="select-label"
+                    id="select"
+                    value={selectedValue}
+                    onChange={handleChange}
+                    sx={{ mx: 5, my: 2 }}
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    <MenuItem value="option1">Option 1</MenuItem>
+                    <MenuItem value="option2">Option 2</MenuItem>
+                    <MenuItem value="option3">Option 3</MenuItem>
+                  </Select>
+                </FormControl> */}
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Storehouse</TableCell>
+                        <TableCell>QTY</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {recentProductDashboard?.store_house_data ? (
+                        recentProductDashboard.store_house_data.map((data_house, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{data_house.store}</TableCell>
+                            <TableCell>{data_house.qty}</TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={2}>No data available</TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Card>
+            </Grid>
           </Grid>
 
-          <Grid xs={12} md={4} lg={4}>
-
-            <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
-              <FormControl fullWidth>
-                <InputLabel id="select-label" sx={{ ml: 5, mt: 2 }}>Select Option</InputLabel>
-                <Select
-                  labelId="select-label"
-                  id="select"
-                  value={selectedValue}
-                  onChange={handleChange}
-                  sx={{ mx: 5, my: 2 }}
-                >
-                  <MenuItem value="">None</MenuItem>
-                  <MenuItem value="option1">Option 1</MenuItem>
-                  <MenuItem value="option2">Option 2</MenuItem>
-                  <MenuItem value="option3">Option 3</MenuItem>
-                </Select>
-              </FormControl>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Storehouse</TableCell>
-                      <TableCell>QTY</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>Godown 1</TableCell>
-                      <TableCell>10</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Godown 2</TableCell>
-                      <TableCell>20</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Godown 3</TableCell>
-                      <TableCell>25</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Godown 4</TableCell>
-                      <TableCell>30</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Godown 5</TableCell>
-                      <TableCell>35</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Godown 6</TableCell>
-                      <TableCell>5</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Godown 7</TableCell>
-                      <TableCell>15</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Card>
-          </Grid>
-        </Grid>
-
+        ) : (
+          <>Select mill</>
+        )
       )}
+
+
       <Dialog open={open} onClose={() => setOpen(false)} sx={{ width: '80%' }} PaperProps={{
         sx: {
           width: "80%",
           maxWidth: "80%!important",
         },
       }}>
-        <DateRangePicker
-          locale={id}
-          onChange={handleDateRangeChange}
-          showSelectionPreview
-          moveRangeOnFirstSelection={false}
-          months={2}
-          ranges={[selectedRange]}
-          direction="horizontal"
-          onClose={() => setOpen(false)}
-        />
+        <>
+
+
+
+          <DateRangePicker
+            locale={id}
+            onChange={handleDateRangeChange}
+            showSelectionPreview
+            moveRangeOnFirstSelection={false}
+            months={2}
+            ranges={[selectedRange]}
+            direction="horizontal"
+            onClose={() => setOpen(false)}
+          />
+
+        </>
+
       </Dialog>
     </Container>
   );
