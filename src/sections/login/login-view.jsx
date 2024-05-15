@@ -31,7 +31,7 @@ export default function LoginView() {
 
   const [checked, setChecked] = useState(isTestEnvironment === 'true');
 
-  console.log('isTestEnvironment',isTestEnvironment,ip)
+  console.log('isTestEnvironment', isTestEnvironment, ip)
 
   const handlePhoneNumberChange = (event) => {
     setPhoneNumber(event.target.value);

@@ -2,6 +2,7 @@ import { Typography } from '@mui/material';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import PropTypes from 'prop-types';
+import { useEffect } from 'react';
 import ApexChart from 'react-apexcharts';
 
 function LineChart({ productData }) {
@@ -9,6 +10,13 @@ function LineChart({ productData }) {
   const dates = productData?.product_data?.map(data => data?.date) || [];
   const inwardData = productData?.product_data?.map(data => data?.inward_qty) || [];
   const outwardData = productData?.product_data?.map(data => data?.outward_qty) || [];
+
+  console.log('productData', productData)
+
+
+  useEffect(() => {
+
+  }, [productData])
 
   // ApexCharts options
   const options = {

@@ -6,7 +6,7 @@ import 'react-date-range/dist/styles.css'; // main css file
 import 'react-date-range/dist/theme/default.css';
 import NetworkRepository from 'src/app-utils/network_repository';
 
-import { Button, Card, CardHeader, Dialog, MenuItem, Select, Skeleton, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material';
+import { Box, Button, Card, CardHeader, Dialog, MenuItem, Paper, Select, Skeleton, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material';
 import { format, subDays } from 'date-fns';
 import { id } from 'date-fns/locale';
 
@@ -116,7 +116,7 @@ export default function AppView() {
     const fetchProductDashboard = async () => {
       setLoading(true);
       try {
-        const invoiceStats = await NetworkRepository.getProductDashboard(selectedProduct.toString() ?? '0', '', '', '');
+        const invoiceStats = await NetworkRepository.getProductDashboard(selectedOption, format(selectedRange.startDate, "yyyy"), format(selectedRange.startDate, "MM"), selectedProduct.toString() ?? '0');
         setRecentProductDashboard(invoiceStats);
       } catch (error) {
         console.error('Error fetching invoice stats:', error);
@@ -130,11 +130,15 @@ export default function AppView() {
 
 
 
-  }, [selectedProduct]);
+  }, [selectedProduct, selectedRange, selectedOption]);
 
 
 
   useEffect(() => { }, [data])
+
+  useEffect(() => {
+
+  }, [recentProductDashboard])
 
 
   console.log('data', data);
@@ -180,34 +184,34 @@ export default function AppView() {
             </Select>
           </Stack>
           <Stack pl={1}>
-            
+
             {selectedOption && (
 
               <>
-               <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
-              Select product
-            </Typography>
-              <Select
-                value={selectedProduct}
-                onChange={handleProductChange}
-                displayEmpty
-                style={{ width: '250px' }}
-                inputProps={{ 'aria-label': 'Without label' }}
-              >
-                <MenuItem value="" >
-                  All
-                </MenuItem>
-                {selectedUser.mills
-                  .find((mill) => mill.id === selectedOption)
-                  ?.products.map((product) => (
-                    <MenuItem key={product.id} value={product.id}>
-                      {product.product_type.product_type} {`(${product.code === '' ? 'none' : product.code})`}
+                <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
+                  Select product
+                </Typography>
+                <Select
+                  value={selectedProduct}
+                  onChange={handleProductChange}
+                  displayEmpty
+                  style={{ width: '250px' }}
+                  inputProps={{ 'aria-label': 'Without label' }}
+                >
+                  <MenuItem value="" >
+                    All
+                  </MenuItem>
+                  {selectedUser.mills
+                    .find((mill) => mill.id === selectedOption)
+                    ?.products.map((product) => (
+                      <MenuItem key={product.id} value={product.id}>
+                        {product.product_type.product_type} {`(${product.code === '' ? 'none' : product.code})`}
 
-                    </MenuItem>
-                  ))}
-              </Select>
+                      </MenuItem>
+                    ))}
+                </Select>
               </>
-             
+
             )}
 
 
@@ -250,15 +254,15 @@ export default function AppView() {
 
           <Grid xs={12} sm={6} md={4} >
             {!loading ? (
-            <AppWidgetSummary
-              title="Total Dispatch quantity"
-              total={data.totals?.total_invoice_qty}
-              unit='QTL'
-              color="success"
-              icon={
-                <img src="/assets/dashboard/dispatches-quantity.svg" alt="" />
-              }
-            />
+              <AppWidgetSummary
+                title="Total Dispatch quantity"
+                total={data.totals?.total_invoice_qty}
+                unit='QTL'
+                color="success"
+                icon={
+                  <img src="/assets/dashboard/dispatches-quantity.svg" alt="" />
+                }
+              />
             ) : (
               <Skeleton variant="rectangular" width="100%" height={150} sx={{ borderRadius: '8px' }} />
 
@@ -360,9 +364,7 @@ export default function AppView() {
                   </TableBody>
                 </Table>
               </TableContainer>
-
             </Card>
-
           </Grid>
 
 
@@ -562,7 +564,31 @@ export default function AppView() {
           </Grid>
 
         ) : (
-          <>Select mill</>
+
+          <Paper
+          sx={{
+            textAlign: 'center',
+          }}
+        >
+<Box
+          component="img"
+
+          src='https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg?w=1060&t=st=1702019602~exp=1702020202~hmac=57da9194b9435ec95e27dd6e62fa486527a2fbd01692ff3a09a04fbc6e18807d'
+          sx={{
+            top: 0,
+            width: '300px',
+            height: '300px',
+            objectFit: 'cover',
+            position: 'inherit',
+          }}
+        />
+
+        <Typography typography='h4'>Select mill and product</Typography>
+
+        </Paper>
+
+
+          
         )
       )}
 
