@@ -1,6 +1,4 @@
-import { Typography } from '@mui/material';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import ApexChart from 'react-apexcharts';
@@ -57,10 +55,10 @@ function LineChart({ productData }) {
   return (
     productData && (
       <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
-        <CardHeader title="Total stock" />
-        <Typography sx={{ ml: 3 }} variant="h4" color="secondary">
-          {productData.total_stock_qty}
-        </Typography>
+        {/* <CardHeader title="Total stock" /> */}
+        {/* <Typography sx={{ ml: 3 }} variant="h4" color="secondary">
+          {productData.total_stock_qty < 0 ? 0 : productData.total_stock_qty}
+        </Typography> */}
         <ApexChart
           type="line"
           series={series}

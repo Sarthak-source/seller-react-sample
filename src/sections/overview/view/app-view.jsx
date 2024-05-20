@@ -6,9 +6,10 @@ import 'react-date-range/dist/styles.css'; // main css file
 import 'react-date-range/dist/theme/default.css';
 import NetworkRepository from 'src/app-utils/network_repository';
 
-import { Box, Button, Card, CardHeader, Dialog, MenuItem, Paper, Select, Skeleton, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tabs } from '@mui/material';
+import { Box, Button, Card, CardHeader, Dialog, MenuItem, Paper, Select, Skeleton, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, Tabs } from '@mui/material';
 import { format, subDays } from 'date-fns';
-import { id } from 'date-fns/locale';
+import { enGB } from 'date-fns/locale';
+
 
 import { useEffect, useState } from 'react';
 import { DateRangePicker } from 'react-date-range';
@@ -17,6 +18,7 @@ import { fShortenNumberIndian } from 'src/utils/format-number';
 import AppCurrentVisits from '../app-current-visits';
 import AppNewsUpdate from '../app-news-update';
 
+import DispatchDashboardScreen from '../app-dispatch';
 import LineChart from '../app-line-chart';
 import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
@@ -43,10 +45,12 @@ export default function AppView() {
   const [recentProductDashboard, setRecentProductDashboard] = useState({});
 
   const handleSelectChange = (event) => {
+    setLoading(true);
     setSelectedOption(event.target.value);
   };
 
   const handleProductChange = (event) => {
+    setLoading(true);
     setSelectedProduct(event.target.value);
   };
 
@@ -55,6 +59,7 @@ export default function AppView() {
   };
 
   const handleDateRangeChange = (ranges) => {
+    setLoading(true);
     setSelectedRange(ranges.selection);
   };
 
@@ -136,9 +141,7 @@ export default function AppView() {
 
   useEffect(() => { }, [data])
 
-  useEffect(() => {
-
-  }, [recentProductDashboard])
+  useEffect(() => { }, [recentProductDashboard])
 
 
   console.log('data', data);
@@ -154,6 +157,22 @@ export default function AppView() {
     value: item.total_quantity // Assuming you want to use total_quantity as the value
   }));
 
+
+  const [currentMonth] = useState(new Date());
+
+  const [monthWiseData, setMonthWiseData] = useState([1, 23, 34, 42, 4, 3, 5, 7, 8, 9, 4, 3, 5, 67, 4,]);
+
+  const fetchData = async () => {
+    // Your API call to fetch data
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const formatAmount = (amount) => {
+    // Your implementation here
+  };
 
   return (
     <Container maxWidth="xl">
@@ -245,6 +264,7 @@ export default function AppView() {
       >
         <Tab label="Home" style={{ marginLeft: '-18px' }} />
         <Tab label="Product" />
+        <Tab label="Dispatch" />
 
       </Tabs>
 
@@ -335,48 +355,52 @@ export default function AppView() {
             )}
           </Grid>
 
-
           <Grid xs={12} md={8} lg={8}>
-            <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', }}>
-              <CardHeader title="Recent invoice" />
+            {!loading ? (
+              <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', }}>
+                <CardHeader title="Recent invoice" />
 
-              <TableContainer sx={{ m: 2 }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Invoice #</TableCell>
-                      <TableCell>From</TableCell>
-                      <TableCell>To</TableCell>
-                      <TableCell>Quantity</TableCell>
-                      <TableCell>Amounts</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {recentInvoiceData?.recent_invoices?.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell>{row.id}</TableCell>
-                        <TableCell>{row.billing_address.name}</TableCell>
-                        <TableCell>{row.shipping_address.name}</TableCell>
-                        <TableCell>{row.total_qty}</TableCell>
-                        <TableCell>{fShortenNumberIndian(row.total_amount)}</TableCell>
+                <TableContainer sx={{ m: 2 }}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Invoice #</TableCell>
+                        <TableCell>From</TableCell>
+                        <TableCell>To</TableCell>
+                        <TableCell>Quantity</TableCell>
+                        <TableCell>Amounts</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Card>
+                    </TableHead>
+                    <TableBody>
+                      {recentInvoiceData?.recent_invoices?.map((row) => (
+                        <TableRow key={row.id}>
+                          <TableCell>{row.id}</TableCell>
+                          <TableCell>{row.billing_address.name}</TableCell>
+                          <TableCell>{row.shipping_address.name}</TableCell>
+                          <TableCell>{row.total_qty}</TableCell>
+                          <TableCell>{fShortenNumberIndian(row.total_amount)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Card>
+            ) : (
+              <Skeleton variant="rectangular" width="100%" height="100%" sx={{ borderRadius: '8px' }} />
+            )}
           </Grid>
-
-
           <Grid xs={12} md={6} lg={4}>
-            <AppCurrentVisits
-              title="Product sales"
-              chart={{
-                series: seriesData || [],
-              }}
-            />
+            {!loading ? (
+              <AppCurrentVisits
+                title="Product sales"
+                chart={{
+                  series: seriesData || [],
+                }}
+              />
+            ) : (
+              <Skeleton variant="rectangular" width="100%" height="100%" sx={{ borderRadius: '8px' }} />
+            )}
           </Grid>
-
 
 
           <Grid xs={12} lg={16}>
@@ -520,21 +544,7 @@ export default function AppView() {
               <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}>
 
                 <Typography mx={2} my={2}>Storehouses</Typography>
-                {/* <FormControl fullWidth>
-                  <InputLabel id="select-label" sx={{ ml: 5, mt: 2 }}>Select Option</InputLabel>
-                  <Select
-                    labelId="select-label"
-                    id="select"
-                    value={selectedValue}
-                    onChange={handleChange}
-                    sx={{ mx: 5, my: 2 }}
-                  >
-                    <MenuItem value="">None</MenuItem>
-                    <MenuItem value="option1">Option 1</MenuItem>
-                    <MenuItem value="option2">Option 2</MenuItem>
-                    <MenuItem value="option3">Option 3</MenuItem>
-                  </Select>
-                </FormControl> */}
+
                 <TableContainer>
                   <Table>
                     <TableHead>
@@ -548,7 +558,7 @@ export default function AppView() {
                         recentProductDashboard.store_house_data.map((data_house, index) => (
                           <TableRow key={index}>
                             <TableCell>{data_house.store}</TableCell>
-                            <TableCell>{data_house.qty}</TableCell>
+                            <TableCell >{data_house.qty < 0 ? 0 : data_house.qty}</TableCell>
                           </TableRow>
                         ))
                       ) : (
@@ -557,6 +567,14 @@ export default function AppView() {
                         </TableRow>
                       )}
                     </TableBody>
+                    <TableFooter>
+                      <TableCell>TOTAL STOCK</TableCell>
+                      <TableCell color="secondary">
+                        <Typography color="secondary" style={{ fontSize: '20px', fontWeight: 600 }}>
+                          {recentProductDashboard.total_stock_qty < 0 ? 0 : recentProductDashboard.total_stock_qty}
+                        </Typography>
+                      </TableCell>
+                    </TableFooter>
                   </Table>
                 </TableContainer>
               </Card>
@@ -566,32 +584,33 @@ export default function AppView() {
         ) : (
 
           <Paper
-          sx={{
-            textAlign: 'center',
-          }}
-        >
-<Box
-          component="img"
+            sx={{
+              textAlign: 'center',
 
-          src='https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg?w=1060&t=st=1702019602~exp=1702020202~hmac=57da9194b9435ec95e27dd6e62fa486527a2fbd01692ff3a09a04fbc6e18807d'
-          sx={{
-            top: 0,
-            width: '300px',
-            height: '300px',
-            objectFit: 'cover',
-            position: 'inherit',
-          }}
-        />
+            }}
+          >
+            <Box
+              component="img"
 
-        <Typography typography='h4'>Select mill and product</Typography>
-
-        </Paper>
-
-
-          
+              src='https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg?w=1060&t=st=1702019602~exp=1702020202~hmac=57da9194b9435ec95e27dd6e62fa486527a2fbd01692ff3a09a04fbc6e18807d'
+              sx={{
+                top: 0,
+                width: '300px',
+                height: '300px',
+                objectFit: 'cover',
+                position: 'inherit',
+              }}
+            />
+            <Typography sx={{ pb: 2 }} typography='h5'>Select mill and product</Typography>
+          </Paper>
         )
       )}
 
+
+
+      {value === 2 && (
+        <DispatchDashboardScreen productData={selectedProduct} />
+      )}
 
       <Dialog open={open} onClose={() => setOpen(false)} sx={{ width: '80%' }} PaperProps={{
         sx: {
@@ -600,11 +619,8 @@ export default function AppView() {
         },
       }}>
         <>
-
-
-
           <DateRangePicker
-            locale={id}
+            locale={enGB}
             onChange={handleDateRangeChange}
             showSelectionPreview
             moveRangeOnFirstSelection={false}
@@ -613,10 +629,12 @@ export default function AppView() {
             direction="horizontal"
             onClose={() => setOpen(false)}
           />
-
+          {/* Button should have some content to display */}
+          <Button onClick={() => setOpen(false)} color="primary" variant="contained">Submit</Button>
         </>
-
       </Dialog>
+
+
     </Container>
   );
 }

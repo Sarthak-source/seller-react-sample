@@ -26,6 +26,9 @@ export function fShortenNumber(number) {
 
 
 export function fShortenNumberIndian(number) {
+  if (typeof number !== 'number') {
+    return '₹0'; // Return '₹0' to maintain currency format
+  }
 
   const formatter = new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -34,10 +37,12 @@ export function fShortenNumberIndian(number) {
     maximumFractionDigits: 2,
     notation: 'compact',
     compactDisplay: 'long',
-  })
+  });
 
   return formatter.format(number);
 }
+
+
 
 
 // export function fShortenNumberIndian(number) {

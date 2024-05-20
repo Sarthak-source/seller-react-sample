@@ -1213,6 +1213,20 @@ const NetworkRepository = {
       return e.toString();
     }
   },
+
+  yearDispatches: async (mill) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.yearDispatches}?mill=${mill}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
 }
 
 

@@ -96,6 +96,7 @@ const ApiAppConstants = {
     invoiceStats: 'invoice_stats/',
     recentInvoices: 'recent_invoices/',
     productDashboard:'product_dashboard/',
+    yearDispatches:'financial_year_dispatches/',
 };
 
 export { ApiAppConstants, auth, ip, testip };
