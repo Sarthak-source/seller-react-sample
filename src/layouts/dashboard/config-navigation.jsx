@@ -27,12 +27,17 @@ const navConfig = [
     path: '/home/traders',
     icon: icon('ic_trading'),
   },
+  
   {
-    title: 'profile',
-    path: '/home/profile',
+    title: 'users',
+    path: '/home/users-view',
     icon: icon('ic_user'),
   },
-
+  {
+    title: 'products',
+    path: '/home/products',
+    icon: icon('ic_cart'),
+  },
   {
     title: 'Quality check',
     path: '/home/quality-check',
@@ -43,10 +48,24 @@ const navConfig = [
     path: '/home/generate-invoice',
     icon: icon('ic_vehilcle'),
   },
+
+  {
+    title: 'Address',
+    path: '/home/ic_address',
+    icon: icon('ic_address'),
+  },
+
+  
   {
     title: 'Storehouse',
     path: '/home/',
     icon: icon('ic_storehouse'),
+  },
+
+  {
+    title: 'profile',
+    path: '/home/profile',
+    icon: icon('ic_lock'),
   },
   // {
   //   title: 'Not found',

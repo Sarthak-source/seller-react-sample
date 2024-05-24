@@ -8,6 +8,10 @@ import SalesOrderForm from 'src/sections/dashboard/orders/add-to-sap/add-to-sap'
 import OrderCreate from 'src/sections/dashboard/orders/self-order/add-self-order';
 import TenderCreate from 'src/sections/dashboard/tender/add-tender/add-tender';
 import SalesContractForm from 'src/sections/dashboard/tender/add-to-sap/add-to-sap';
+import ProductForm from 'src/sections/product-managment/add-product';
+import ProductTableView from 'src/sections/product-managment/product-list';
+import UserForm from 'src/sections/uses/add-user';
+import UserView from 'src/sections/uses/user-table';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -38,7 +42,7 @@ export default function Router() {
   const children = [
     { element: <DashboardView />, index: true },
     { path: 'dashboard', element: <IndexPage />, },
-    { path: 'products', element: <ProductsPage /> },
+    
     { path: 'blog', element: <BlogPage /> },
     { path: 'tender-details/:id', element: <TenderDetails /> },
     { path: 'add-tender-to-sap', element: <SalesContractForm /> },
@@ -55,6 +59,11 @@ export default function Router() {
     { path: 'generate-invoice/store-house/summary', element: <SummaryScreen /> },
     { path: 'traders', element: <TraderDetails /> },
     { path: 'profile', element: <ProfileDetails /> },
+    { path: 'products', element: <ProductTableView/>},
+    { path: 'home/products/add-products', element: <ProductForm /> },
+    { path: 'home/users-view/add-users', element: <UserForm /> },
+    { path: 'users-view', element: <UserView/>},
+
     { path: 'reports', element: <ReportDetails /> },
 
   ];

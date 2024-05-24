@@ -13,6 +13,7 @@ import { setFullScreen } from 'src/redux/actions/full-screen-action'; // Move th
 
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { setLoadingInstructionScreen } from 'src/redux/actions/loading-instruction-action';
 import NetworkRepository from '../../../../app-utils/network_repository'; // Adjust the path
 import TableEmptyRows from '../../table-empty-rows';
 import SharedTableHead from '../../table-head';
@@ -115,6 +116,7 @@ export default function InoviceCard(
         shipTo: `${row.loading_instruction[0].address.name}\n${row.address_gstin}\n${row.loading_instruction[0].address.address}`,
         rate: row.loading_instruction[0].qty,
         grade: row.loading_instruction[0].order_head.price,
+        remark:row.remark,
         loadingInstructions: row,
     }));
 
@@ -160,6 +162,11 @@ export default function InoviceCard(
         setIsFullScreen(!isFullScreen)
     }
 
+    useEffect(() => {
+        dispatch(setLoadingInstructionScreen({ loadingsInstruction: 'invoice', currentStatus: status }));
+
+    }, [dispatch,status])
+
     console.log('ivoice', dataFiltered)
 
     const notFound = !dataFiltered.length;
@@ -167,7 +174,7 @@ export default function InoviceCard(
         <>
 
             <Card>
-                
+
                 <TableToolbar
                     numSelected={selected.length}
                     identifier='InoviceCard'
@@ -176,7 +183,7 @@ export default function InoviceCard(
                     onFullScreen={() => fullScreen()}
                 />
                 <Scrollbar>
-                    <TableContainer sx={{ height:  '70vh', overflow: 'auto' }}>
+                    <TableContainer sx={{ height: '70vh', overflow: 'auto' }}>
                         <Table stickyHeader sx={{ minWidth: 800 }}>
                             <SharedTableHead
                                 order={order}
@@ -208,6 +215,7 @@ export default function InoviceCard(
                                                 shipTo={row.shipTo}
                                                 rate={row.rate}
                                                 grade={row.grade}
+                                                remark={row.remark}
                                                 loadingInstructions={row.loadingInstructions}
                                             />
                                         ))}

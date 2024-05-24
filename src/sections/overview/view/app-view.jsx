@@ -6,7 +6,7 @@ import 'react-date-range/dist/styles.css'; // main css file
 import 'react-date-range/dist/theme/default.css';
 import NetworkRepository from 'src/app-utils/network_repository';
 
-import { Box, Button, Card, CardHeader, Dialog, MenuItem, Paper, Select, Skeleton, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, Tabs } from '@mui/material';
+import { Button, Card, CardHeader, Dialog, MenuItem, Select, Skeleton, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, Tabs } from '@mui/material';
 import { format, subDays } from 'date-fns';
 import { enGB } from 'date-fns/locale';
 
@@ -31,6 +31,9 @@ export default function AppView() {
   const selectedUser = useSelector((state) => state.user.selectedUser);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [loadingProduct, setLoadingProduct] = useState(false);
+
   const [selectedProduct, setSelectedProduct] = useState('');
   const [selectedOption, setSelectedOption] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
@@ -68,7 +71,7 @@ export default function AppView() {
       setLoading(true);
       try {
         const formattedDate = format(date, "yyyy-MM-dd");
-        const invoiceStats = await NetworkRepository.getInvoiceStatsForDate(formattedDate, selectedOption.toString());
+        const invoiceStats = await NetworkRepository.getInvoiceStatsForDate(formattedDate, selectedOption.toString()??'',selectedProduct.toString() ?? '0');
         setData(invoiceStats);
       } catch (error) {
         console.error('Error fetching invoice stats:', error);
@@ -82,7 +85,7 @@ export default function AppView() {
       try {
         const formattedStartDate = format(startDate, "yyyy-MM-dd");
         const formattedEndDate = format(endDate, "yyyy-MM-dd");
-        const invoiceStats = await NetworkRepository.getInvoiceStats(formattedStartDate, formattedEndDate, selectedOption.toString());
+        const invoiceStats = await NetworkRepository.getInvoiceStats(formattedStartDate, formattedEndDate, selectedOption.toString()??'',selectedProduct.toString() ?? '0');
         setData(invoiceStats);
       } catch (error) {
         console.error('Error fetching invoice stats:', error);
@@ -96,26 +99,29 @@ export default function AppView() {
     } else {
       fetchInvoiceStatsForRange(selectedRange.startDate, selectedRange.endDate);
     }
-  }, [selectedRange, selectedOption]);
+  }, [selectedRange, selectedOption,selectedProduct]);
+  
 
   useEffect(() => {
     const fetchLatestInvoice = async () => {
-      setLoading(true);
+      setLoadingProduct(true);
 
       try {
         const formattedStartDate = format(selectedRange.startDate, "yyyy-MM-dd");
         const formattedEndDate = format(selectedRange.endDate, "yyyy-MM-dd");
-        const invoiceStats = await NetworkRepository.getRecentInvoices(selectedOption.toString(), formattedStartDate, formattedEndDate);
+        const invoiceStats = await NetworkRepository.getRecentInvoices(selectedOption.toString(), formattedStartDate, formattedEndDate, selectedProduct.toString() ?? '0',selectedUser.id);
         setRecentInvoiceDataData(invoiceStats);
       } catch (error) {
         console.error('Error fetching invoice stats:', error);
       } finally {
-        setLoading(false);
+        setLoadingProduct(false);
       }
     };
 
     fetchLatestInvoice();
-  }, [selectedOption, selectedRange]);
+
+  }, [selectedOption, selectedRange, selectedProduct,selectedUser]);
+
 
   useEffect(() => {
     const fetchProductDashboard = async () => {
@@ -129,22 +135,18 @@ export default function AppView() {
         setLoading(false);
       }
     };
-    if (selectedProduct !== '') {
+
+    if (selectedOption !== '') {
       fetchProductDashboard();
     }
-
-
 
   }, [selectedProduct, selectedRange, selectedOption]);
 
 
 
-  useEffect(() => { }, [data])
+  
 
-  useEffect(() => { }, [recentProductDashboard])
-
-
-  console.log('data', data);
+  console.log('datalalal', data);
 
   console.log('recentInvoiceData', recentInvoiceData)
 
@@ -158,21 +160,7 @@ export default function AppView() {
   }));
 
 
-  const [currentMonth] = useState(new Date());
-
-  const [monthWiseData, setMonthWiseData] = useState([1, 23, 34, 42, 4, 3, 5, 7, 8, 9, 4, 3, 5, 67, 4,]);
-
-  const fetchData = async () => {
-    // Your API call to fetch data
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const formatAmount = (amount) => {
-    // Your implementation here
-  };
+ 
 
   return (
     <Container maxWidth="xl">
@@ -180,7 +168,7 @@ export default function AppView() {
         <Typography variant="h4">
           Hi, {selectedUser.name && selectedUser.name.charAt(0).toUpperCase() + selectedUser.name.slice(1)} 👋
         </Typography>
-        <Stack direction="row" sx={{ transform: 'scale(0.8)', mb: 1, mr: -9.5 }} >
+        <Stack direction="row" sx={{ transform: 'scale(0.8)', mb: 1, mr: value !== 2 ? -9.5 : 0 }} >
           <Stack >
             <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
               Select mill
@@ -202,47 +190,52 @@ export default function AppView() {
               ))}
             </Select>
           </Stack>
-          <Stack pl={1}>
 
-            {selectedOption && (
+          {value !== 2 ? (<>
+            <Stack pl={1}>
+              {selectedOption && (
+                <>
+                  <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
+                    Select product
+                  </Typography>
+                  <Select
+                    value={selectedProduct}
+                    onChange={handleProductChange}
+                    displayEmpty
+                    style={{ width: '250px' }}
+                    inputProps={{ 'aria-label': 'Without label' }}
+                  >
+                    <MenuItem value="" >
+                      All
+                    </MenuItem>
+                    {selectedUser.mills
+                      .find((mill) => mill.id === selectedOption)
+                      ?.products.map((product) => (
+                        <MenuItem key={product.id} value={product.id}>
+                          {product.product_type.product_type} {`(${product.code === '' ? 'none' : product.code})`}
 
-              <>
-                <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
-                  Select product
-                </Typography>
-                <Select
-                  value={selectedProduct}
-                  onChange={handleProductChange}
-                  displayEmpty
-                  style={{ width: '250px' }}
-                  inputProps={{ 'aria-label': 'Without label' }}
-                >
-                  <MenuItem value="" >
-                    All
-                  </MenuItem>
-                  {selectedUser.mills
-                    .find((mill) => mill.id === selectedOption)
-                    ?.products.map((product) => (
-                      <MenuItem key={product.id} value={product.id}>
-                        {product.product_type.product_type} {`(${product.code === '' ? 'none' : product.code})`}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </>
 
-                      </MenuItem>
-                    ))}
-                </Select>
-              </>
-
-            )}
+              )}
 
 
-          </Stack>
-          <Stack pl={1}>
-            <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
-              Select date
-            </Typography>
-            <Button sx={{ minWidth: 200, minHeight: 53 }} variant="outlined" onClick={() => setOpen(true)}>
-              {format(selectedRange.startDate, 'MMM/dd/yyyy')} - {format(selectedRange.endDate, 'MMM/dd/yyyy')}
-            </Button>
-          </Stack>
+            </Stack>
+            <Stack pl={1}>
+              <Typography sx={{ pb: 2 }} color="grey" fontWeight="bold" fontSize={13.5}>
+                Select date
+              </Typography>
+              <Button sx={{ minWidth: 200, minHeight: 53 }} variant="outlined" onClick={() => setOpen(true)}>
+                {format(selectedRange.startDate, 'MMM/dd/yyyy')} - {format(selectedRange.endDate, 'MMM/dd/yyyy')}
+              </Button>
+            </Stack>
+
+          </>) : (
+            <></>
+          )}
+
 
         </Stack>
       </Stack>
@@ -356,7 +349,7 @@ export default function AppView() {
           </Grid>
 
           <Grid xs={12} md={8} lg={8}>
-            {!loading ? (
+            {!selectedValue ? (
               <Card sx={{ boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', }}>
                 <CardHeader title="Recent invoice" />
 
@@ -390,7 +383,7 @@ export default function AppView() {
             )}
           </Grid>
           <Grid xs={12} md={6} lg={4}>
-            {!loading ? (
+            {!selectedValue ? (
               <AppCurrentVisits
                 title="Product sales"
                 chart={{
@@ -535,7 +528,7 @@ export default function AppView() {
 
         </Grid>)}
       {value === 1 && (
-        selectedProduct !== '' ? (
+        (
           <Grid container spacing={5} mt={0.2}>
             <Grid xs={12} md={8} lg={8}>
               <LineChart productData={recentProductDashboard} />
@@ -581,35 +574,13 @@ export default function AppView() {
             </Grid>
           </Grid>
 
-        ) : (
-
-          <Paper
-            sx={{
-              textAlign: 'center',
-
-            }}
-          >
-            <Box
-              component="img"
-
-              src='https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg?w=1060&t=st=1702019602~exp=1702020202~hmac=57da9194b9435ec95e27dd6e62fa486527a2fbd01692ff3a09a04fbc6e18807d'
-              sx={{
-                top: 0,
-                width: '300px',
-                height: '300px',
-                objectFit: 'cover',
-                position: 'inherit',
-              }}
-            />
-            <Typography sx={{ pb: 2 }} typography='h5'>Select mill and product</Typography>
-          </Paper>
         )
       )}
 
 
 
       {value === 2 && (
-        <DispatchDashboardScreen productData={selectedProduct} />
+        <DispatchDashboardScreen productData={selectedOption} />
       )}
 
       <Dialog open={open} onClose={() => setOpen(false)} sx={{ width: '80%' }} PaperProps={{

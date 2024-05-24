@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Box from '@mui/material/Box';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useResponsive } from 'src/hooks/use-responsive';
+import { setToggleAction } from 'src/redux/actions/toggle-screen';
 import Header from './header';
 import Main from './main';
 import Nav from './nav';
@@ -11,8 +13,25 @@ import Nav from './nav';
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout({ children }) {
-  const [openNav, setOpenNav] = useState(false);
   const isFullScreen = useSelector((state) => state.fullScreen.fullScreenState);
+  const toggle = useSelector((state) => state.toggleState.toggleState);
+
+  const lgUp = useResponsive('up', 'lg');
+  const [openNav, setOpenNav] = useState(lgUp);
+
+
+  console.log('toggle',toggle);
+  const dispatch = useDispatch();
+
+
+  useEffect(()=>{
+
+    dispatch(setToggleAction(lgUp));
+
+  },[lgUp,dispatch])
+
+  useEffect(()=>{
+  },[toggle])
 
 
   const handleOpenNav = () => {
@@ -31,8 +50,8 @@ export default function DashboardLayout({ children }) {
         }}
       >
 
-        {isFullScreen && (<Nav openNav={openNav} onCloseNav={() => setOpenNav(false)} />)}
-        <Main>{children}</Main>
+        {isFullScreen && toggle&& (<Nav openNav onCloseNav={() => setOpenNav(false)} />)}
+        <Main >{children}</Main>
       </Box>
     </>
   );

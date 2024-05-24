@@ -29,6 +29,7 @@ export default function DoOrderTableRow({
     shipTo,
     rate,
     grade,
+    remark,
 }) {
     const [open, setOpen] = useState(null);
     const navigate = useNavigate();
@@ -229,6 +230,8 @@ export default function DoOrderTableRow({
                 </TableCell>
                 <TableCell>{rate}</TableCell>
                 <TableCell>{grade}</TableCell>
+                <TableCell style={{ color: 'rgb(25, 106, 255)' }}>{remark}</TableCell>
+
                 <TableCell
                     onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = theme.palette.grey[200];
@@ -301,4 +304,5 @@ DoOrderTableRow.propTypes = {
     shipTo: PropTypes.string,
     rate: PropTypes.string,
     grade: PropTypes.string,
+    remark: PropTypes.string,
 };

@@ -1157,11 +1157,13 @@ const NetworkRepository = {
     }
   },
 
-  getInvoiceStats: async (from, to, mill) => {
+  getInvoiceStats: async (from, to, mill, product) => {
+    console.log('count124', `${ApiAppConstants.invoiceStats}?from_date=${from}&to_date=${to}&mill=${mill}&product=${product}`)
+
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url:
-          `${ApiAppConstants.invoiceStats}?from_date=${from}&to_date=${to}&mill=${mill}`,
+          `${ApiAppConstants.invoiceStats}?from_date=${from}&to_date=${to}&mill=${mill}&product=${product}`,
         header: { authorization: auth },
       });
 
@@ -1172,10 +1174,11 @@ const NetworkRepository = {
     }
   },
 
-  getInvoiceStatsForDate: async (date, mill) => {
+  getInvoiceStatsForDate: async (date, mill, product) => {
+    console.log('count124', `${ApiAppConstants.invoiceStats}?date=${date}&mill=${mill}&product=${product}`)
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.invoiceStats}?date=${date}&mill=${mill}`,
+        url: `${ApiAppConstants.invoiceStats}?date=${date}&mill=${mill}&product=${product}`,
         header: { authorization: auth },
       });
 
@@ -1186,12 +1189,14 @@ const NetworkRepository = {
     }
   },
 
-  getRecentInvoices: async (mill, from, to) => {
+  getRecentInvoices: async (mill, from, to, product, seller) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.recentInvoices}?&mill=${mill}&from_date=${from}&to_date=${to}`,
+        url: `${ApiAppConstants.recentInvoices}?&mill=${mill}&from_date=${from}&to_date=${to}&product=${product}&seller=${seller}`,
         header: { authorization: auth },
       });
+
+      console.log('getRecentInvoicesApi', `${ApiAppConstants.recentInvoices}?&mill=${mill}&from_date=${from}&to_date=${to}&product=${product}`, apiResponse)
 
       return await apiResponse;
     } catch (e) {
@@ -1227,6 +1232,126 @@ const NetworkRepository = {
       return e.toString();
     }
   },
+
+  getUserDropdownDetails: async (seller) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.users}create/?seller=${seller}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  getProductDropdownDetails: async (seller) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.product}create/?seller=${seller}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  postUserData: async (
+    name,
+    sellerType,
+    sellerRole,
+    mills,
+    phoneNumber,
+    seller,
+    products
+  ) => {
+    try {
+      const data = JSON.stringify({
+        'name': name,
+        'seller_type': sellerType,
+        'seller_role': sellerRole,
+        'mills': mills,
+        'phone_number': phoneNumber,
+        'seller': seller,
+        'products': products,
+      });
+
+      console.log('postUserData', `${ApiAppConstants.users}create/`, {
+        'name': name,
+        'seller_type': sellerType,
+        'seller_role': sellerRole,
+        'mills': mills,
+        'phone_number': phoneNumber,
+        'seller': seller,
+        'products': products,
+      }, data)
+
+
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.users}create/`,
+        ContentType: 'application/json',
+        header: { 'authorization': auth },
+        data,
+      });
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  getUserList: async (mill, seller) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.users}?mill=${mill}&seller=${seller}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  createProduct: async (productType, code, seller) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.product}create/`,
+        data: {
+          product_type: productType,
+          code,
+          seller
+        },
+        header: { authorization: auth },
+      });
+
+      return apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  getProductList: async (mill, seller) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.productsList}?mill=${mill}&seller=${seller}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
 }
 
 

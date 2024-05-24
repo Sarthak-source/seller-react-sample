@@ -19,7 +19,7 @@ import {
 import { format, parseISO } from 'date-fns';
 import { useEffect, useState } from 'react';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Label from 'src/components/label';
@@ -43,6 +43,11 @@ export default function LoadingInstructionDetails() {
 
   const { loadingInstructionHeaderRow } = useDispatchesTableFormat();
   const [loading, setLoading] = useState(true);
+
+  const usedInState = useSelector((state) => state.loadingInstructionScreenState);
+
+  console.log('usedInState loadingInstructionDetailsData',usedInState)
+
 
   console.log('loadingInstructionDetailsData', loadingInstructionDetailsData)
 
@@ -115,6 +120,8 @@ export default function LoadingInstructionDetails() {
       },
     ];
 
+    console.log('loadingInstructionDetailsData',loadingInstructionDetailsData)
+
     const imageUrlAndTitleList = mapping.map((mappingItem) => {
       const { key, title } = mappingItem;
       let imageUrl;
@@ -172,10 +179,14 @@ export default function LoadingInstructionDetails() {
                           {
                             loadingInstructionDetailsData.loadinginstruction.map((loadinginstruction, index) => (
                               <DispatchTableRow
-                                type='loadingsInstruction'
+                                type={usedInState.loadingInstructionScreen}
+                                subtype={usedInState.currentStatus}
+                                show
                                 orderNo={loadinginstruction.order_head.id}
+                                doPk={loadinginstruction?.delivery_order}
                                 lrNum={loadinginstruction.lr_number}
-
+                                lrId={loadinginstruction.id}
+                                qcStatus={loadinginstruction.qc_status}
                                 millName={loadingInstructionDetailsData.mill}
                                 name={loadingInstructionDetailsData.trader}
                                 date={format(parseISO(loadinginstruction.date), 'dd/MMM/yyyy')}
@@ -185,6 +196,7 @@ export default function LoadingInstructionDetails() {
                                 shipTo={`${loadinginstruction.address.name}\n${loadingInstructionDetailsData.address_gstin}\n${loadinginstruction.address.address}`}
                                 rate={loadinginstruction.product != null ? loadinginstruction.order_head.price : 'Not given'}
                                 grade={loadinginstruction.product != null ? loadinginstruction.product.code : 'Not given'}
+                                remark={loadinginstruction.remark}
                               />
                             ))
                           }
@@ -251,6 +263,7 @@ export default function LoadingInstructionDetails() {
                                     'available_qty',
                                     result.yet_to_load
                                   )} ${result.tender_head.product.product_type.unit}`}
+                                  remark={result.remark}
                                   order={result}
                                 />
                               ))}
@@ -301,6 +314,7 @@ export default function LoadingInstructionDetails() {
                               total={tenderDetails.qty}
                               sold={tenderDetails.approved_qty}
                               balance={tenderDetails.available_qty}
+                              remark={tenderDetails.remark}
                             />
                           ))}
                         </TableBody>

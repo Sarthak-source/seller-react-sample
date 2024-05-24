@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { setFullScreen } from 'src/redux/actions/full-screen-action';
+import { setLoadingInstructionScreen } from 'src/redux/actions/loading-instruction-action';
 import NetworkRepository from '../../../../app-utils/network_repository'; // Adjust the path
 import TableEmptyRows from '../../table-empty-rows';
 import SharedTableHead from '../../table-head';
@@ -37,6 +38,8 @@ export default function DeliveryOrderCard() {
     const dispatch = useDispatch();
 
 
+
+
     useEffect(() => {
         setDispatchesData([])
     }, [searchTerm])
@@ -45,6 +48,13 @@ export default function DeliveryOrderCard() {
         setPage(1)
         setDispatchesData([])
     }, [selectedMill])
+
+
+    useEffect(() => {
+        dispatch(setLoadingInstructionScreen({ loadingsInstruction: 'deliveryOrder', currentStatus: '' }));
+
+    }, [dispatch,])
+
 
 
 
@@ -103,14 +113,14 @@ export default function DeliveryOrderCard() {
     return (
         <>
             <Card>
-                
+
                 <TableToolbar
                     numSelected={selected.length}
                     label='Search dispatches..'
                     onFullScreen={() => fullScreen()}
                 />
                 <Scrollbar>
-                    <TableContainer sx={{ height:  '70vh', overflow: 'auto' }}>
+                    <TableContainer sx={{ height: '70vh', overflow: 'auto' }}>
                         <Table stickyHeader sx={{ minWidth: 800 }}>
                             <SharedTableHead
                                 order={order}
@@ -137,6 +147,7 @@ export default function DeliveryOrderCard() {
                                             shipTo={`${row.loading_instruction[0].address.name}\n${row.address_gstin}\n${row.loading_instruction[0].address.address}`}
                                             rate={row.loading_instruction[0].order_head.price}
                                             grade={row.loading_instruction[0].product != null ? row.loading_instruction[0].product.code : 'Not given'}
+                                            remark={row.remark}
                                         />
                                     ))}
                                 <TableEmptyRows

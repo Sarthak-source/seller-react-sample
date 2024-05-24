@@ -31,6 +31,8 @@ export function useDispatchesTableFormat() {
         { id: 'ShipTo', label: 'Shipped To' },
         { id: 'rate', label: 'Rate' },
         { id: 'grade', label: 'Grade' },
+        { id: 'remark', label: 'Remark', align: 'center' },
+        { id: 'TCS' },
         { id: '' },
     ]
 
@@ -47,6 +49,8 @@ export function useDispatchesTableFormat() {
         { id: 'ShipTo', label: 'Shipped To' },
         { id: 'rate', label: 'Rate' },
         { id: 'grade', label: 'Grade' },
+        { id: 'remark', label: 'Remark', align: 'center' },
+        { id: 'TCS' },
         { id: '' },
     ]
 

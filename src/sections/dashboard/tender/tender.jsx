@@ -165,6 +165,7 @@ export default function TenderView() {
         total: row.qty,
         sold: row.approved_qty,
         balance: row.available_qty,
+        remark:row.remark
     }));
 
     const handleExportCSV = () => {
@@ -292,6 +293,7 @@ export default function TenderView() {
                                                 total={row.total}
                                                 sold={row.sold}
                                                 balance={row.balance}
+                                                remark={row.remark}
                                             />
                                         ))}
                                     <TableEmptyRows

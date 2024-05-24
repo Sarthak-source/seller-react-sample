@@ -13,8 +13,10 @@ import { bgBlur } from 'src/theme/css';
 
 import Iconify from 'src/components/iconify';
 
-import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import MyBreadcrumbs from 'src/components/bread-crumbs/bread-crumbs';
+import { setToggleAction } from 'src/redux/actions/toggle-screen';
 import AccountPopover from './common/account-popover';
 import Searchbar from './common/searchbar';
 import { HEADER, NAV } from './config-layout';
@@ -24,18 +26,34 @@ export default function Header({ onOpenNav, openNav }) {
   const theme = useTheme();
 
   const lgUp = useResponsive('up', 'lg');
+  const [toggle, setToggle] = useState(lgUp)
   const isFullScreen = useSelector((state) => state.fullScreen.fullScreenState);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setToggleAction(!toggle));
+
+  }, [toggle, dispatch])
+
+
+  const handleOpenNav = () => {
+    setToggle(!toggle)
+    dispatch(setToggleAction(!toggle));
+  };
+
+
+
 
 
   const renderContent = (
     <>
       <Stack marginLeft={-1}>
         <Stack direction='row' marginTop={2}>
-          <IconButton onClick={onOpenNav} sx={{ mr: 1 }}>
+          <IconButton onClick={handleOpenNav} sx={{ mr: toggle ? 5 : 0 }}>
             <Iconify icon="eva:menu-2-fill" color='primary.main' />
           </IconButton>
           <Searchbar />
-
         </Stack>
         <MyBreadcrumbs />
       </Stack>

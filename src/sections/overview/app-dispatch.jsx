@@ -100,16 +100,12 @@ const DispatchDashboardScreen = ({ productData }) => {
 
         <>
 
-            <MobileStepper
-                variant='text'
-                steps={maxSteps}
-                position="static"
-                activeStep={activeStep}
-                nextButton={<Button onClick={handleNext} disabled={activeStep === maxSteps - 1}>Next</Button>}
-                backButton={<Button onClick={handleBack} disabled={activeStep === 0}>Back</Button>}
-            />
+            
+
+
 
             <Grid item mt={1}>
+            <Typography variant="h6" color="secondary">Current Financial year</Typography>
 
                 <Grid container spacing={1} mt={1}>
                     <Grid item xs={6} sm={3} md={3} >
@@ -132,33 +128,60 @@ const DispatchDashboardScreen = ({ productData }) => {
                         {!loading ? (
                             <AppWidgetSummary
                                 title="TOTAL SALE QTY"
-                                total={data?.financial_year_data?.total_sale_qty}
+                                total={data?.financial_year_data?.total_sale_qty != null ? data?.financial_year_data?.total_sale_qty : '0'}
                                 color="info"
                                 icon={<img src="/assets/dashboard/dispatches-on-truck.svg" alt="" />}
-                            />) : (<Skeleton variant="rectangular" width="100%" height={150} sx={{ borderRadius: '8px' }} />)}
+                            />
+                        ) : (
+                            <Skeleton variant="rectangular" width="100%" height={150} sx={{ borderRadius: '8px' }} />
+                        )}
                     </Grid>
 
                     <Grid item xs={6} sm={3} md={3}>
-                        {!loading ? (<AppWidgetSummary
-                            title="PENDING ORDERS"
-
-                            total={data?.financial_year_data?.pending_orders}
-                            color="warning"
-                            icon={<img src="/assets/dashboard/sales-report.svg" alt="" />}
-                        />) : (<Skeleton variant="rectangular" width="100%" height={150} sx={{ borderRadius: '8px' }} />)}
+                        {!loading ? (
+                            <AppWidgetSummary
+                                title="PENDING ORDERS"
+                                total={data?.financial_year_data?.pending_orders != null ? data?.financial_year_data?.pending_orders : '0'}
+                                color="warning"
+                                icon={<img src="/assets/dashboard/sales-report.svg" alt="" />}
+                            />
+                        ) : (
+                            <Skeleton variant="rectangular" width="100%" height={150} sx={{ borderRadius: '8px' }} />
+                        )}
                     </Grid>
 
                     <Grid item xs={6} sm={3} md={3}>
-                        {!loading ? (<AppWidgetSummary
-                            title="TOTAL DISPATCHES"
-
-                            total={data?.financial_year_data?.total_dispatches}
-                            color="warning"
-                            icon={<img src="/assets/dashboard/sales-report.svg" alt="" />}
-                        />) : (<Skeleton variant="rectangular" width="100%" height={150} sx={{ borderRadius: '8px' }} />)}
+                        {!loading ? (
+                            <AppWidgetSummary
+                                title="TOTAL DISPATCHES"
+                                total={data?.financial_year_data?.total_dispatches != null ? data?.financial_year_data?.total_dispatches : '0'}
+                                color="warning"
+                                icon={<img src="/assets/dashboard/sales-report.svg" alt="" />}
+                            />
+                        ) : (
+                            <Skeleton variant="rectangular" width="100%" height={150} sx={{ borderRadius: '8px' }} />
+                        )}
                     </Grid>
+
 
                 </Grid>
+
+                <MobileStepper
+                variant='text'
+                steps={maxSteps}
+                position="static"
+                activeStep={activeStep}
+                nextButton={
+                    <Button onClick={handleNext} disabled={activeStep === maxSteps - 1 || activeStep >= monthWiseData.length - 1}>
+                        Next ({monthWiseData[activeStep + 1]?.month_year ?? 'no data'})
+                    </Button>
+                }
+                backButton={
+                    <Button onClick={handleBack} disabled={activeStep === 0}>
+                        Back ({monthWiseData[activeStep - 1]?.month_year ?? 'no data'})
+                    </Button>
+                }
+            />
 
                 <Grid item mt={2}>
                     <Grid container spacing={2} >
@@ -175,7 +198,7 @@ const DispatchDashboardScreen = ({ productData }) => {
                                             ]} type="radialBar"
                                             height={250}
                                         />
-                                        <Typography variant="subtitle2" sx={{ mx: 2 }}>Dispatched Qty: 67</Typography>
+                                        <Typography variant="subtitle2" sx={{ mx: 2 }}>Dispatched Qty: {dispatchedQty.toFixed(2)}</Typography>
                                     </Grid>
                                     <Grid item xs={6} md={4} lg={4}>
                                         <Chart
@@ -186,7 +209,7 @@ const DispatchDashboardScreen = ({ productData }) => {
                                             ]} type="radialBar"
                                             height={250}
                                         />
-                                        <Typography variant="subtitle2" sx={{ mx: 2 }}>Received Amount: {fShortenNumberIndian(data?.month_wise_data[0]?.received_amount)}</Typography>
+                                        <Typography variant="subtitle2" sx={{ mx: 2 }}>Received Amount: {fShortenNumberIndian(receivedAmount)}</Typography>
                                     </Grid>
                                     {/* Add more data as needed */}
                                 </Box>

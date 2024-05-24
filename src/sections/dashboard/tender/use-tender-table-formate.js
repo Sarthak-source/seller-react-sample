@@ -75,6 +75,7 @@ export function useTenderTableFormat() {
         { id: 'total', label: 'Total' },
         { id: 'sold', label: 'Sold' },
         { id: 'balance', label: 'Balance', align: 'center' },
+        { id: 'remark', label: 'Remark', align: 'center' },
         { id: '' },
     ]
 

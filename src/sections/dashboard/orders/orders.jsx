@@ -152,6 +152,7 @@ export default function OrdersView() {
         loading: `${formatQuantity(row, 'yet_to_load', row.yet_to_load)} ${row.tender_head.product.product_type.unit}`,
         dispatched: `${formatQuantity(row, 'dispatched_qty', row.dispatched_qty)} ${row.tender_head.product.product_type.unit}`,
         balance: `${formatQuantity(row, 'available_qty', row.available_qty)} ${row.tender_head.product.product_type.unit}`,
+        remark:row.remark,
         order: row,
     }));
 
@@ -173,6 +174,7 @@ export default function OrdersView() {
                 row.loading,
                 row.dispatched,
                 row.balance,
+                row.remark,
             ]),
         ];
 
@@ -270,6 +272,7 @@ export default function OrdersView() {
                                                 loading={row.loading}
                                                 dispatched={row.dispatched}
                                                 balance={row.balance}
+                                                remark={row.remark}
                                                 order={row.order}
                                             />
                                         ))}

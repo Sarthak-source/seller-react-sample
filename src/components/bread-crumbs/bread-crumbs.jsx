@@ -1,12 +1,15 @@
 import { useTheme } from '@emotion/react';
 import { Breadcrumbs, Link, Typography } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useResponsive } from 'src/hooks/use-responsive';
 import Iconify from '../iconify/iconify';
 
 const MyBreadcrumbs = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
+  const lgUp = useResponsive('up', 'lg');
+
 
 
   const handleClick = (path) => {
@@ -17,7 +20,7 @@ const MyBreadcrumbs = () => {
   const pathnames = location.pathname.split('/').filter((x) => x);
 
   return (
-    <Breadcrumbs separator="›" aria-label="breadcrumb" sx={{ height: '1px', marginLeft: 1, marginBottom: 2.5 }}>
+    <Breadcrumbs separator="›" aria-label="breadcrumb" sx={{ height: '1px', marginLeft:lgUp?8:-1, marginBottom: 2.5 }}>
 
       {pathnames.map((name, index) => {
         const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
@@ -27,7 +30,7 @@ const MyBreadcrumbs = () => {
           <Typography fontSize={11} marginTop={0.5} key={name} style={{ cursor: 'pointer' }}>
              {
               name === 'home' ? (
-                <Iconify icon="lets-icons:home-duotone"  sx={{height:18,width:18,mt:-0.4}}/>
+                <Iconify icon="lets-icons:home-duotone"  sx={{height:18,width:18,mt:-0.4,ml:2}}/>
               ) : (
                 <>{name}</>
               )
@@ -40,7 +43,7 @@ const MyBreadcrumbs = () => {
 
             {
               name === 'home' ? (
-                <Iconify icon="lets-icons:home-duotone" sx={{height:18,width:18,mt:1}}/>
+                <Iconify icon="lets-icons:home-duotone" sx={{height:18,width:18,mt:1,ml:2.5}}/>
               ) : (
                 <>{name}</>
               )

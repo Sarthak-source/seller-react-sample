@@ -5,7 +5,7 @@ import { useTheme } from '@emotion/react';
 import { LoadingButton } from '@mui/lab';
 import { fCurrency } from "src/utils/format-number";
 
-import { Alert, Avatar, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Paper, Snackbar, Stack, Table, TableBody, TableContainer, TableHead, TextField, Tooltip, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, MenuItem, Paper, Select, Snackbar, Stack, Table, TableBody, TableContainer, TableHead, TextField, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
@@ -24,6 +24,7 @@ import { useDispatchTableFuctions } from './use-dispatch-table-fuctions';
 export default function DispatchTableRow({
     type,
     subtype,
+    show,
     orderNo,
     doPk,
     invoiceNo,
@@ -39,6 +40,7 @@ export default function DispatchTableRow({
     rate,
     grade,
     qcStatus,
+    remark,
     loadingInstructions
 }) {
     const [open, setOpen] = useState(null);
@@ -54,15 +56,32 @@ export default function DispatchTableRow({
     const [statusType, setStatusType] = useState('');
     const [openTaxDialog, setTaxDialog] = useState('');
     const [loading, setLoading] = useState('');
+    const [selectedTax, setSelectedTax] = useState('');
 
     const [balance, setBalance] = useState();
 
     const dispatch = useDispatch();
     const currentState = useSelector((state) => state.stateRefreash.currentState);
-    
+    const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
+
+    const usedInState = useSelector((state) => state.loadingInstructionScreenState);
+
+
+    console.log('selectedTax', selectedTax)
 
     console.log('DispatchTableRow loadingInstructions', loadingInstructions?.status)
 
+    console.log('selectedUserConfig', selectedUserConfig.gstin_other_tax)
+
+    const handleChangeTax = (event) => {
+        setSelectedTax(event.target.value);
+    };
+
+    const nav = () => {
+        setTimeout(() => {
+          navigate(`/home/`);
+        }, 2000);
+      };
 
 
     // Check if loadingInstructions is not undefined and is an array
@@ -70,12 +89,12 @@ export default function DispatchTableRow({
         ? loadingInstructions?.loading_instruction.map(({ id }) => id)
         : [];
 
-    console.log(ids)
+    console.log('lohol', loadingInstructions, ids)
 
     const handleOpen = async (contentType, statusArg) => {
 
 
-        console.log('handleOpen',statusArg)
+        console.log('handleOpen', statusArg)
 
         if (statusArg === 'Approve') {
 
@@ -110,13 +129,28 @@ export default function DispatchTableRow({
                 return;
             }
 
-            const data = await NetworkRepository.loadingInstructionUpdate({
-                orderId: ids,
+            console.log(
+                'postable', {
+                orderId: [lrId],
                 qty: quantity,
                 status,
-                sellerId: selectedUser.id
+                sellerId: selectedUser.id,
+                gstin_other_tax: selectedTax === '' ? [0] : [selectedTax?.id],
+
+            }
+            )
+
+            console.log('yes tax loadingInstructionUpdate')
+            const data = await NetworkRepository.loadingInstructionUpdate({
+                orderId: [lrId],
+                qty: quantity,
+                status,
+                sellerId: selectedUser.id,
+                gstin_other_tax: selectedTax === '' ? [0] : [selectedTax?.id],
             });
 
+
+            console.log('no tax loadingInstructionUpdate', data)
             console.log('make it matter', data);
 
             if (data instanceof Error && data.response && data.response.status === 400) {
@@ -216,25 +250,35 @@ export default function DispatchTableRow({
 
     const handleAction = async () => {
 
-        const data = await NetworkRepository.loadingInstructionUpdate2({
+
+        console.log(
+            'postable', {
             remaining_balance: balance.balance.toString() === "balance",
             credit: true,
-            orderId: ids,
+            orderId: [lrId],
             qty: quantity,
             status: 'Approved',
-            gstin_other_tax: '0',
+            gstin_other_tax: selectedTax === '' ? [0] : [selectedTax?.id],
             sellerId: selectedUser.id
-        });
+        },)
+
+        const
+            data = await NetworkRepository.loadingInstructionUpdate2({
+                remaining_balance: balance.balance.toString() === "balance",
+                credit: true,
+                orderId: [lrId],
+                qty: quantity,
+                status: 'Approved',
+                gstin_other_tax: selectedTax === '' ? [0] : [selectedTax?.id],
+                sellerId: selectedUser.id
+            });
 
         console.log('dio', data)
 
         if (data) {
             console.log('issue do', `http://${ip}/${ApiAppConstants.getDoDoc}${data.id}`)
-
             printDoOpen(`http://${ip}/${ApiAppConstants.getDoDoc}${data.id}`)
-
         }
-
     }
 
 
@@ -250,7 +294,8 @@ export default function DispatchTableRow({
         setTaxDialog(null);
         dispatch(selectState(!currentState));
         setMailDialogOpen(false);
-        setPdfData(null)
+        setPdfData(null);
+        nav();
     };
 
     const handleEmailSend = async () => {
@@ -337,6 +382,8 @@ export default function DispatchTableRow({
     }
 
     console.log('subtype', subtype)
+
+    console.log('usedInState', usedInState)
 
     return (
         <>
@@ -434,6 +481,9 @@ export default function DispatchTableRow({
                 </TableCell>
                 <TableCell>{rate}</TableCell>
                 <TableCell>{grade}</TableCell>
+                <TableCell style={{ color: 'rgb(25, 106, 255)' }}>{remark}</TableCell>
+
+
                 {loadingInstructions?.status !== 'Cancel' ? (<TableCell
                     onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = theme.palette.grey[200];
@@ -446,6 +496,24 @@ export default function DispatchTableRow({
                     {loadingInstructions?.status !== 'Cancel' && (
 
                         <Box display="flex" justifyContent="space-between" sx={{ gap: 1 }}  >
+                            {type === 'loadingsInstruction' && usedInState.loadingInstructionScreen === 'loadingsInstruction' && show && (<TableCell>
+                                <Select
+                                    value={selectedTax}
+                                    onChange={handleChangeTax}
+                                    displayEmpty
+                                    fullWidth
+                                >
+                                    <MenuItem value="" disabled>
+                                        TCS
+                                    </MenuItem>
+                                    {selectedUserConfig.gstin_other_tax.map((tax) => (
+                                        <MenuItem key={tax.id} value={tax}>
+                                            {`${tax.tax_desc}`}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </TableCell>)}
+
                             {
                                 type === 'invoice' && (
                                     <HoverExpandButton onClick={printOpen} width='100px' color={theme.palette.success.main} >
@@ -534,11 +602,11 @@ export default function DispatchTableRow({
                                 <TableBody>
                                     <TableRow>
                                         <TableCell>
-                                            {ids.join(', ')}
+                                            {lrId}
                                         </TableCell>
                                         <TableCell>
 
-                                            <Typography key={loadingInstructions?.veicle_num}>{loadingInstructions?.veicle_num}</Typography>
+                                            <Typography key={vehicleNumber}>{vehicleNumber}</Typography>
 
                                         </TableCell>
                                         <TableCell>
@@ -584,6 +652,7 @@ export default function DispatchTableRow({
 DispatchTableRow.propTypes = {
     type: PropTypes.string,
     subtype: PropTypes.string,
+    show: PropTypes.bool,
     orderNo: PropTypes.string,
     lrNum: PropTypes.string,
     doPk: PropTypes.string,
@@ -599,5 +668,6 @@ DispatchTableRow.propTypes = {
     rate: PropTypes.string,
     grade: PropTypes.string,
     qcStatus: PropTypes.string,
+    remark: PropTypes.string,
     loadingInstructions: PropTypes.any,
 };

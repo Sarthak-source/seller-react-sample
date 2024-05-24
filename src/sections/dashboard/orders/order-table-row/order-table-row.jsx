@@ -37,6 +37,7 @@ export default function OrdersTableRow({
     loading,
     dispatched,
     balance,
+    remark,
     order,
 }) {
     const [open, setOpen] = useState(null);
@@ -184,6 +185,8 @@ export default function OrdersTableRow({
                 <TableCell>{loading}</TableCell>
                 <TableCell>{dispatched}</TableCell>
                 <TableCell>{balance}</TableCell>
+                <TableCell style={{ color: 'rgb(25, 106, 255)' }}>{remark}</TableCell>
+
                 <TableCell
                     onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor = theme.palette.grey[200];
@@ -304,4 +307,5 @@ OrdersTableRow.propTypes = {
     dispatched: PropTypes.string,
     balance: PropTypes.string,
     order: PropTypes.string,
+    remark: PropTypes.string,
 };

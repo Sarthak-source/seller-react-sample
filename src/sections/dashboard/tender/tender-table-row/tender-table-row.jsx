@@ -36,6 +36,7 @@ export default function TenderTableRow({
   total,
   sold,
   balance,
+  remark,
 }) {
   const navigate = useNavigate();
 
@@ -155,6 +156,7 @@ export default function TenderTableRow({
         <TableCell>{total}</TableCell>
         <TableCell>{sold}</TableCell>
         <TableCell>{balance}</TableCell>
+        <TableCell style={{ color: 'rgb(25, 106, 255)' }}>{remark}</TableCell>
         <TableCell
 
           onMouseEnter={(e) => {
@@ -227,4 +229,5 @@ TenderTableRow.propTypes = {
   total: PropTypes.any,
   sold: PropTypes.any,
   balance: PropTypes.any,
+  remark:PropTypes.any,
 };

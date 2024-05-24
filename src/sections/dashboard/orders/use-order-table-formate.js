@@ -107,6 +107,7 @@ export function useOrderTableFormate() {
         { id: 'loading', label: 'Loading' },
         { id: 'dispatched', label: 'Dispatched' },
         { id: 'balance', label: 'Balance', align: 'center' },
+        { id: 'remark', label: 'Remark', align: 'center' },
         { id: '' },
     ]
 

@@ -9,6 +9,8 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFullScreen } from 'src/redux/actions/full-screen-action';
+import { setLoadingInstructionScreen } from 'src/redux/actions/loading-instruction-action';
+
 
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
@@ -16,10 +18,10 @@ import NetworkRepository from '../../../../app-utils/network_repository'; // Adj
 import TableEmptyRows from '../../table-empty-rows';
 import SharedTableHead from '../../table-head';
 import TableNoData from '../../table-no-data';
-import DispatchTableRow from '../dispatches-table-row/dispatch-table-row';
 
 import TableToolbar from '../../table-toolbar';
 import { applyFilter, emptyRows, getComparator } from '../../utils';
+import DispatchTableRow from '../dispatches-table-row/dispatch-table-row';
 import { useDispatchesTableFormat } from '../use-dispatches-table-formate';
 
 export default function LoadingsInstructionCard(
@@ -50,6 +52,11 @@ export default function LoadingsInstructionCard(
     }, [searchTerm, status, selectedMill])
 
 
+    useEffect(() => {
+        dispatch(setLoadingInstructionScreen({ loadingsInstruction: 'loadingsInstruction', currentStatus: status }));
+
+    }, [dispatch, status])
+
 
     useEffect(() => {
         const fetchDispatchesData = async (dispatchesPage, text, currentStatus, millId) => {
@@ -69,7 +76,7 @@ export default function LoadingsInstructionCard(
 
         fetchDispatchesData(page, searchTerm, status, selectedMill.id);
     }, [page, status, selectedMill, searchTerm, selectedUser.id, currentState]);
-    
+
 
     const handleSort = (event, id) => {
         const isAsc = orderBy === id && order === 'asc';
@@ -106,6 +113,7 @@ export default function LoadingsInstructionCard(
         orderNo: row.loading_instruction[0].order_head.id,
         lrNum: row.loading_instruction[0].lr_number,
         lrId: row.loading_instruction[0].id,
+        doPk: row.delivery_order,
         millName: row.mill,
         name: row.trader,
         date: format(parseISO(row.loading_instruction[0].date), 'dd/MMM/yyyy'),
@@ -116,6 +124,7 @@ export default function LoadingsInstructionCard(
         rate: row.loading_instruction[0].product != null ? row.loading_instruction[0].order_head.price : 'Not given',
         grade: row.loading_instruction[0].product != null ? row.loading_instruction[0].product.code : 'Not given',
         qcStatus: row.qc_status,
+        remark:row.remark,
         loadingInstructions: row,
     }));
 
@@ -140,6 +149,7 @@ export default function LoadingsInstructionCard(
                 row.shipTo.replace(/,/g, '').replace(/[\r\n]/g, ''),
                 row.rate,
                 row.grade,
+                row.remark,
             ]),
         ];
 
@@ -166,7 +176,7 @@ export default function LoadingsInstructionCard(
     return (
         <>
             <Card>
-                
+
                 <TableToolbar
                     numSelected={selected.length}
                     onFullScreen={() => fullScreen()}
@@ -174,7 +184,7 @@ export default function LoadingsInstructionCard(
                     onDownload={handleExportCSV}
                 />
                 <Scrollbar>
-                    <TableContainer sx={{ height:  '70vh', overflow: 'auto' }}>
+                    <TableContainer sx={{ height: '70vh', overflow: 'auto' }}>
                         <Table stickyHeader sx={{ minWidth: 800 }}>
                             <SharedTableHead
                                 order={order}
@@ -190,9 +200,11 @@ export default function LoadingsInstructionCard(
                                         .map((row) => (
                                             <DispatchTableRow
                                                 type='loadingsInstruction'
+                                                show={false}
                                                 subtype={status}
                                                 key={row.orderNo}
                                                 orderNo={row.orderNo}
+                                                doPk={row.doPk}
                                                 lrNum={row.lrNum}
                                                 lrId={row.lrId}
                                                 millName={row.millName}
@@ -205,6 +217,7 @@ export default function LoadingsInstructionCard(
                                                 rate={row.rate}
                                                 grade={row.grade}
                                                 qcStatus={row.qcStatus}
+                                                remark={row.remark}
                                                 loadingInstructions={row.loadingInstructions}
                                             />
                                         ))}
