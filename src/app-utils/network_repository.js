@@ -545,28 +545,48 @@ const NetworkRepository = {
   },
 
   addressListPost: async (
-    { name,
-      gstin,
-      pin,
-      address,
-      location,
-      sellerId }) => {
+    name,
+    gstin,
+    pin,
+    address,
+    location,
+    sellerId) => {
     try {
-      const data = new URLSearchParams();
+      // const data = new URLSearchParams();
 
-      data.append("trader", sellerId.toString());
-      data.append("name", name.toString());
-      data.append("gstin", gstin.toString());
-      data.append("pin", pin.toString());
-      data.append("address", address.toString());
-      data.append("location", location.toString());
+      // data.append("trader", sellerId);
+      // data.append("name", name);
+      // data.append("gstin", gstin);
+      // data.append("pin", pin);
+      // data.append("address", address);
+      // data.append("location", location);
+
+
+      const data = JSON.stringify({
+        "trader": sellerId,
+        "name": name,
+        "gstin": gstin,
+        "pin": pin,
+        "address": address,
+        "location": location,
+      },);
+
+
+      console.log('addresspost', data)
 
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url: `${ApiAppConstants.addressListPost}`,
         header: {
           'authorization': auth
         },
-        data: data.toString(),
+        data:{
+          "trader": sellerId,
+          "name": name,
+          "gstin": gstin,
+          "pin": pin,
+          "address": address,
+          "location": location,
+        },
       });
       return await apiResponse;
     } catch (e) {
@@ -1305,6 +1325,51 @@ const NetworkRepository = {
     }
   },
 
+
+  updateUserData: async (
+    name,
+    sellerType,
+    sellerRole,
+    mills,
+    phoneNumber,
+    seller,
+    products
+  ) => {
+    try {
+      const data = JSON.stringify({
+        'name': name,
+        'seller_type': sellerType,
+        'seller_role': sellerRole,
+        'mills': mills,
+        'phone_number': phoneNumber,
+        'seller': seller,
+        'products': products,
+      });
+
+      console.log('postUserData', `${ApiAppConstants.users}${seller}/update/`, {
+        'name': name,
+        'seller_type': sellerType,
+        'seller_role': sellerRole,
+        'mills': mills,
+        'phone_number': phoneNumber,
+        'seller': seller,
+        'products': products,
+      }, data)
+
+
+      const apiResponse = await NetworkAxios.patchAxiosHttpMethod({
+        url: `${ApiAppConstants.users}${seller}/update/`,
+        ContentType: 'application/json',
+        header: { 'authorization': auth },
+        data,
+      });
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
   getUserList: async (mill, seller) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
@@ -1352,6 +1417,19 @@ const NetworkRepository = {
     }
   },
 
+  getAddressList: async (seller) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.sellerAddressList}?seller=${seller}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
 }
 
 

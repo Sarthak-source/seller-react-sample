@@ -95,11 +95,13 @@ const ApiAppConstants = {
     productData: 'get_product_data/',
     invoiceStats: 'invoice_stats/',
     recentInvoices: 'recent_invoices/',
-    productDashboard:'product_dashboard/',
-    yearDispatches:'financial_year_dispatches/',
-    users:'users/',
-    product:'product/',
-    productsList:'products_list/'
+    productDashboard: 'product_dashboard/',
+    yearDispatches: 'financial_year_dispatches/',
+    users: 'users/',
+    product: 'product/',
+    productsList: 'products_list/',
+    sellerAddressList: 'seller_address_list/',
+    addressUpdate:'address_update/',
 };
 
 export { ApiAppConstants, auth, ip, testip };

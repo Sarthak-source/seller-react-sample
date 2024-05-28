@@ -51,7 +51,7 @@ const navConfig = [
 
   {
     title: 'Address',
-    path: '/home/ic_address',
+    path: '/home/address-view',
     icon: icon('ic_address'),
   },
 

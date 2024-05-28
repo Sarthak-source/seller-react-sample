@@ -16,6 +16,21 @@ const UserForm = () => {
   const [loading, setLoading] = useState(false);
 
   const selectedUser = useSelector((state) => state.user.selectedUser);
+  const currentState = useSelector((state) => state.sellerUpdate.selectedSeller);
+
+  console.log('currentState', currentState)
+
+
+  useEffect(() => {
+    if (currentState) {
+      setName(currentState.name || ''); // If currentState.name is falsy, set an empty string
+      setSellerType(currentState.seller_type || ''); // Set to an empty string if falsy
+      setSellerRole(currentState.seller_role || []); // Set to an empty array if falsy
+      setMills(currentState.mills.map((mill) => mill.id) || []); // Set to an empty array if falsy
+      setPhoneNumber(currentState.phone_number || ''); // Set to an empty string if falsy
+      setProducts(currentState.products || []); // Set to an empty array if falsy
+    }
+  }, [currentState]);
 
   const handleNameChange = (event) => {
     setName(event.target.value);
@@ -61,15 +76,33 @@ const UserForm = () => {
     console.log(formData);
 
     try {
-      await NetworkRepository.postUserData(
-        formData.name,
-        formData.seller_type,
-        formData.seller_role,
-        formData.mills,
-        formData.phone_number,
-        formData.seller,
-        formData.products
-      );
+
+      if (currentState) {
+        await NetworkRepository.updateUserData(
+          formData.name,
+          formData.seller_type,
+          formData.seller_role,
+          formData.mills,
+          formData.phone_number,
+          formData.seller,
+          formData.products
+        );
+
+      } else {
+
+        await NetworkRepository.postUserData(
+          formData.name,
+          formData.seller_type,
+          formData.seller_role,
+          formData.mills,
+          formData.phone_number,
+          formData.seller,
+          formData.products
+        );
+
+
+
+      }
       alert('Data submitted successfully');
     } catch (error) {
       console.error('Error submitting data:', error);
@@ -116,7 +149,7 @@ const UserForm = () => {
           maxWidth: 600,
         }}
       >
-        <Typography variant="h4" sx={{ pb: 2 }}>Add seller</Typography>
+        <Typography variant="h4" sx={{ pb: 2 }}>{currentState === null ? 'Add' : 'Update'} seller</Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -203,16 +236,18 @@ const UserForm = () => {
                 </Grid>
               </>
             )}
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Phone Number"
                 variant="outlined"
+                disabled={currentState !== null}
                 value={phoneNumber}
                 onChange={handlePhoneNumberChange}
                 fullWidth
                 required
                 margin="normal"
+                inputProps={{ maxLength: 10 }}
               />
             </Grid>
 

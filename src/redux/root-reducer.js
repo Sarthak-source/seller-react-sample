@@ -4,6 +4,7 @@ import loadingInstructionScreenReducer from './reducers/loading-instruction-redu
 import millReducer from './reducers/mill-reducer';
 import orderReducer from './reducers/order-reducer';
 import searchReducer from './reducers/search-reducer';
+import sellerUpdateReducer from './reducers/seller-update-reducer';
 import stateRefreshReducer from './reducers/state-refresh-reducer';
 import storeReducer from './reducers/store-state-reducer';
 import storeSummaryReducer from './reducers/store-summary-reducer';
@@ -23,8 +24,9 @@ const rootReducer = combineReducers({
   fullScreen: fullScreenReducer,
   storeState: storeReducer,
   storeSummaryState: storeSummaryReducer,
-  toggleState:toggleReducer,
-  loadingInstructionScreenState:loadingInstructionScreenReducer,
+  toggleState: toggleReducer,
+  loadingInstructionScreenState: loadingInstructionScreenReducer,
+  sellerUpdate: sellerUpdateReducer,
 });
 
 

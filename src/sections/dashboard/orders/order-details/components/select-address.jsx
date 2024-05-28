@@ -1,19 +1,13 @@
-import { LoadingButton } from '@mui/lab';
 import {
   Box,
   Button,
   Card,
   Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Stack,
-  TextField,
   Typography
 } from '@mui/material';
 import PropTypes from 'prop-types';
@@ -21,6 +15,7 @@ import { useEffect, useState } from 'react';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import AddAddress from 'src/sections/address/add-address';
 
 export default function SelectAddressScreen({ gstIn, orderPk, billing, shipping, onSelect }) {
   const [selectedAddressId, setSelectedAddressId] = useState({});
@@ -125,56 +120,8 @@ export default function SelectAddressScreen({ gstIn, orderPk, billing, shipping,
           </List>
         )}
       </Box>
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Add address</DialogTitle>
-        <DialogContent >
-          <TextField
-            name="name"
-            label="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            fullWidth
-            sx={{ marginBottom: 2, marginTop: 2 }}
-          />
-          <TextField
-            name="location"
-            label="Location"
 
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            fullWidth
-            sx={{ marginBottom: 2 }}
-          />
-          <TextField
-            name="pin"
-            label="Pin"
-            inputProps={{ maxLength: 6 }}
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            fullWidth
-            sx={{ marginBottom: 2 }}
-          />
-
-          <TextField
-            name="address"
-            label="Enter address"
-            inputProps={{ maxLength: 6 }}
-            multiline
-            rows={4}
-            value={addressTyped}
-            onChange={(e) => setAddress(e.target.value)}
-            fullWidth
-
-            sx={{ marginBottom: 2 }}
-          />
-          {/* Your dialog content goes here */}
-        </DialogContent>
-        <DialogActions>
-          <LoadingButton onClick={handleAddNewAddress}>Add</LoadingButton>
-          <LoadingButton onClick={closeDialog}>Cancel</LoadingButton>
-          {/* Additional action buttons if needed */}
-        </DialogActions>
-      </Dialog>
+      <AddAddress openDialog={openDialog} setOpenDialog={setOpenDialog}  />
     </Box>
   );
 }

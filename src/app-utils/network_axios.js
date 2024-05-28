@@ -60,7 +60,7 @@ const NetworkAxiosOptions = {
     },
 
     async getAxiosHttpMethod({ url, header, full = true }) {
-        console.log('ddfdfdfdfdf',url);
+        console.log('ddfdfdfdfdf', url);
         const fullUrl = full ? `${this.endPointUrl}${url}` : url;
         try {
             const response = await this.axiosOptions.get(fullUrl, { headers: header || this.cacheOptions });
@@ -75,6 +75,26 @@ const NetworkAxiosOptions = {
     async putAxiosHttpMethod({ url, data, header, ContentType = 'application/x-www-form-urlencoded' }) {
         try {
             const response = await this.axiosOptions.put(
+                `${this.endPointUrl}${url}`,
+                data,
+                {
+                    headers: {
+                        ...header,
+                        'Content-Type': ContentType,
+                    } || this.cacheOptions,
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error('Error:', error);
+            throw error;
+        }
+    },
+
+
+    async patchAxiosHttpMethod({ url, data, header, ContentType = 'application/x-www-form-urlencoded' }) {
+        try {
+            const response = await this.axiosOptions.patch(
                 `${this.endPointUrl}${url}`,
                 data,
                 {
