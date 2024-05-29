@@ -2,6 +2,8 @@ import { useTheme } from '@emotion/react';
 import { Box, Button, ButtonGroup, Chip, FormControl, InputLabel, MenuItem, OutlinedInput, Paper, Select, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
+import * as XLSX from 'xlsx';
+
 
 const RenderTableFromJson = ({
   renderTableHeader,
@@ -54,34 +56,22 @@ const RenderTableFromJson = ({
 
   const downloadCSV = () => {
     if (jsonData) {
-      const csvContent = generateCSVFromTable();
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'data.csv');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
+      const table = tableRef.current;
+      const rows = Array.from(table.querySelectorAll('tr'));
+      const data = rows.map(row => {
+        const cells = Array.from(row.querySelectorAll('td, th'));
+        return cells.map(cell => cell.textContent.trim());
+      });
+
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+      XLSX.writeFile(workbook, 'data.xlsx');
     } else {
       console.error('No JSON data available to download.');
     }
   };
-
-  const generateCSVFromTable = () => {
-    const table = document.querySelector('table');
-    const rows = Array.from(table.querySelectorAll('tr'));
-    const csvData = rows.map(row => {
-      const rowData = Array.from(row.querySelectorAll('td, th'))
-        .map(cell => cell.textContent.trim())
-        .join(',');
-      return rowData;
-    }).join('\n');
-    return csvData;
-  };
+  
 
   const handleChange = (event) => {
     console.log(event);

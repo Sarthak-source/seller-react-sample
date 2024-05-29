@@ -81,6 +81,8 @@ const useRenderFunctions = () => {
         return 'TCS';
       case 'price':
         return 'Price';
+      case 'status':
+        return 'Status';
       case 'sealNo':
         return 'Seal No';
       default:
@@ -138,6 +140,7 @@ const useRenderFunctions = () => {
     driverNo: false,
     transporterName: true,
     millName: true,
+    status: true,
     traderName: true,
     deliveryOrderNo: true,
     invoiceNo: true,
@@ -186,6 +189,8 @@ const useRenderFunctions = () => {
         return item.total_qty;
       case 'totalAmount':
         return item.total_amount;
+      case 'status':
+        return item.status;
       case 'totalTaxAmount':
         return item.total_tax_amount;
       case 'totalInvoiceValue':
