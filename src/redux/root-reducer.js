@@ -11,6 +11,7 @@ import storeSummaryReducer from './reducers/store-summary-reducer';
 import tabStepReducer from './reducers/tab-step-reducer';
 import toggleReducer from './reducers/toggle-reducer';
 import traderReducer from './reducers/trader-reducer';
+import sellerProductReducer from './reducers/update-products-reducer';
 import userReducer from './reducers/user-reducer';
 
 const rootReducer = combineReducers({
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   toggleState: toggleReducer,
   loadingInstructionScreenState: loadingInstructionScreenReducer,
   sellerUpdate: sellerUpdateReducer,
+  productUpdate:sellerProductReducer,
 });
 
 

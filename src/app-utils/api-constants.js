@@ -102,6 +102,7 @@ const ApiAppConstants = {
     productsList: 'products_list/',
     sellerAddressList: 'seller_address_list/',
     addressUpdate:'address_update/',
+    updateTrader:'updateTrader/',
 };
 
 export { ApiAppConstants, auth, ip, testip };

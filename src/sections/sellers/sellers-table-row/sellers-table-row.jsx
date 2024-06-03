@@ -63,7 +63,7 @@ export default function UserTableRow({
           onMouseLeave={(e) => {
             e.currentTarget.style.boxShadow = 'none';
           }}
-          onClick={()=>handleSellerUpdate(row)} component="th" scope="row" padding="normal">
+          onClick={() => handleSellerUpdate(row)} component="th" scope="row" padding="normal">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Avatar alt={name} src="avatarUrl" />
             <Typography variant="subtitle2" noWrap>
@@ -111,5 +111,5 @@ UserTableRow.propTypes = {
   phoneNumber: PropTypes.any,
   email: PropTypes.any,
   mills: PropTypes.any,
-  row:PropTypes.any,
+  row: PropTypes.any,
 };

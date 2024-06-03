@@ -1,16 +1,23 @@
 import { Avatar, Stack, TableCell, TableRow, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import Label from 'src/components/label';
+import { selectProductData } from 'src/redux/actions/update-product-action';
+import { useRouter } from 'src/routes/hooks';
 import { useProductTableFormat } from '../use-product-table-form';
 
 export default function ProductTableRow({
     name,
     status,
     productType,
+    row,
 }) {
     const [openDialog, setOpenDialog] = useState(false);
     const { getStatusColor } = useProductTableFormat();
+    const router = useRouter();
+    const dispatch = useDispatch();
+
 
     const handleOpenDialog = () => {
         setOpenDialog(true);
@@ -18,6 +25,11 @@ export default function ProductTableRow({
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
+    };
+
+    const handleProductUpdate = (product) => {
+        dispatch(selectProductData(product));
+        router.replace('/home/products/add-products');
     };
 
     return (
@@ -31,7 +43,7 @@ export default function ProductTableRow({
                     onMouseLeave={(e) => {
                         e.currentTarget.style.boxShadow = 'none';
                     }}
-                    onClick={handleOpenDialog}
+                    onClick={()=>handleProductUpdate(row)}
                     component="th"
                     scope="row"
                     padding="normal"
@@ -56,4 +68,5 @@ ProductTableRow.propTypes = {
     name: PropTypes.string.isRequired,
     status: PropTypes.string.isRequired,
     productType: PropTypes.string.isRequired,
+    row: PropTypes.any.isRequired,
 };

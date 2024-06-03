@@ -579,7 +579,7 @@ const NetworkRepository = {
         header: {
           'authorization': auth
         },
-        data:{
+        data: {
           "trader": sellerId,
           "name": name,
           "gstin": gstin,
@@ -1430,6 +1430,58 @@ const NetworkRepository = {
       return e.toString();
     }
   },
+
+
+  updateTraderData: async (
+    traderId,
+    traderName,
+    gstin,
+    city,
+    address,
+    email,
+    pin,
+    bankFile,
+    panFile,
+    gstFile,
+    addressFile
+  ) => {
+    try {
+      const formData = new FormData();
+      formData.append("trader_name", traderName.toString());
+      formData.append("trader_id", traderId.toString());
+      formData.append("gstin", gstin);
+      formData.append("city", city);
+      formData.append("address", address);
+      formData.append("email", email);
+      formData.append("pin", pin);
+
+      // Append files if they exist
+      if (bankFile) formData.append("bank_file", bankFile);
+      if (panFile) formData.append("pan_file", panFile);
+      if (gstFile) formData.append("gst_file", gstFile);
+      if (addressFile) formData.append("address_file", addressFile);
+
+      Array.from(formData.entries()).forEach(([key, value]) => {
+        console.log(`${key}: ${value}`);
+      });
+
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.updateTrader}`,
+        header: {
+          'authorization': auth,
+          'Content-Type': 'multipart/form-data'
+        },
+        data: formData,
+      });
+
+      return apiResponse;
+    } catch (error) {
+      console.error("Error updating trader data:", error);
+      alert("An error occurred while updating trader data. Please try again.");
+      return error.toString();
+    }
+  }
+
 }
 
 

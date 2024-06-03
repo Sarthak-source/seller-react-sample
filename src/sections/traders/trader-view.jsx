@@ -180,6 +180,7 @@ export default function TraderView() {
                                             phoneNumber={row.phone_number}
                                             email={row.email}
                                             mills={row.mills}
+                                            row={row}
                                         />
                                     ))}
                                     <TableEmptyRows

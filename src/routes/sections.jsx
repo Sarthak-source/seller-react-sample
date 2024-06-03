@@ -13,6 +13,11 @@ import ProductForm from 'src/sections/product-managment/add-product';
 import ProductTableView from 'src/sections/product-managment/product-list';
 import UserForm from 'src/sections/sellers/add-sellers';
 import UserView from 'src/sections/sellers/sellers-table';
+import UpdateTraderForm from 'src/sections/traders/update_trader';
+import WarehouseInventoryForm from 'src/sections/warehouse/inventory/inventory-form';
+import WarehouseOrderForm from 'src/sections/warehouse/order/order-form';
+import WarehouseProductForm from 'src/sections/warehouse/product/product-form';
+import WarehouseView from 'src/sections/warehouse/warehouse-management';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -43,7 +48,7 @@ export default function Router() {
   const children = [
     { element: <DashboardView />, index: true },
     { path: 'dashboard', element: <IndexPage />, },
-    
+    { path: 'warehouse-management', element: <WarehouseView />, },
     { path: 'blog', element: <BlogPage /> },
     { path: 'tender-details/:id', element: <TenderDetails /> },
     { path: 'add-tender-to-sap', element: <SalesContractForm /> },
@@ -59,15 +64,18 @@ export default function Router() {
     { path: 'generate-invoice/store-house', element: <StoreHouse /> },
     { path: 'generate-invoice/store-house/summary', element: <SummaryScreen /> },
     { path: 'traders', element: <TraderDetails /> },
+    { path: 'home/traders/update-traders', element: <UpdateTraderForm /> },
     { path: 'profile', element: <ProfileDetails /> },
-    { path: 'products', element: <ProductTableView/>},
+    { path: 'products', element: <ProductTableView /> },
     { path: 'home/products/add-products', element: <ProductForm /> },
     { path: 'home/users-view/add-users', element: <UserForm /> },
-    { path: 'users-view', element: <UserView/>},
-    { path: 'address-view', element: <AddressView/>},
-    
-
+    { path: 'users-view', element: <UserView /> },
+    { path: 'address-view', element: <AddressView /> },
     { path: 'reports', element: <ReportDetails /> },
+    { path: 'home/warehouse-management/add-product-form', element: <WarehouseProductForm /> },
+    { path: 'home/warehouse-management/add-order-form', element: <WarehouseOrderForm /> },
+    { path: 'home/warehouse-management/add-inventory-form', element: <WarehouseInventoryForm /> },
+
 
   ];
 

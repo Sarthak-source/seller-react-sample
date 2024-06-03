@@ -58,7 +58,7 @@ const navConfig = [
   
   {
     title: 'Storehouse',
-    path: '/home/',
+    path: '/home/warehouse-management',
     icon: icon('ic_storehouse'),
   },
 

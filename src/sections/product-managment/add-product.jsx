@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Alert, Card, FormControl, FormControlLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, Stack, TextField } from '@mui/material';
+import { Alert, Card, FormControl, FormControlLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, Snackbar, Stack, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -12,8 +12,14 @@ const ProductForm = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]); // Initialize as an empty array
   const [successMessage, setSuccessMessage] = useState(''); // State for success message
+  const [errorMessage, setErrorMessage] = useState(''); // State for error message
+  const [openSnackbar, setOpenSnackbar] = useState(false); // State for Snackbar
 
   const selectedUser = useSelector((state) => state.user.selectedUser);
+  const currentState = useSelector((state) => state.productUpdate.selectedProducts);
+
+  console.log('currentState', currentState)
+
 
   const navigate = useNavigate();
 
@@ -22,6 +28,14 @@ const ProductForm = () => {
       navigate(`/home/products`);
     }, 2000);
   };
+
+  useEffect(() => {
+    if (currentState) {
+      setProductType(currentState.product_type.id);
+      setProductCode(currentState.code);
+      setStatus(currentState.status.toLowerCase());
+    }
+  }, [currentState]);
 
   const handleProductTypeChange = (event) => {
     const selectedProduct = data.find(product => product.id === event.target.value);
@@ -38,13 +52,18 @@ const ProductForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!productType || !productCode) {
+      setErrorMessage('Please fill out all required fields.');
+      setOpenSnackbar(true);
+      return;
+    }
     setLoading(true);
     try {
       const response = await NetworkRepository.createProduct(productType, productCode, selectedUser.id);
       console.log(response);
       if (response.status === 200 && response.data.Success) {
         setSuccessMessage(response.data.Success);
-        alert(response.data.Success);
+        setOpenSnackbar(true); // Open the Snackbar
       }
     } catch (error) {
       console.error('Error creating product:', error);
@@ -52,6 +71,13 @@ const ProductForm = () => {
       setLoading(false);
       nav();
     }
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
   };
 
   useEffect(() => {
@@ -123,6 +149,11 @@ const ProductForm = () => {
           </LoadingButton>
         </form>
       </Card>
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity={errorMessage ? "error" : "success"} sx={{ width: '100%' }}>
+          {errorMessage || successMessage}
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 };

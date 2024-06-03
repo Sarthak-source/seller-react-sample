@@ -16,6 +16,11 @@ export const fetchTraderDataFailure = (error) => ({
   payload: error,
 });
 
+export const updateTraderData = (data) => ({
+  type: actionTypes.TRADER_DATA_UPDATE,
+  payload: data,
+});
+
 export const fetchTraderData = (selectedUserId) => async (dispatch) => {
 
   dispatch(fetchTraderDataStart());

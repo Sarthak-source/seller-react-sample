@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
+  IconButton,
   List,
   ListItem,
   ListItemAvatar,
@@ -17,8 +18,11 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
+import { updateTraderData } from 'src/redux/actions/traders';
+import { useRouter } from 'src/routes/hooks';
 import { useTraderTableFormat } from '../use-trader-table-formate';
 
 export default function TraderTableRow({
@@ -28,13 +32,18 @@ export default function TraderTableRow({
   phoneNumber,
   email,
   mills,
+  row,
 }) {
   const [openMenu, setOpenMenu] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const { getStatusColor } = useTraderTableFormat();
+  const router = useRouter();
+  const dispatch = useDispatch();
 
-  const handleOpenMenu = (event) => {
-    setOpenMenu(event.currentTarget);
+  const handleOpenMenu = (data) => {
+    dispatch(updateTraderData(data));
+    
+    router.replace('/home/traders/update-traders');
   };
 
   const handleCloseMenu = () => {
@@ -113,32 +122,12 @@ export default function TraderTableRow({
         <TableCell>
           <Label color={getStatusColor(status)}>{status}</Label>
         </TableCell>
-        {/* <TableCell align="right">
-          <IconButton onClick={handleOpenMenu}>
-            <Iconify icon="eva:more-vertical-fill" />
+        <TableCell align="right">
+          <IconButton onClick={()=>handleOpenMenu(row)}>
+            <Iconify icon="eva:edit-fill" />
           </IconButton>
-        </TableCell> */}
+        </TableCell>
       </TableRow>
-      {/* <Popover
-        open={!!openMenu}
-        anchorEl={openMenu}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        slotProps={{
-          sx: { width: 140 },
-        }}
-      >
-        <MenuItem onClick={handleOpenDialog}>
-          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-        <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
-          <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover> */}
-
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Mills associated with this trader</DialogTitle>
         <DialogContent>
@@ -176,4 +165,5 @@ TraderTableRow.propTypes = {
   phoneNumber: PropTypes.any,
   email: PropTypes.any,
   mills: PropTypes.any,
+  row: PropTypes.any,
 };

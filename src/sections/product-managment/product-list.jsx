@@ -13,6 +13,7 @@ import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
+import { selectProductData } from 'src/redux/actions/update-product-action';
 import { useRouter } from 'src/routes/hooks';
 import TableEmptyRows from '../dashboard/table-empty-rows';
 import SharedTableHead from '../dashboard/table-head';
@@ -68,7 +69,8 @@ export default function ProductTableView() {
 
     const notFound = !dataFiltered.length;
 
-    const handleOpenUser = () => {
+    const handleOpenProduct = () => {
+        dispatch(selectProductData(null));
         router.replace('/home/products/add-products');
     }
 
@@ -76,7 +78,7 @@ export default function ProductTableView() {
         <Container maxWidth="xl">
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5} mt={1}>
                 <Typography variant="h4" mt={2} mb={-2}>Products</Typography>
-                <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenUser}>
+                <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenProduct}>
                     Add Products
                 </Button>
             </Stack>
@@ -106,6 +108,7 @@ export default function ProductTableView() {
                                             name={row.code}
                                             status={row.status}
                                             productType={row.product_type.product_type}
+                                            row={row}
                                         />
                                     ))}
                                     <TableEmptyRows height={77} emptyRows={0} />

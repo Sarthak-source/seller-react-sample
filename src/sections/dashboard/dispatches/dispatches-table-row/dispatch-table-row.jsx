@@ -71,7 +71,6 @@ export default function DispatchTableRow({
 
     console.log('DispatchTableRow loadingInstructions', loadingInstructions?.status)
 
-    console.log('selectedUserConfig', selectedUserConfig.gstin_other_tax)
 
     const handleChangeTax = (event) => {
         setSelectedTax(event.target.value);
