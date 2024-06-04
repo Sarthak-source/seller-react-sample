@@ -14,9 +14,6 @@ import ProductTableView from 'src/sections/product-managment/product-list';
 import UserForm from 'src/sections/sellers/add-sellers';
 import UserView from 'src/sections/sellers/sellers-table';
 import UpdateTraderForm from 'src/sections/traders/update_trader';
-import WarehouseInventoryForm from 'src/sections/warehouse/inventory/inventory-form';
-import WarehouseOrderForm from 'src/sections/warehouse/order/order-form';
-import WarehouseProductForm from 'src/sections/warehouse/product/product-form';
 import WarehouseView from 'src/sections/warehouse/warehouse-management';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
@@ -72,9 +69,9 @@ export default function Router() {
     { path: 'users-view', element: <UserView /> },
     { path: 'address-view', element: <AddressView /> },
     { path: 'reports', element: <ReportDetails /> },
-    { path: 'home/warehouse-management/add-product-form', element: <WarehouseProductForm /> },
-    { path: 'home/warehouse-management/add-order-form', element: <WarehouseOrderForm /> },
-    { path: 'home/warehouse-management/add-inventory-form', element: <WarehouseInventoryForm /> },
+    // { path: 'home/warehouse-management/add-product-form', element: <WarehouseProductForm /> },
+    // { path: 'home/warehouse-management/add-order-form', element: <WarehouseOrderForm /> },
+    // { path: 'home/warehouse-management/add-inventory-form', element: <WarehouseInventoryForm /> },
 
 
   ];

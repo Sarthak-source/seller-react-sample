@@ -8,7 +8,7 @@ const products = [
   // Add more products as needed
 ];
 
-export default function Products() {
+export default function ProductsBatch() {
   const router = useRouter();
 
 
@@ -23,11 +23,11 @@ export default function Products() {
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4" gutterBottom>
-          Products
+          Products batch
         </Typography>
 
         <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenProduct}>
-          Add products
+          Add products batch
         </Button>
       </Stack>
 
@@ -36,10 +36,10 @@ export default function Products() {
           <TableHead>
             <TableRow>
               <TableCell>Product ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Stock</TableCell>
+              <TableCell>Batch no</TableCell>
+              <TableCell>start date</TableCell>
+              <TableCell>end date </TableCell>
+              <TableCell>status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

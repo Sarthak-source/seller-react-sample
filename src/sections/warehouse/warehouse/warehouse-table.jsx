@@ -2,19 +2,19 @@ import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer,
 import Iconify from 'src/components/iconify';
 import { useRouter } from 'src/routes/hooks';
 
-const inventory = [
+const warehouseView = [
   { id: 1, product: 'Product A', location: 'Warehouse 1', quantity: 50 },
   { id: 2, product: 'Product B', location: 'Warehouse 2', quantity: 30 },
-  // Add more inventory items as needed
+  // Add more WarehouseView items as needed
 ];
 
-export default function Inventory() {
+export default function WarehouseTableView() {
   const router = useRouter();
 
 
-  const handleOpenInventory = () => {
+  const handleOpenWarehouseView = () => {
     console.log('handleOpenProduct')
-    router.replace('/home/warehouse-management/add-inventory-form');
+    router.replace('/home/warehouse-management/add-WarehouseView-form');
 
   }
 
@@ -23,11 +23,11 @@ export default function Inventory() {
 
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4" gutterBottom>
-          Inventory
+          Warehouse
         </Typography>
 
-        <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenInventory}>
-          Add Inventory
+        <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenWarehouseView}>
+          Add Warehouse
         </Button>
       </Stack>
 
@@ -35,19 +35,23 @@ export default function Inventory() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Product ID</TableCell>
-              <TableCell>Product</TableCell>
+              <TableCell>Code</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Plant</TableCell>
+              <TableCell>Area</TableCell>
               <TableCell>Location</TableCell>
-              <TableCell>Quantity</TableCell>
+              <TableCell>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {inventory.map((item) => (
+            {warehouseView.map((item) => (
               <TableRow key={item.id}>
                 <TableCell>{item.id}</TableCell>
                 <TableCell>{item.product}</TableCell>
                 <TableCell>{item.location}</TableCell>
                 <TableCell>{item.quantity}</TableCell>
+                <TableCell>{item.product}</TableCell>
+                <TableCell>{item.location}</TableCell>
               </TableRow>
             ))}
           </TableBody>

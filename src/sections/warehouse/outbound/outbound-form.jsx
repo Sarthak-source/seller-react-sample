@@ -2,25 +2,25 @@ import { LoadingButton } from '@mui/lab';
 import { Card, Grid, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 
-export default function WarehouseProductForm() {
-  const [product, setProduct] = useState({
-    name: '',
-    category: '',
-    price: '',
-    stock: '',
+export default function WarehouseOrderForm() {
+  const [order, setOrder] = useState({
+    customer: '',
+    date: '',
+    status: '',
+    total: '',
   });
 
   const handleChange = (e) => {
-    setProduct({ ...product, [e.target.name]: e.target.value });
+    setOrder({ ...order, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setProduct({
-      name: '',
-      category: '',
-      price: '',
-      stock: '',
+    setOrder({
+      customer: '',
+      date: '',
+      status: '',
+      total: '',
     });
   };
 
@@ -43,15 +43,15 @@ export default function WarehouseProductForm() {
         }}
       >
         <Typography variant="h6" gutterBottom>
-          Add/Edit Product
+          Add/Edit Order
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
-                label="Name"
-                name="name"
-                value={product.name}
+                label="Customer"
+                name="customer"
+                value={order.customer}
                 onChange={handleChange}
                 fullWidth
                 required
@@ -59,9 +59,23 @@ export default function WarehouseProductForm() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                label="Category"
-                name="category"
-                value={product.category}
+                label="Date"
+                name="date"
+                type="date"
+                value={order.date}
+                onChange={handleChange}
+                fullWidth
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Status"
+                name="status"
+                value={order.status}
                 onChange={handleChange}
                 fullWidth
                 required
@@ -69,21 +83,10 @@ export default function WarehouseProductForm() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                label="Price"
-                name="price"
+                label="Total"
+                name="total"
                 type="number"
-                value={product.price}
-                onChange={handleChange}
-                fullWidth
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Stock"
-                name="stock"
-                type="number"
-                value={product.stock}
+                value={order.total}
                 onChange={handleChange}
                 fullWidth
                 required

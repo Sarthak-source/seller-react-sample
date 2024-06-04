@@ -1,3 +1,4 @@
+import { Alert } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -6,16 +7,12 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Snackbar from '@mui/material/Snackbar';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TextField from '@mui/material/TextField';
-
-
-
-import { Alert } from '@mui/material';
-import Snackbar from '@mui/material/Snackbar';
 import TableContainer from '@mui/material/TableContainer';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -236,8 +233,6 @@ export default function TraderView() {
                     {snackbarMessage}
                 </Alert>
             </Snackbar>
-
         </Container>
-
     );
 }

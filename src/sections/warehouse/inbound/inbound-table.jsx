@@ -2,17 +2,17 @@ import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer,
 import Iconify from 'src/components/iconify';
 import { useRouter } from 'src/routes/hooks';
 
-const orders = [
+const inboundTable = [
   { id: 1, customer: 'Customer A', date: '2023-06-01', status: 'Shipped', total: 200 },
   { id: 2, customer: 'Customer B', date: '2023-06-02', status: 'Processing', total: 300 },
-  // Add more orders as needed
+  // Add more InboundTable as needed
 ];
 
-export default function Orders() {
+export default function InboundTable() {
   const router = useRouter();
 
 
-  const handleOpenOrders = () => {
+  const handleOpenInboundTable = () => {
     console.log('handleOpenProduct')
     router.replace('/home/warehouse-management/add-order-form');
 
@@ -22,32 +22,38 @@ export default function Orders() {
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4" gutterBottom>
-          Orders
+          Inbound
         </Typography>
 
-        <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenOrders}>
-          Add orders
+        <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenInboundTable}>
+          Add Inbound
         </Button>
       </Stack>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Order ID</TableCell>
-              <TableCell>Customer</TableCell>
-              <TableCell>Date</TableCell>
+              <TableCell>Inbound #</TableCell>
+              <TableCell>Warehouse</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Sale Order No</TableCell>
+              <TableCell>To Warehouse</TableCell>
+              <TableCell>Created by</TableCell>
+              <TableCell>Approved by</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Total</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.map((order) => (
+            {inboundTable.map((order) => (
               <TableRow key={order.id}>
                 <TableCell>{order.id}</TableCell>
                 <TableCell>{order.customer}</TableCell>
                 <TableCell>{order.date}</TableCell>
                 <TableCell>{order.status}</TableCell>
                 <TableCell>{order.total}</TableCell>
+                <TableCell>{order.customer}</TableCell>
+                <TableCell>{order.date}</TableCell>
+                <TableCell>{order.status}</TableCell>
               </TableRow>
             ))}
           </TableBody>
