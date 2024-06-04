@@ -72,7 +72,7 @@ export default function UpdateTraderForm() {
       const previewUrl = URL.createObjectURL(file);
       setFormData({
         ...formData,
-        [name]: file.name,
+        [name]: file,
       });
       setFilePreviews({
         ...filePreviews,
@@ -96,10 +96,10 @@ export default function UpdateTraderForm() {
         formData.address,
         formData.email,
         formData.pin,
-        filePreviews.bank_file,
-        filePreviews.pan_file,
-        filePreviews.gst_file,
-        filePreviews.address_file
+        formData.bank_file,
+        formData.pan_file,
+        formData.gst_file,
+        formData.address_file
       );
 
       // You can add further handling here based on the response
@@ -219,7 +219,8 @@ export default function UpdateTraderForm() {
                     height: 56,
                   }}
                 >
-                  Upload Bank File
+                  {filePreviews.bank_file ? "Change Bank File" : "Upload Bank File"}
+
                   <input
                     type="file"
                     name="bank_file"
@@ -233,7 +234,7 @@ export default function UpdateTraderForm() {
                     {!filePreviews.bank_file && <Alert severity="error">Address file not found</Alert>}
 
                   </Box>
-                  
+
                 )}
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -250,7 +251,7 @@ export default function UpdateTraderForm() {
                     height: 56,
                   }}
                 >
-                  Upload PAN File
+                  {filePreviews.pan_file ? "Change PAN File" : "Upload PAN File"}
                   <input
                     type="file"
                     name="pan_file"
@@ -278,7 +279,7 @@ export default function UpdateTraderForm() {
                     height: 56,
                   }}
                 >
-                  Upload GST File
+                  {filePreviews.gst_file ? "Change GST File" : "Upload GST File"}
                   <input
                     type="file"
                     name="gst_file"
@@ -306,7 +307,7 @@ export default function UpdateTraderForm() {
                     height: 56,
                   }}
                 >
-                  Upload Address File
+                  {filePreviews.address_file ? "Change Address File" : "Upload Address File"}
                   <input
                     type="file"
                     name="address_file"

@@ -1456,13 +1456,13 @@ const NetworkRepository = {
       formData.append("pin", pin);
 
       // Append files if they exist
-      if (bankFile) formData.append("bank_file", bankFile);
-      if (panFile) formData.append("pan_file", panFile);
-      if (gstFile) formData.append("gst_file", gstFile);
-      if (addressFile) formData.append("address_file", addressFile);
+      if (bankFile instanceof File) formData.append("bank_file", bankFile);
+      if (panFile instanceof File) formData.append("pan_file", panFile);
+      if (gstFile instanceof File) formData.append("gst_file", gstFile);
+      if (addressFile instanceof File) formData.append("address_file", addressFile);
 
       Array.from(formData.entries()).forEach(([key, value]) => {
-        console.log(`${key}: ${value}`);
+        console.log(`log val ${key}: ${value}`);
       });
 
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({

@@ -37,7 +37,7 @@ export default function WarehouseView() {
             width: "100%",
             justifyContent: 'flex-start',
             position: 'fixed',
-            zIndex: 2,           
+            zIndex: 2,
             backgroundColor: '#f9fafb',
           }}
         >
@@ -46,16 +46,12 @@ export default function WarehouseView() {
           <Tab label="Inventory" />
          
         </Tabs>
-
-    
-
       <Box sx={{
         paddingTop:  '50px'
       }}>
         {tab === 0 && <Products />}
         {tab === 1 && <Orders />}
         {tab === 2 && <Inventory />}
-       
       </Box>
     </Container>
   );
