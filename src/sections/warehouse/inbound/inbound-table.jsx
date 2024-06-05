@@ -1,22 +1,35 @@
 import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
 import { useRouter } from 'src/routes/hooks';
 
-const inboundTable = [
-  { id: 1, customer: 'Customer A', date: '2023-06-01', status: 'Shipped', total: 200 },
-  { id: 2, customer: 'Customer B', date: '2023-06-02', status: 'Processing', total: 300 },
-  // Add more InboundTable as needed
-];
-
 export default function InboundTable() {
   const router = useRouter();
-
+  const [loading, setLoading] = useState(true);
+  const [inbounds, setInboundData] = useState([]);
 
   const handleOpenInboundTable = () => {
-    console.log('handleOpenProduct')
-    router.replace('/home/warehouse-management/add-order-form');
+    router.replace('/home/warehouse-management/add-inbound-form');
+  };
 
-  }
+  useEffect(() => {
+    const fetchInboundBatchData = async () => {
+      try {
+        setLoading(true);
+        const data = await NetworkRepository.getInboundList();
+        setInboundData(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInboundBatchData();
+  }, []);
+
+
+  console.log('datadata',inbounds)
 
   return (
     <Box>
@@ -24,7 +37,6 @@ export default function InboundTable() {
         <Typography variant="h4" gutterBottom>
           Inbound
         </Typography>
-
         <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenInboundTable}>
           Add Inbound
         </Button>
@@ -44,16 +56,16 @@ export default function InboundTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {inboundTable.map((order) => (
+            {inbounds.inbound_data?.map((order) => (
               <TableRow key={order.id}>
-                <TableCell>{order.id}</TableCell>
-                <TableCell>{order.customer}</TableCell>
-                <TableCell>{order.date}</TableCell>
-                <TableCell>{order.status}</TableCell>
-                <TableCell>{order.total}</TableCell>
-                <TableCell>{order.customer}</TableCell>
-                <TableCell>{order.date}</TableCell>
-                <TableCell>{order.status}</TableCell>
+                <TableCell>{order.inbound_num}</TableCell>
+                <TableCell>{order.ware_house.name}</TableCell>
+                <TableCell>{order.inbound_type}</TableCell>
+                <TableCell>{order.po_num || 'N/A'}</TableCell>
+                <TableCell>{order.from_warehouse ? order.from_warehouse.name : 'N/A'}</TableCell>
+                <TableCell>{order.created_by}</TableCell>
+                <TableCell>{order.approved_by || 'N/A'}</TableCell>
+                <TableCell>{order.is_active}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -62,4 +74,3 @@ export default function InboundTable() {
     </Box>
   );
 }
-

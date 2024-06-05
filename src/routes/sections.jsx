@@ -14,7 +14,12 @@ import ProductTableView from 'src/sections/product-managment/product-list';
 import UserForm from 'src/sections/sellers/add-sellers';
 import UserView from 'src/sections/sellers/sellers-table';
 import UpdateTraderForm from 'src/sections/traders/update_trader';
+import InboundForm from 'src/sections/warehouse/inbound/inbound-form';
+import OutboundForm from 'src/sections/warehouse/outbound/outbound-form';
+import ProductBatchForm from 'src/sections/warehouse/product-batch/product-batch-form';
+import ProductMFGBatchForm from 'src/sections/warehouse/product-manufacture/product-batch-manufacturing-form';
 import WarehouseView from 'src/sections/warehouse/warehouse-management';
+import WarehouseForm from 'src/sections/warehouse/warehouse/warehouse-form';
 
 export const IndexPage = lazy(() => import('src/pages/app'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
@@ -69,9 +74,11 @@ export default function Router() {
     { path: 'users-view', element: <UserView /> },
     { path: 'address-view', element: <AddressView /> },
     { path: 'reports', element: <ReportDetails /> },
-    // { path: 'home/warehouse-management/add-product-form', element: <WarehouseProductForm /> },
-    // { path: 'home/warehouse-management/add-order-form', element: <WarehouseOrderForm /> },
-    // { path: 'home/warehouse-management/add-inventory-form', element: <WarehouseInventoryForm /> },
+    { path: 'home/warehouse-management/add-product-form', element: <ProductBatchForm /> },
+    { path: 'home/warehouse-management/add-product-mfg-form', element: <ProductMFGBatchForm /> },
+    { path: 'home/warehouse-management/add-warehouse-form', element: <WarehouseForm /> },
+    { path: 'home/warehouse-management/add-inbound-form', element: <InboundForm/> },
+    { path: 'home/warehouse-management/add-outbound-form', element:<OutboundForm/> },
 
 
   ];

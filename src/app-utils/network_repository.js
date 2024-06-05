@@ -552,14 +552,6 @@ const NetworkRepository = {
     location,
     sellerId) => {
     try {
-      // const data = new URLSearchParams();
-
-      // data.append("trader", sellerId);
-      // data.append("name", name);
-      // data.append("gstin", gstin);
-      // data.append("pin", pin);
-      // data.append("address", address);
-      // data.append("location", location);
 
 
       const data = JSON.stringify({
@@ -1480,7 +1472,269 @@ const NetworkRepository = {
       alert("An error occurred while updating trader data. Please try again.");
       return error.toString();
     }
-  }
+  },
+
+
+  getProductBatchList: async (product) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.productBatch}?product=${product}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+
+  getProductBatchMFGList: async () => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.productManufacture}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+
+  getWarehouseList: async () => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.warehouse}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+
+  getInboundList: async () => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.inbound}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+
+  getOutboundList: async () => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.outbound}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  getStockLedgerList: async () => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.stockLedgerList}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  postProductBatch: async (
+    product,
+    batch_num,
+    batch_start_date,
+    batch_end_date,
+    created_by
+  ) => {
+    try {
+      console.log('Sending data to product_batch endpoint', {
+        "product": product,
+        "batch_num": batch_num,
+        "batch_start_date": batch_start_date,
+        "batch_end_date": batch_end_date,
+        "created_by": created_by,
+      });
+
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.productBatch}`,
+        header: { 'authorization': auth },
+        data: {
+          "product": product,
+          "batch_num": batch_num,
+          "batch_start_date": batch_start_date,
+          "batch_end_date": batch_end_date,
+          "created_by": created_by,
+        },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+
+  postProductMFGBatch: async (
+    product,
+    mill,
+    batch_num,
+    mfg_date,
+    exp_date,
+    mfg_qty,
+    uom,
+    created_by
+  ) => {
+    try {
+      console.log('Sending data to product_batch endpoint', {
+        "product": product,
+        "mill": mill,
+        "batch_num": batch_num,
+        "mfg_date": mfg_date,
+        "exp_date": exp_date,
+        "mfg_qty": mfg_qty,
+        "uom": uom,
+        "created_by": created_by,
+      });
+
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.productManufacture}`,
+        header: { 'authorization': auth },
+        data: {
+          "product": product,
+          "mill": mill,
+          "batch_num": batch_num,
+          "mfg_date": mfg_date,
+          "exp_date": exp_date,
+          "mfg_qty": mfg_qty,
+          "uom": uom,
+          "created_by": created_by,
+        },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  postWarehouseBatch: async (
+    code,
+    name,
+    mill,
+    ware_house_type,
+    parent_ware_house,
+    location,
+    area,
+    created_by,
+    location_list
+  ) => {
+    try {
+
+
+      const data = JSON.stringify({
+        'code': code,
+        'name': name,
+        'mill': mill,
+        'location_list': location_list,
+        'ware_house_type': ware_house_type,
+        'parent_ware_house': parent_ware_house,
+        'location': location,
+        'area': area,
+        'created_by': created_by,
+        
+      });
+
+
+      console.log('data1232', data,{
+        'code': code,
+        'name': name,
+        'mill': mill,
+        'ware_house_type': ware_house_type,
+        'parent_ware_house': parent_ware_house,
+        'location': location,
+        'area': area,
+        'created_by': created_by,
+        'location_list': location_list
+      })
+
+
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.warehouseCreate}`,
+        header: { 'authorization': auth },
+        data:JSON.stringify({
+          'code': code,
+          'name': name,
+          'mill': mill,
+          'ware_house_type': ware_house_type,
+          'parent_ware_house': parent_ware_house,
+          'location': location,
+          'area': area,
+          'created_by': created_by,
+          'location_list': location_list
+        })
+      });
+
+      return apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+
+
+  postInbound: async (
+    ware_house,
+    inbound_type,
+    created_by,
+    inbound_data
+  ) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.inbound}`,
+        headers: { 'authorization': auth },
+        data: {
+          "ware_house": ware_house,
+          "inbound_type": inbound_type,
+          "created_by": created_by,
+          "inbound_data": inbound_data,
+        }
+      });
+
+      return apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+
 
 }
 

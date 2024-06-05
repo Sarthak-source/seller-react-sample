@@ -24,6 +24,7 @@ import { useParams } from 'react-router-dom';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Label from 'src/components/label';
 import Scrollbar from 'src/components/scrollbar';
+import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import OrdersTableRow from '../../orders/order-table-row/order-table-row';
 import { useOrderTableFormate } from '../../orders/use-order-table-formate';
 import TenderTableRow from '../../tender/tender-table-row/tender-table-row';
@@ -347,10 +348,10 @@ export default function LoadingInstructionDetails() {
           </Stepper>
         </Stack>
       ) : (
-        <Label sx={{ px: 20 }}>
-          <Typography variant="h10">Dispatch details data is null</Typography>
+       
+          <SkeletonLoader marginTop='-10'/>
 
-        </Label>
+       
       )}
     </Container>
   );

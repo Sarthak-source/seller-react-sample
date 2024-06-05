@@ -6,8 +6,8 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import InboundTable from './inbound/inbound-table';
 import OutboundTable from './outbound/outbound-table';
-import ProductsBatch from './product/product-batch/product-batch-table';
-import ProductsManufacturing from './product/product-manufacture/product-batch-manufacturing-list';
+import ProductsBatch from './product-batch/product-batch-table';
+import ProductsManufacturing from './product-manufacture/product-batch-manufacturing-list';
 import StockLedgerTable from './stock-ledger/stock-ledger-table';
 import WarehouseTableView from './warehouse/warehouse-table';
 
@@ -35,8 +35,8 @@ export default function WarehouseView() {
 
         style={{
           marginBottom: '2px',
-          marginTop: -8,
-         
+          marginTop: -12,
+          marginBlock:5,
           display: 'flex',
           width: "100%",
           justifyContent: 'flex-start',
@@ -54,7 +54,7 @@ export default function WarehouseView() {
 
       </Tabs>
       <Box sx={{
-        paddingTop: '50px'
+        paddingTop: '65px'
       }}>
         {tab === 0 && <ProductsBatch />}
         {tab === 1 && <ProductsManufacturing />}

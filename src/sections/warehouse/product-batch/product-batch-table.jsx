@@ -1,21 +1,45 @@
 import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
 import { useRouter } from 'src/routes/hooks';
 
-const products = [
-  { id: 1, name: 'Product A', category: 'Category 1', price: 100, stock: 20 },
-  { id: 2, name: 'Product B', category: 'Category 2', price: 150, stock: 15 },
-  // Add more products as needed
-];
 
 export default function ProductsBatch() {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
+  const [productData, setProductData] = useState([]);
+  
+
+
+  
 
   const handleOpenProduct = () => {
     console.log('handleOpenProduct')
     router.replace('/home/warehouse-management/add-product-form');
   }
+
+
+  useEffect(() => {
+    console.log('sdfsdfsdf')
+    const fetchProductBatchData = async () => {
+      try {
+        setLoading(true);
+        const data = await NetworkRepository.getProductBatchList('');
+        setProductData(data);
+
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProductBatchData();
+  }, []);
+
+
+  console.log('productDataMFD', productData)
 
 
 
@@ -43,13 +67,13 @@ export default function ProductsBatch() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.map((product) => (
+            {productData.map((product) => (
               <TableRow key={product.id}>
                 <TableCell>{product.id}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{product.category}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.stock}</TableCell>
+                <TableCell>{product.batch_num}</TableCell>
+                <TableCell>{new Date(product.batch_start_date).toLocaleDateString()}</TableCell>
+                <TableCell>{new Date(product.batch_end_date).toLocaleDateString()}</TableCell>
+                <TableCell>{product.is_active}</TableCell>
               </TableRow>
             ))}
           </TableBody>
