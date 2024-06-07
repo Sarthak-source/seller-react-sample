@@ -5,6 +5,12 @@ export const selectDashboardTab = (tab) => ({
     payload: tab
 });
 
+export const selectWareHouseTab = (tab) => ({
+    type: actionTypes.WARE_HOUSE_TAB_STATE,
+    payload: tab
+});
+
+
 export const selectTenderStep = (step) => ({
     type: actionTypes.TENDER_STEP_STATE,
     payload: step

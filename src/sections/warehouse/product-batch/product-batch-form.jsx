@@ -5,7 +5,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 
@@ -21,7 +21,14 @@ const ProductBatchForm = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
 
+  const productBatch = useSelector((state) => state.warehouseUpdate.productBatches);
+
+
   console.log('selectedUserConfig', selectedUserConfig);
+
+  console.log('lol', productBatch);
+
+  const isUpdate = Object.keys(productBatch).length === 0;
 
 
   const handleAutoGenerate = () => {
@@ -54,21 +61,51 @@ const ProductBatchForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try {
-      await NetworkRepository.postProductBatch(product, batchNumber, batchStartDate, batchEndDate, selectedUserConfig.seller.user);
-      setSnackbarMessage('Product batch added successfully');
-      setSnackbarSeverity('success');
-    } catch (error) {
-      setSnackbarMessage('Failed to add product batch');
-      setSnackbarSeverity('error');
-    } finally {
-      setSnackbarOpen(true);
-    }
+
+    if (isUpdate) {
+
+      try {
+        await NetworkRepository.postProductBatch(product, batchNumber, batchStartDate, batchEndDate, selectedUserConfig.seller.user);
+        setSnackbarMessage('Product batch added successfully');
+        setSnackbarSeverity('success');
+      } catch (error) {
+        setSnackbarMessage('Failed to add product batch');
+        setSnackbarSeverity('error');
+      } finally {
+        setSnackbarOpen(true);
+      }
+      
+    } else {
+      console.log('helloeoeo')
+
+      try {
+        await NetworkRepository.postProductBatch(product, batchNumber, batchStartDate, batchEndDate, selectedUserConfig.seller.user);
+        setSnackbarMessage('Product batch updated successfully');
+        setSnackbarSeverity('success');
+      } catch (error) {
+        setSnackbarMessage('Failed to updated product batch');
+        setSnackbarSeverity('error');
+      } finally {
+        setSnackbarOpen(true);
+      }
+      
+    }  
   };
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
+
+
+  useEffect(() => {
+    if (!isUpdate) {
+      setProduct(productBatch.product); // Assuming productBatch has a product property
+      setBatchNumber(productBatch.batch_num); // Assuming productBatch has a batch_num property
+      setBatchStartDate(productBatch.batch_start_date ? productBatch.batch_start_date.split('T')[0] : ''); // Extracting date part only
+      setBatchEndDate(productBatch.batch_end_date ? productBatch.batch_end_date.split('T')[0] : ''); // Extracting date part only
+      setStatus(productBatch.is_active); // Assuming productBatch has an is_active property
+    }
+  }, [isUpdate, productBatch]);
 
   return (
     <Stack alignItems="center" justifyContent="center" sx={{  pt: 2 }}>

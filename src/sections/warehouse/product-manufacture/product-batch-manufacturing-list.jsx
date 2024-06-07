@@ -1,17 +1,28 @@
-import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, Button, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
+import { updateProductMFGbatch } from 'src/redux/actions/warehouse-update-action';
 import { useRouter } from 'src/routes/hooks';
 
 export default function ProductsManufacturing() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [productData, setProductData] = useState([]);
+  const dispatch = useDispatch();
+
 
   const handleOpenProduct = () => {
+    dispatch(updateProductMFGbatch({}));
     router.replace('/home/warehouse-management/add-product-mfg-form');
   }
+
+  const handleUpdateProduct = (row) => {
+    dispatch(updateProductMFGbatch(row));
+    router.replace('/home/warehouse-management/add-product-mfg-form');
+  }
+
 
   useEffect(() => {
     const fetchProductBatchData = async () => {
@@ -63,9 +74,10 @@ export default function ProductsManufacturing() {
                 <TableCell>{new Date(product.mfg_date).toLocaleDateString()}</TableCell>
                 <TableCell>{product.mfg_qty}</TableCell>
                 <TableCell>{new Date(product.exp_date).toLocaleDateString()}</TableCell>
-                <TableCell>
-                  <Button variant="contained" color="primary">Edit</Button>
-                  <Button variant="contained" color="secondary">Delete</Button>
+                <TableCell align="right">
+                  <IconButton onClick={() => handleUpdateProduct(product)}>
+                    <Iconify icon="eva:edit-fill" />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}

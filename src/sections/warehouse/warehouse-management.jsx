@@ -4,6 +4,8 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectWareHouseTab } from 'src/redux/actions/tab-step-action';
 import InboundTable from './inbound/inbound-table';
 import OutboundTable from './outbound/outbound-table';
 import ProductsBatch from './product-batch/product-batch-table';
@@ -14,11 +16,16 @@ import WarehouseTableView from './warehouse/warehouse-table';
 // ----------------------------------------------------------------------
 
 export default function WarehouseView() {
-  const [tab, setTab] = useState(0);
+  const selectedTab = useSelector((state) => state.tabSteps.warehouseStepState);
+  const dispatch = useDispatch();
+
+  const [tab, setTab] = useState(selectedTab);
 
   const selectTabState = (event, newValue) => {
+    dispatch(selectWareHouseTab(newValue));
     setTab(newValue)
   }
+
   return (
     <Container maxWidth="xl">
 
@@ -31,12 +38,13 @@ export default function WarehouseView() {
         value={tab}
         onChange={selectTabState}
         textColor="primary"
+        variant="scrollable"
+        allowScrollButtonsMobile
         indicatorColor="primary"
-
         style={{
           marginBottom: '2px',
-          marginTop: -12,
-          marginBlock:5,
+          marginTop: -10,
+          marginBlock: 5,
           display: 'flex',
           width: "100%",
           justifyContent: 'flex-start',
@@ -46,7 +54,7 @@ export default function WarehouseView() {
         }}
       >
         <Tab label="Product batch" style={{ marginLeft: '-16px' }} />
-        <Tab label="Product batch MFG" style={{ marginLeft: '-18px' }} />
+        <Tab label="Product batch MFG" />
         <Tab label="Warehouse" />
         <Tab label="Inbound" />
         <Tab label="Outbound" />

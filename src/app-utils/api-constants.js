@@ -109,6 +109,7 @@ const ApiAppConstants = {
     warehouseCreate:'warehouse_create/',
     inbound:'inbound/',
     outbound:'outbound/',
+    warehouseLocation:'warehouse_location/',
     stockLedgerList:'/',
 };
 

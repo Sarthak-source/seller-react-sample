@@ -13,6 +13,7 @@ import toggleReducer from './reducers/toggle-reducer';
 import traderReducer from './reducers/trader-reducer';
 import sellerProductReducer from './reducers/update-products-reducer';
 import userReducer from './reducers/user-reducer';
+import warehouseReducer from './reducers/warehouse-update-reducer';
 
 const rootReducer = combineReducers({
   orders: orderReducer,
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
   loadingInstructionScreenState: loadingInstructionScreenReducer,
   sellerUpdate: sellerUpdateReducer,
   productUpdate:sellerProductReducer,
+  warehouseUpdate:warehouseReducer,
 });
 
 

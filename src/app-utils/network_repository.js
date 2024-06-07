@@ -1505,10 +1505,10 @@ const NetworkRepository = {
   },
 
 
-  getWarehouseList: async () => {
+  getWarehouseList: async (seller) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.warehouse}`,
+        url: `${ApiAppConstants.warehouse}?seller=${seller}`,
         header: { authorization: auth },
       });
 
@@ -1539,6 +1539,20 @@ const NetworkRepository = {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.outbound}`,
+        header: { authorization: auth },
+      });
+
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  getWarehouseLocationList: async (warehouse) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod({
+        url: `${ApiAppConstants.warehouseLocation}?ware_house=${warehouse}`,
         header: { authorization: auth },
       });
 
@@ -1667,11 +1681,11 @@ const NetworkRepository = {
         'location': location,
         'area': area,
         'created_by': created_by,
-        
+
       });
 
 
-      console.log('data1232', data,{
+      console.log('data1232', data, {
         'code': code,
         'name': name,
         'mill': mill,
@@ -1687,7 +1701,8 @@ const NetworkRepository = {
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url: `${ApiAppConstants.warehouseCreate}`,
         header: { 'authorization': auth },
-        data:JSON.stringify({
+        ContentType: 'application/json',
+        data: JSON.stringify({
           'code': code,
           'name': name,
           'mill': mill,
@@ -1707,24 +1722,42 @@ const NetworkRepository = {
     }
   },
 
-
-
   postInbound: async (
     ware_house,
     inbound_type,
+    from_warehouse,
+    po_num,
     created_by,
     inbound_data
   ) => {
     try {
+
+      console.log('data123',
+        {
+          ware_house,
+          inbound_type,
+          from_warehouse,
+          created_by,
+          po_num,
+          inbound_data
+        }
+      )
+
+      const data = JSON.stringify({
+        "ware_house": ware_house,
+        "inbound_type": inbound_type,
+        "created_by": created_by,
+        "inbound_data": inbound_data,
+        "from_warehouse": from_warehouse,
+        "po_num": po_num,
+      })
+
+      console.log('data123', data)
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url: `${ApiAppConstants.inbound}`,
-        headers: { 'authorization': auth },
-        data: {
-          "ware_house": ware_house,
-          "inbound_type": inbound_type,
-          "created_by": created_by,
-          "inbound_data": inbound_data,
-        }
+        header: { 'authorization': auth },
+        ContentType: 'application/json',
+        data,
       });
 
       return apiResponse;
@@ -1735,6 +1768,50 @@ const NetworkRepository = {
   },
 
 
+  postOutbound: async (
+    ware_house,
+    inbound_type,
+    from_warehouse,
+    po_num,
+    created_by,
+    inbound_data
+  ) => {
+    try {
+
+      console.log('data123',
+        {
+          ware_house,
+          inbound_type,
+          from_warehouse,
+          created_by,
+          po_num,
+          inbound_data
+        }
+      )
+
+      const data = JSON.stringify({
+        "ware_house": ware_house,
+        "inbound_type": inbound_type,
+        "created_by": created_by,
+        "outbound_data": inbound_data,
+        "from_warehouse": from_warehouse,
+        "po_num": po_num,
+      })
+
+      console.log('data123', data)
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.outbound}`,
+        header: { 'authorization': auth },
+        ContentType: 'application/json',
+        data,
+      });
+
+      return apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
 
 }
 

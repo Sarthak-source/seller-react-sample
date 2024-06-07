@@ -68,7 +68,6 @@ export default function DashboardView() {
           onChange={selectTabState}
           textColor="primary"
           indicatorColor="primary"
-
           style={{
             marginBottom: '2px',
             marginTop: -8,
@@ -77,7 +76,6 @@ export default function DashboardView() {
             justifyContent: 'flex-start',
             position: 'fixed',
             zIndex: 2,
-            
             backgroundColor: '#f9fafb',
           }}
         >

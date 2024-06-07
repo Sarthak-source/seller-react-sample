@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Iconify from 'src/components/iconify';
 import { selectMill } from 'src/redux/actions/mill-action';
 import { setSearchTerm } from 'src/redux/actions/search-action';
+import useDebounce from 'src/routes/hooks/use-debounced';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +26,15 @@ export default function TableToolbar({ numSelected, label, onDownload, onFullScr
   const selectedMill = useSelector((state) => state.mill.selectedMill);
   const searchTerm = useSelector((state) => state.search.searchTerm);
 
-  useEffect(() => { dispatch(setSearchTerm('')) }, [dispatch, label])
+  useEffect(() => { dispatch(setSearchTerm('')) }, [dispatch, label]);
+
+  const debouncedDispatch = useDebounce((value) => {
+    dispatch(setSearchTerm(value));
+  }, 300);
+
+  const handleSearch = (event) => {
+    debouncedDispatch(event.target.value);
+  };
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -35,13 +44,6 @@ export default function TableToolbar({ numSelected, label, onDownload, onFullScr
     dispatch(selectMill(mill));
     setOpen(null);
   };
-
-  const handleSearch = (event) => {
-    dispatch(setSearchTerm(event.target.value));
-  };
-
-  console.log('selectedUser', selectedUser);
-  console.log('selectedMill', selectedMill);
 
   const renderMillMenuItems = () => {
     if (!selectedUser || !selectedUser.mills) {
@@ -124,14 +126,13 @@ export default function TableToolbar({ numSelected, label, onDownload, onFullScr
                   <Iconify icon="ic:round-filter-list" color="primary.main" />
                 )}
               </IconButton>
-              
             </Tooltip>
 
             <Tooltip title="Full screen">
-                <IconButton onClick={onFullScreen}>
-                  <Iconify icon="ic:round-fullscreen" color='primary.main' />
-                </IconButton>
-              </Tooltip>
+              <IconButton onClick={onFullScreen}>
+                <Iconify icon="ic:round-fullscreen" color='primary.main' />
+              </IconButton>
+            </Tooltip>
           </Stack>
         )
       )}

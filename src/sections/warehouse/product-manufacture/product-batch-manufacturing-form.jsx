@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
@@ -31,6 +32,12 @@ export default function ProductMFGBatchForm() {
     const [snackbarMessage, setSnackbarMessage] = useState('');
 
     const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
+    const productMFGBatch = useSelector((state) => state.warehouseUpdate.productMFGbatches);
+
+    console.log('productMFGBatch', productMFGBatch)
+
+    const isUpdate = Object.keys(productMFGBatch).length !== 0;
+
 
     const availableUOMs = ['Mt', 'Qtl'];
 
@@ -57,7 +64,7 @@ export default function ProductMFGBatchForm() {
         }
     };
 
-    console.log('selectedUserConfig',selectedUserConfig)
+    console.log('selectedUserConfig', selectedUserConfig)
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -71,22 +78,38 @@ export default function ProductMFGBatchForm() {
             return;
         }
 
-        console.log('selectedUserConfig',selectedUserConfig.seller.user)
-
-
         try {
-            await NetworkRepository.postProductMFGBatch(
-                product,
-                plant,
-                batchNumber,
-                formattedManufacturingDate,
-                formattedExpiryDate,
-                manufacturingQty,
-                uom,
-                selectedUserConfig.seller.user
-            );
+            if (isUpdate) {
+                // Logic for updating existing entry
+                await NetworkRepository.updateProductMFGBatch(
+                    productMFGBatch.id,
+                    product,
+                    plant,
+                    batchNumber,
+                    formattedManufacturingDate,
+                    formattedExpiryDate,
+                    manufacturingQty,
+                    uom,
+                    selectedUserConfig.seller.user
+                );
 
-            setSnackbarMessage('Data saved successfully');
+                setSnackbarMessage('Data updated successfully');
+            } else {
+                // Logic for adding new entry
+                await NetworkRepository.postProductMFGBatch(
+                    product,
+                    plant,
+                    batchNumber,
+                    formattedManufacturingDate,
+                    formattedExpiryDate,
+                    manufacturingQty,
+                    uom,
+                    selectedUserConfig.seller.user
+                );
+
+                setSnackbarMessage('Data saved successfully');
+            }
+
             setSnackbarOpen(true);
 
             // Clear the form after successful submission
@@ -99,10 +122,11 @@ export default function ProductMFGBatchForm() {
             setUOM('');
 
         } catch (error) {
-            setSnackbarMessage('Failed to save data');
+            setSnackbarMessage('Failed to save/update data');
             setSnackbarOpen(true);
         }
     };
+
 
     const formatDate = (date) => {
         const formattedDate = new Date(date);
@@ -132,6 +156,23 @@ export default function ProductMFGBatchForm() {
             fetchProductBatchData();
         }
     }, [product]);
+
+
+    useEffect(() => {
+        if (isUpdate) {
+            setProduct(productMFGBatch.id || '');
+            setPlant(productMFGBatch.mill || '');
+            setBatchNumber(productMFGBatch.batch_num || '');
+            setManufacturingDate(productMFGBatch.mfg_date ? dayjs(productMFGBatch.mfg_date) : null);
+            setManufacturingQty(productMFGBatch.mfg_qty || '');
+            setExpiryDate(productMFGBatch.exp_date ? dayjs(productMFGBatch.exp_date) : null);
+            setUOM(productMFGBatch.uom || '');
+        }
+    }, [productMFGBatch, isUpdate]);
+    
+
+console.log('manufacturingDate',manufacturingDate)
+
 
     return (
         <Stack alignItems="center" justifyContent="center" sx={{ height: '100vh', pt: 2 }}>
