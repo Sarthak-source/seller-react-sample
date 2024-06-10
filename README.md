@@ -1,9 +1,10 @@
-Sutra React Web App
+**Sutra React Web App**
 
-Overview
+**Overview**
 This is the Sutra React web application developed by GoFlamingo. The project leverages several modern web development tools and libraries to ensure a robust, maintainable, and scalable codebase. The following sections detail the installation, development, and build processes, as well as a comprehensive list of the packages used in the project.
 
-Requirements
+**Requirements**
+
 Node.js v18.x
 Installation
 To install the project dependencies, run the following command:
@@ -39,8 +40,10 @@ re:build-npm: Clean the project, reinstall dependencies using npm, and build the
 dev:host: Start the development server with host binding.
 vite:start: Start the development server using Vite.
 vite:build: Build the project for production using Vite.
-Packages
-Dependencies
+
+**Packages**
+**Dependencies**
+
 @emotion/react: ^11.11.1
 @emotion/styled: ^11.11.0
 @faker-js/faker: ^8.1.0
@@ -76,7 +79,9 @@ redux-devtools-extension: ^2.13.9
 redux-thunk: ^2.4.2
 simplebar-react: ^3.2.4
 xlsx: ^0.18.5
-DevDependencies
+
+**DevDependencies**
+
 @vitejs/plugin-react-swc: ^3.4.0
 eslint: ^8.53.0
 eslint-config-airbnb: ^19.0.4
@@ -92,5 +97,7 @@ eslint-plugin-unused-imports: ^3.0.0
 prettier: ^3.0.3
 vite: ^4.4.11
 vite-plugin-checker: ^0.6.2
-Repository
+
+
+**Repository**
 For more information, visit the project's GitHub repository.
