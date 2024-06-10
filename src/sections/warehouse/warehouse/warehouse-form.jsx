@@ -1,4 +1,7 @@
-import { Box, Button, Card, FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import {
+  Box, Button, Card, FormControl, Grid, InputLabel, MenuItem, Select, Snackbar, Stack,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
@@ -17,9 +20,9 @@ const WarehouseForm = () => {
 
   const [locations, setLocations] = useState([]);
   const [locationData, setLocationData] = useState({
-    'code': '',
-    'description': '',
-    'is_active': '',
+    locationCode: '',
+    locationDesc: '',
+    locationStatus: '',
   });
 
   const [warehouse, setWarehouseData] = useState([]);
@@ -29,19 +32,20 @@ const WarehouseForm = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
-
   const warehouseData = useSelector((state) => state.warehouseUpdate.warehouses);
 
+  console.log('warehouseData',warehouseData)
+
   const isUpdate = Object.keys(warehouseData).length !== 0;
-
-
-  console.log('warehouseData', warehouseData)
 
   useEffect(() => {
     const fetchWareHouseBatchData = async () => {
       try {
         setLoading(true);
+        console.log('selectedUserConfig.seller.id',selectedUserConfig.seller.id)
         const data = await NetworkRepository.getWarehouseList(selectedUserConfig.seller.id);
+       
+       
         setWarehouseData(data);
       } catch (error) {
         console.error(error);
@@ -51,6 +55,34 @@ const WarehouseForm = () => {
     };
     fetchWareHouseBatchData();
   }, [selectedUserConfig]);
+
+  useEffect(()=>{
+    const fetchLocationBatchData = async () => {
+      try {
+        setLoading(true);
+       
+        const locationDataFetched = await NetworkRepository.getWarehouseLocationList(warehouseData.id);
+        console.log('locationData',locationDataFetched)
+        const mappedLocations = locationDataFetched.map(location => ({
+          locationCode: location.code.toString(), // Assuming code is a number
+          locationDesc: location.description,
+          locationStatus: location.is_active ? 'Active' : 'Inactive', // Assuming is_active is a boolean
+        }));
+    
+        // Set the mapped locations to the state
+        setLocations(mappedLocations);
+        
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (warehouseData.id) {
+      fetchLocationBatchData();
+    }
+    
+  },[warehouseData])
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
@@ -69,28 +101,24 @@ const WarehouseForm = () => {
   };
 
   const addLocation = () => {
-    // Check if any required fields are empty
     if (!locationData.locationCode || !locationData.locationDesc || !locationData.locationStatus) {
       setSnackbarMessage('Please fill in all required fields to add location.');
       setSnackbarOpen(true);
       return;
     }
 
-    // All required fields are filled, add the location
     setLocations((prevLocations) => [...prevLocations, locationData]);
 
-    // Reset locationData to clear the input fields
     setLocationData({
-      'code': '',
-      'description': '',
-      'is_active': '',
+      locationCode: '',
+      locationDesc: '',
+      locationStatus: '',
     });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Validation logic
     if (!formData.code || !formData.name || !formData.plant || !formData.type || !formData.warehouseArea || !formData.locationInPlant) {
       setSnackbarMessage('Please fill in all required fields.');
       setSnackbarOpen(true);
@@ -98,23 +126,34 @@ const WarehouseForm = () => {
     }
 
     try {
-      const response = await NetworkRepository.postWarehouseBatch(
-        formData.code,
-        formData.name,
-        formData.plant,
-        formData.type,
-        formData.parentWarehouseId || null, // Set to null if empty
-        formData.locationInPlant,
-        parseFloat(formData.warehouseArea),
-        257, // Assuming created_by is always 257
-        locations.map(location => ({
-          code: location.locationCode,
-          description: location.locationDesc,
-          is_active: location.locationStatus
-        }))
-      );
+      if (isUpdate) {
+        const response = await NetworkRepository.warehouseEdit({
+          id: warehouseData.id,
+          location: formData.locationInPlant,
+          area: formData.warehouseArea,
+          updated_by: selectedUserConfig.seller.user,
+        });
 
-      setSnackbarMessage('Data saved successfully');
+        setSnackbarMessage('Warehouse updated successfully');
+      } else {
+        const response = await NetworkRepository.postWarehouseBatch(
+          formData.code,
+          formData.name,
+          formData.plant,
+          formData.type,
+          formData.parentWarehouseId || null,
+          formData.locationInPlant,
+          parseFloat(formData.warehouseArea),
+          selectedUserConfig.seller.user,
+          locations.map(location => ({
+            code: location.locationCode,
+            description: location.locationDesc,
+            is_active: location.locationStatus
+          }))
+        );
+
+        setSnackbarMessage('Data saved successfully');
+      }
     } catch (error) {
       setSnackbarMessage('Failed to save data');
     } finally {
@@ -122,9 +161,7 @@ const WarehouseForm = () => {
     }
   };
 
-
   const handleCancel = () => {
-    // Reset the form
     setFormData({
       code: '',
       name: '',
@@ -142,32 +179,20 @@ const WarehouseForm = () => {
     setSnackbarOpen(false);
   };
 
-
   useEffect(() => {
     if (isUpdate) {
-      // Populate the form with warehouse data
-      let typeValue = '';
-      let statusValue = '';
-      if (warehouseData.ware_house_type) {
-        typeValue = warehouseData.ware_house_type === 'Open' ? 'open' : 'close';
-      }
-
-      if (warehouseData.is_active) {
-        statusValue = warehouseData.ware_house_type === 'Active' ? 'inactive' : 'active';
-      }
       setFormData({
         code: warehouseData.code,
         name: warehouseData.name,
         plant: warehouseData.mill.pk,
-        type: typeValue,
-        parentWarehouseId:  warehouseData.parent_ware_house,
+        type: warehouseData.ware_house_type === 'Open' ? 'open' : 'close',
+        parentWarehouseId: warehouseData.parent_ware_house,
         warehouseArea: warehouseData.area,
         locationInPlant: warehouseData.location,
-        status: statusValue,
+        status: warehouseData.is_active === 'Active' ? 'inactive' : 'active',
       });
     }
   }, [isUpdate, warehouseData]);
-
 
   return (
     <Stack alignItems="center" justifyContent="center" sx={{ pt: 2 }}>
@@ -190,6 +215,7 @@ const WarehouseForm = () => {
               value={formData.code}
               onChange={handleFormChange}
               fullWidth
+              disabled={isUpdate}
             />
             <TextField
               label="Name"
@@ -197,8 +223,9 @@ const WarehouseForm = () => {
               value={formData.name}
               onChange={handleFormChange}
               fullWidth
+              disabled={isUpdate}
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" disabled={isUpdate}>
               <InputLabel htmlFor="plant">Plant</InputLabel>
               <Select
                 labelId="plant"
@@ -214,8 +241,6 @@ const WarehouseForm = () => {
                 ))}
               </Select>
             </FormControl>
-
-
             <FormControl fullWidth>
               <InputLabel htmlFor="type">Type</InputLabel>
               <Select
@@ -223,6 +248,7 @@ const WarehouseForm = () => {
                 name="type"
                 value={formData.type}
                 onChange={handleFormChange}
+                disabled={isUpdate}
               >
                 <MenuItem value="open">Open</MenuItem>
                 <MenuItem value="closed">Closed</MenuItem>
@@ -235,6 +261,7 @@ const WarehouseForm = () => {
                 name="parentWarehouseId"
                 value={formData.parentWarehouseId}
                 onChange={handleFormChange}
+                disabled={isUpdate}
               >
                 {warehouse.map(item => (
                   <MenuItem key={item.id} value={item.id}>
@@ -243,14 +270,11 @@ const WarehouseForm = () => {
                 ))}
               </Select>
             </FormControl>
-
             <TextField
               label="Warehouse Area"
               name="warehouseArea"
               value={formData.warehouseArea}
               onChange={handleFormChange}
-              multiline
-              rows={4}
               fullWidth
             />
             <TextField
@@ -274,81 +298,84 @@ const WarehouseForm = () => {
             </FormControl>
           </Stack>
           <Box sx={{ mt: 3 }}>
-  <Typography variant="h6" gutterBottom>Locations</Typography>
-  <Grid container spacing={2} alignItems="center">
-    <Grid item xs={12} sm={3}>
-      <TextField
-        label="Location Code"
-        name="locationCode"
-        value={locationData.locationCode}
-        onChange={handleLocationChange}
-        fullWidth
-      />
-    </Grid>
-    <Grid item xs={12} sm={3}>
-      <TextField
-        label="Location Desc"
-        name="locationDesc"
-        value={locationData.locationDesc}
-        onChange={handleLocationChange}
-        fullWidth
-      />
-    </Grid>
-    <Grid item xs={12} sm={3}>
-      <FormControl fullWidth>
-        <InputLabel htmlFor="locationStatus">Status</InputLabel>
-        <Select
-          id="locationStatus"
-          name="locationStatus"
-          value={locationData.locationStatus}
-          onChange={handleLocationChange}
-          fullWidth
-        >
-          <MenuItem value="Active">Active</MenuItem>
-          <MenuItem value="Inactive">Inactive</MenuItem>
-        </Select>
-      </FormControl>
-    </Grid>
-    <Grid item xs={12} sm={3}>
-      <Button variant="contained" onClick={addLocation} fullWidth>Add Location</Button>
-    </Grid>
-  </Grid>
-  <TableContainer component={Card} sx={{ mt: 3 }}>
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Sl. No</TableCell>
-          <TableCell>Location Code</TableCell>
-          <TableCell>Location Desc</TableCell>
-          <TableCell>Status</TableCell>
-          <TableCell>Action</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {locations.map((location, index) => (
-          <TableRow key={index}>
-            <TableCell>{index + 1}</TableCell>
-            <TableCell>{location.locationCode}</TableCell>
-            <TableCell>{location.locationDesc}</TableCell>
-            <TableCell>{location.locationStatus}</TableCell>
-            <TableCell>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={() => {
-                  setLocations(prevLocations => prevLocations.filter((_, i) => i !== index));
-                }}
-              >
-                Delete
-              </Button>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  </TableContainer>
-</Box>
-
+            <Typography variant="h6" gutterBottom>Locations</Typography>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} sm={3}>
+                <TextField
+                  label="Location Code"
+                  name="locationCode"
+                  disabled={isUpdate}
+                  value={locationData.locationCode}
+                  onChange={handleLocationChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <TextField
+                  label="Location Desc"
+                  name="locationDesc"
+                  disabled={isUpdate}
+                  value={locationData.locationDesc}
+                  onChange={handleLocationChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="locationStatus">Status</InputLabel>
+                  <Select
+                    id="locationStatus"
+                    name="locationStatus"
+                    disabled={isUpdate}
+                    value={locationData.locationStatus}
+                    onChange={handleLocationChange}
+                    fullWidth
+                  >
+                    <MenuItem value="Active">Active</MenuItem>
+                    <MenuItem value="Inactive">Inactive</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Button variant="contained" disabled={isUpdate} onClick={addLocation} fullWidth>Add Location</Button>
+              </Grid>
+            </Grid>
+            <TableContainer component={Card} sx={{ mt: 3 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Sl. No</TableCell>
+                    <TableCell>Location Code</TableCell>
+                    <TableCell>Location Desc</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {locations.map((location, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{location.locationCode}</TableCell>
+                      <TableCell>{location.locationDesc}</TableCell>
+                      <TableCell>{location.locationStatus}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          disabled={isUpdate}
+                          onClick={() => {
+                            setLocations(prevLocations => prevLocations.filter((_, i) => i !== index));
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
           <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
             <Button variant="contained" color="primary" type="submit">Save</Button>
             <Button variant="outlined" color="secondary" onClick={handleCancel}>Cancel</Button>

@@ -67,7 +67,7 @@ const NetworkAxiosOptions = {
             return response.data;
         } catch (error) {
             console.error('Error:', error);
-            throw error;
+            throw error.response.data.detail;
         }
     },
 
@@ -87,7 +87,7 @@ const NetworkAxiosOptions = {
             return response.data;
         } catch (error) {
             console.error('Error:', error);
-            throw error;
+            throw error.response.data.detail;
         }
     },
 
@@ -107,7 +107,7 @@ const NetworkAxiosOptions = {
             return response.data;
         } catch (error) {
             console.error('Error:', error);
-            throw error;
+            throw error.response.data.detail;
         }
     },
 
@@ -124,7 +124,7 @@ const NetworkAxiosOptions = {
             return response.data;
         } catch (error) {
             console.error('Error:', error);
-            throw error;
+            throw error.response.data.detail;
         }
     },
 
@@ -134,7 +134,7 @@ const NetworkAxiosOptions = {
             return response.data;
         } catch (error) {
             console.error('Error:', error);
-            throw error;
+            throw error.response.data.detail;
         }
     },
 
@@ -154,7 +154,7 @@ const NetworkAxiosOptions = {
             };
         } catch (error) {
             console.error('Error:', error);
-            throw error;
+            throw error.response.data;
         }
     },
 
@@ -169,7 +169,7 @@ const NetworkAxiosOptions = {
             };
         } catch (error) {
             console.error('Error:', error);
-            throw error;
+            throw error.response.data.detail;
         }
     },
 

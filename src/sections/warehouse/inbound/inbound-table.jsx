@@ -1,16 +1,23 @@
-import { Box, Button, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, Button, IconButton, Paper, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
+import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { updateInbound } from 'src/redux/actions/warehouse-update-action';
 import { useRouter } from 'src/routes/hooks';
 
 export default function InboundTable() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [reloading, setReloading] = useState(false);
+  const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
+
   const [inbounds, setInboundData] = useState([]);
   const dispatch = useDispatch();
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
 
   const handleOpenInboundTable = () => {
@@ -23,6 +30,22 @@ export default function InboundTable() {
     dispatch(updateInbound(row));
 
     router.replace('/home/warehouse-management/add-inbound-form');
+  };
+
+  const handleApprove = async (order) => {
+    setReloading(true)
+    try {
+      await NetworkRepository.inboundApprove({ id: order.id, updated_by: selectedUserConfig.seller.user, });
+      setSnackbarSeverity('success');
+      setSnackbarMessage('Inbound approved successfully');
+      setSnackbarOpen(true);
+    } catch (error) {
+      setSnackbarSeverity('error');
+      setSnackbarMessage('Failed to approve inbound');
+      setSnackbarOpen(true);
+      console.error('Error approving inbound:', error);
+      setReloading(false)
+    }
   };
 
   useEffect(() => {
@@ -38,7 +61,7 @@ export default function InboundTable() {
       }
     };
     fetchInboundBatchData();
-  }, []);
+  }, [reloading]);
 
 
   console.log('datadata', inbounds)
@@ -53,7 +76,9 @@ export default function InboundTable() {
           Add Inbound
         </Button>
       </Stack>
-      <TableContainer component={Paper}>
+      {loading ? (
+        <SkeletonLoader marginTop='-100' />
+      ) : (<TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
@@ -81,15 +106,34 @@ export default function InboundTable() {
                 <TableCell>{order.approved_by || 'N/A'}</TableCell>
                 <TableCell>{order.is_active}</TableCell>
                 <TableCell align="right">
-                  <IconButton onClick={() => handleUpdateInboundTable(order)}>
-                    <Iconify icon="eva:edit-fill" />
-                  </IconButton>
+                  <Stack direction="row">
+                    <Tooltip title="Edit">
+                      <IconButton onClick={() => handleUpdateInboundTable(order)}>
+                        <Iconify icon="eva:edit-fill" />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Approve Inbound">
+                      <IconButton disabled={order.approved_date} onClick={() => handleApprove(order)}>
+                        <Iconify icon="material-symbols:order-approve" />
+                      </IconButton>
+                    </Tooltip>
+
+                  </Stack>
                 </TableCell>
+
               </TableRow>
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainer>)}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+      />
     </Box>
   );
 }

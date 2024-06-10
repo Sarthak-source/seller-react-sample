@@ -1,65 +1,80 @@
-import { Box, Button, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import Iconify from 'src/components/iconify';
+import { Box, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import NetworkRepository from 'src/app-utils/network_repository';
+import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { useRouter } from 'src/routes/hooks';
-
-const stockLedgerTable = [
-  { id: 1, customer: 'Customer A', date: '2023-06-01', status: 'Shipped', total: 200 },
-  { id: 2, customer: 'Customer B', date: '2023-06-02', status: 'Processing', total: 300 },
-  // Add more StockLedgerTable as needed
-];
 
 export default function StockLedgerTable() {
   const router = useRouter();
+  const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
+  const [loading, setLoading] = useState(true);
+  const [stockLedger, setStockLedgerData] = useState([]);
 
+  useEffect(() => {
+    const fetchStockLedgerData = async () => {
+      try {
+        setLoading(true);
+        const data = await NetworkRepository.getStockLedgerList('', selectedUserConfig.seller.id);
+        setStockLedgerData(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStockLedgerData();
+  }, [selectedUserConfig]);
+
+  console.log('stockLedger', stockLedger);
 
   const handleOpenStockLedgerTable = () => {
-    console.log('handleOpenProduct')
+    console.log('handleOpenProduct');
     router.replace('/home/warehouse-management/add-order-form');
-
-  }
+  };
 
   return (
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4" gutterBottom>
-          StockLedger
+          Stock Ledger
         </Typography>
-
-        <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenStockLedgerTable}>
-          Add StockLedger
-        </Button>
+        
       </Stack>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>SL no</TableCell>
-              <TableCell>Warehouse</TableCell>
-              <TableCell>In bound #</TableCell>
-              <TableCell>Out bound #</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Product</TableCell>
-              <TableCell>Batch No</TableCell>
-              <TableCell>QTY</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {stockLedgerTable.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell>{order.id}</TableCell>
-                <TableCell>{order.customer}</TableCell>
-                <TableCell>{order.date}</TableCell>
-                <TableCell>{order.status}</TableCell>
-                <TableCell>{order.total}</TableCell>
-                <TableCell>{order.customer}</TableCell>
-                <TableCell>{order.date}</TableCell>
-                <TableCell>{order.status}</TableCell>
+      {loading ? ( 
+        <SkeletonLoader  marginTop='-100'/>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>SL no</TableCell>
+                <TableCell>Warehouse</TableCell>
+                <TableCell>Inbound #</TableCell>
+                <TableCell>Outbound #</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Product</TableCell>
+                <TableCell>Batch No</TableCell>
+                <TableCell>QTY</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {stockLedger.map((entry, index) => (
+                <TableRow key={entry.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{entry.ware_house.name}</TableCell>
+                  <TableCell>{entry.inbound ? entry.inbound.inbound_num : 'N/A'}</TableCell>
+                  <TableCell>{entry.outbound ? entry.outbound.outbound_num : 'N/A'}</TableCell>
+                  <TableCell>{new Date(entry.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{entry.product.code}</TableCell>
+                  <TableCell>{entry.batch_num.batch_num}</TableCell>
+                  <TableCell>{entry.qty}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Box>
   );
 }
-

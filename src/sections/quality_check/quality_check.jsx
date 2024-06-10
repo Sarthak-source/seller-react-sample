@@ -116,7 +116,10 @@ const QualityCheck = () => {
                     const sendDriverOtp = await NetworkRepository.sendOtpDriver(driverNumberController, vehicleNumberController, selectedUser.id)
                     console.log('sendDriverOtp', sendDriverOtp)
                     setDriverDetails(sendDriverOtp)
-
+                    setDiverNameController(sendDriverOtp.name)
+                    setLicensceController(sendDriverOtp.dl_num)
+                    setCapturedDLBackImage(sendDriverOtp.dl_img_backside)
+                    setCapturedDLFrontImage(sendDriverOtp.dl_img_frontside)
                     setActiveStep((prev) => prev + 1);
                 }
 

@@ -30,7 +30,7 @@ export default function TableToolbar({ numSelected, label, onDownload, onFullScr
 
   const debouncedDispatch = useDebounce((value) => {
     dispatch(setSearchTerm(value));
-  }, 300);
+  }, 30);
 
   const handleSearch = (event) => {
     debouncedDispatch(event.target.value);

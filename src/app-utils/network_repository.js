@@ -175,7 +175,7 @@ const NetworkRepository = {
   deliveryOrders: async (page, text, millId, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: text !== '' ? `${ApiAppConstants.deliveryOrders}?seller=${sellerId}&characters=${text}`
+        url: text !== '' ? `${ApiAppConstants.deliveryOrders}?seller=${sellerId}&characters=${text}&mill_pk=${millId || ''}`
           : `${ApiAppConstants.deliveryOrders}?seller=${sellerId}&page=${page}&mill_pk=${millId || ''}`,
 
         header: { authorization: auth },
@@ -193,7 +193,7 @@ const NetworkRepository = {
   book: async (page, text, status, millId, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: text !== '' ? `${ApiAppConstants.loadingInstructions}?seller=${sellerId}&characters=${text}` :
+        url: text !== '' ? `${ApiAppConstants.loadingInstructions}?seller=${sellerId}&characters=${text}&mill_pk=${millId || ''}&status=${status}` :
           `${ApiAppConstants.loadingInstructions}?seller=${sellerId}&page=${page}&mill_pk=${millId || ''}&status=${status}`,
 
         header: { authorization: auth },
@@ -211,7 +211,7 @@ const NetworkRepository = {
   invoicesReport: async (page, text, status, millId, sellerId) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: text !== '' ? `${ApiAppConstants.invoices}?seller=${sellerId}&characters=${text}&delivery_order__status=${status}` :
+        url: text !== '' ? `${ApiAppConstants.invoices}?seller=${sellerId}&characters=${text}&delivery_order__status=${status}&mill_pk=${millId || ''}` :
           `${ApiAppConstants.invoices}?seller=${sellerId}&page=${page}&mill_pk=${millId || ''}&delivery_order__status=${status}`,
         header: { authorization: auth },
       });
@@ -568,6 +568,51 @@ const NetworkRepository = {
 
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url: `${ApiAppConstants.addressListPost}`,
+        header: {
+          'authorization': auth
+        },
+        data: {
+          "trader": sellerId,
+          "name": name,
+          "gstin": gstin,
+          "pin": pin,
+          "address": address,
+          "location": location,
+        },
+      });
+      return await apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+
+  updateAddress: async (
+    addressPk,
+    name,
+    gstin,
+    pin,
+    address,
+    location,
+    sellerId) => {
+    try {
+
+
+      const data = JSON.stringify({
+        "trader": sellerId,
+        "name": name,
+        "gstin": gstin,
+        "pin": pin,
+        "address": address,
+        "location": location,
+      },);
+
+
+      console.log('addresspost', data)
+
+      const apiResponse = await NetworkAxios.patchAxiosHttpMethod({
+        url: `${ApiAppConstants.addressUpdate}${addressPk}`,
         header: {
           'authorization': auth
         },
@@ -1563,10 +1608,10 @@ const NetworkRepository = {
     }
   },
 
-  getStockLedgerList: async () => {
+  getStockLedgerList: async (mill, seller) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.stockLedgerList}`,
+        url: `${ApiAppConstants.stockLedgerList}?mill=${mill}&seller=${seller}`,
         header: { authorization: auth },
       });
 
@@ -1813,6 +1858,153 @@ const NetworkRepository = {
     }
   },
 
+
+  productBatchEdit: async ({
+    id,
+    productId,
+    batchNo,
+    batchStartDate,
+    batchEndDate,
+    status,
+    updated_by
+  }) => {
+    try {
+      const data = {
+        "product": productId,
+        "batch_num": batchNo,
+        "batch_start_date": batchStartDate,
+        "batch_end_date": batchEndDate,
+        "updated_by": updated_by,
+        "updated_date": new Date().toISOString(),
+        ...(status && { "is_active": status })
+      };
+      console.log('Sending data to product_batch endpoint', data);
+
+      const apiResponse = await NetworkAxios.patchAxiosHttpMethod({
+        url: `${ApiAppConstants.productBatch}${id}/`,
+        header: { 'authorization': auth },
+        data
+      });
+
+      alert("Product Batch Updated Successfully");
+      console.log('Product Batch update Response:', apiResponse);
+      return apiResponse.body;
+    } catch (e) {
+      console.error(e);
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+
+  productBatchMfgEdit: async ({
+    mfgQty,
+    id,
+    updated_by,
+  }) => {
+    try {
+      const data = {
+        "mfg_qty": mfgQty,
+        "updated_by": updated_by,
+        "updated_date": new Date().toISOString()
+      };
+      console.log('Sending data to product_manufacture endpoint', data);
+
+      const apiResponse = await NetworkAxios.patchAxiosHttpMethod({
+        url: `${ApiAppConstants.productManufacture}${id}/`,
+        header: { 'authorization': auth },
+        data
+      });
+
+      alert("Product Batch Manufacturing Updated Successfully");
+      console.log('Product Batch Manufacturing update Response:', apiResponse);
+      return apiResponse;
+    } catch (e) {
+      console.error(e);
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  warehouseEdit: async ({
+    id,
+    location,
+    area,
+    updated_by,
+  }) => {
+    try {
+      const data = {
+        "location": location.toString(),
+        "area": area,
+        "updated_by": updated_by,
+        "updated_date": new Date().toISOString()
+      };
+      console.log('Sending data to warehouse endpoint', data);
+
+      const apiResponse = await NetworkAxios.patchAxiosHttpMethod({
+        url: `${ApiAppConstants.warehouse}${id}/`,
+        header: { 'authorization': auth },
+        ContentType: 'application/json',
+        data: JSON.stringify({data})
+      });
+
+      alert("Warehouse Updated Successfully");
+      console.log('Warehouse update Response:', apiResponse);
+      return apiResponse;
+    } catch (e) {
+      console.error(e);
+      alert(e.toString());
+      return e.toString();
+    }
+  },
+
+  inboundApprove: async ({ id, updated_by }) => {
+    try {
+      const data = {
+        "inbound": id,
+        "approved_date": new Date().toISOString(),
+        "approved_by": updated_by,
+      };
+
+      console.log('inbound',data);
+
+      const response = await NetworkAxios.putAxiosHttpMethod({
+        url: `${ApiAppConstants.inbound}`,
+        header: { 'authorization': auth },
+        data,
+      })
+
+      console.log('Inbound Approve Response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error:', error);
+      return error.toString();
+    }
+  },
+
+  outboundApprove: async ({ id, updated_by }) => {
+    try {
+      const data = {
+        "outbound": id,
+        "approved_date": new Date().toISOString(),
+        "approved_by": updated_by,
+      };
+
+      console.log('inbound',data);
+
+      const response = await NetworkAxios.putAxiosHttpMethod({
+        url: `${ApiAppConstants.outbound}`,
+        header: { 'authorization': auth },
+        data,
+      })
+
+      console.log('Inbound Approve Response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error:', error);
+      return error.toString();
+    }
+  },
 }
 
 

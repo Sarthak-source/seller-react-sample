@@ -43,7 +43,7 @@ export default function WarehouseView() {
         indicatorColor="primary"
         style={{
           marginBottom: '2px',
-          marginTop: -10,
+          marginTop: '-12px',
           marginBlock: 5,
           display: 'flex',
           width: "100%",
@@ -59,7 +59,6 @@ export default function WarehouseView() {
         <Tab label="Inbound" />
         <Tab label="Outbound" />
         <Tab label="Stock Ledger" />
-
       </Tabs>
       <Box sx={{
         paddingTop: '65px'

@@ -367,7 +367,7 @@ export default function AppView() {
                     <TableBody>
                       {recentInvoiceData?.recent_invoices?.map((row) => (
                         <TableRow key={row.id}>
-                          <TableCell>{row.id}</TableCell>
+                          <TableCell>{row.invoice_prefix} {row.invoice_num}</TableCell>
                           <TableCell>{row.billing_address.name}</TableCell>
                           <TableCell>{row.shipping_address.name}</TableCell>
                           <TableCell>{row.total_qty}</TableCell>

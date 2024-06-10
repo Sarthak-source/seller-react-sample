@@ -86,7 +86,7 @@ export default function UserView() {
 
     const handleOpenUser = () => {
         dispatch(selectSellerData(null));
-        router.replace('/home/users-view/add-users');
+        router.replace('/home/sellers-view/add-users');
     }
 
     return (

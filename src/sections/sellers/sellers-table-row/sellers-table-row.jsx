@@ -40,7 +40,7 @@ export default function UserTableRow({
   const handleSellerUpdate = (seller) => {
     dispatch(selectSellerData(seller));
 
-    router.replace('/home/users-view/add-users');
+    router.replace('/home/sellers-view/add-users');
   };
 
   const handleCloseDialog = () => {

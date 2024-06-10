@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 import { fetchTraderData, fetchTraderDataStart } from 'src/redux/actions/traders';
 
-const AddAddress = ({ openDialog, setOpenDialog }) => {
+const AddAddress = ({ openDialog, setOpenDialog, selectedAddress }) => {
     const dispatch = useDispatch();
     const traders = useSelector((state) => state.traders.traderData);
     const selectedUser = useSelector((state) => state.user.selectedUser);
@@ -33,6 +33,8 @@ const AddAddress = ({ openDialog, setOpenDialog }) => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
+    console.log('selectedAddress',selectedAddress)
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -47,7 +49,17 @@ const AddAddress = ({ openDialog, setOpenDialog }) => {
 
         fetchData();
         setTraderData(traders);
-    }, [dispatch, traderData, traders, selectedUser.id]);
+
+        if (selectedAddress) {
+            setNameController(selectedAddress.name.trim());
+            setPinController(selectedAddress.pin);
+            setAddressController(selectedAddress.address);
+            setGstinController(selectedAddress.gstin);
+            setLocationController(selectedAddress.location.trim());
+            // Assuming selectedAddress has a traderId field or similar
+            setSelectedTrader(traders.find(trader => trader.id === selectedAddress.id) || {});
+        }
+    }, [dispatch, traderData, traders, selectedUser.id, selectedAddress]);
 
     const handleTraderChange = (event) => {
         const trader = event.target.value;
@@ -74,43 +86,59 @@ const AddAddress = ({ openDialog, setOpenDialog }) => {
         setLocationController(event.target.value);
     };
 
-    const addAddress = async () => {
+    const addOrUpdateAddress = async () => {
         try {
             if (nameController === '') {
                 showSnackbar('Please add a name.', 'error');
-            } else if (Number.isNaN(Number(pinController)) || pinController.length !== 6) {
-                showSnackbar('Please add a valid PIN number.', 'error');
             } else {
-                const result = await NetworkRepository.addressListPost(
-                    nameController,
-                    gstinController,
-                    pinController,
-                    addressController,
-                    locationController,
-                    selectedTrader.id,
-                );
+                let result;
+                if (selectedAddress) {
+                    // Update address logic
+                    result = await NetworkRepository.updateAddress(
+                        selectedAddress.id,
+                        nameController,
+                        gstinController,
+                        pinController,
+                        addressController,
+                        locationController,
+                        selectedTrader.id,
+                    );
+                    showSnackbar('Address updated successfully.', 'success');
+                } else {
+                    // Add address logic
+                    result = await NetworkRepository.addressListPost(
+                        nameController,
+                        gstinController,
+                        pinController,
+                        addressController,
+                        locationController,
+                        selectedTrader.id,
+                    );
+                    showSnackbar('Address created successfully.', 'success');
+                }
+
                 console.log('result', result);
                 setOpenDialog(false);
-                setNameController('');
-                setPinController('');
-                setAddressController('');
-                setGstinController('');
-                setLocationController('');
-                showSnackbar('Address created successfully.', 'success');
+                resetFormFields();
             }
         } catch (error) {
-            console.error('Error adding Address:', error);
-            showSnackbar('Error adding address.', 'error');
+            console.error('Error adding/updating address:', error);
+            showSnackbar('Error adding/updating address.', 'error');
         }
     };
 
-    const closeDialog = () => {
-        setOpenDialog(false);
+    const resetFormFields = () => {
         setNameController('');
         setPinController('');
         setAddressController('');
         setGstinController('');
         setLocationController('');
+        setSelectedTrader({});
+    };
+
+    const closeDialog = () => {
+        setOpenDialog(false);
+        resetFormFields();
     };
 
     const showSnackbar = (message, severity) => {
@@ -126,7 +154,6 @@ const AddAddress = ({ openDialog, setOpenDialog }) => {
         setSnackbarOpen(false);
     };
 
-
     const isValidGSTIN = (gstin) => {
         const gstinPattern = /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}\d[Z]{1}[A-Z\d]{1}$/;
         return gstinPattern.test(gstin);
@@ -135,7 +162,7 @@ const AddAddress = ({ openDialog, setOpenDialog }) => {
     return (
         <Dialog open={openDialog} onClose={closeDialog}>
             <DialogTitle variant="h4" mt={2} mb={1}>
-                Add Address
+                {selectedAddress ? 'Update Address' : 'Add Address'}
             </DialogTitle>
             <DialogContent>
                 <Stack direction="row" sx={{ mt: 2 }}>
@@ -192,18 +219,17 @@ const AddAddress = ({ openDialog, setOpenDialog }) => {
                     <MenuItem value={selectedTrader} disabled>
                         Select Mill
                     </MenuItem>
-
                     {traderData.map((trader) => (
-
                         <MenuItem key={trader.id} value={trader}>
                             {trader.name}
                         </MenuItem>
                     ))}
                 </Select>
-
             </DialogContent>
             <DialogActions>
-                <Button onClick={addAddress}>Add</Button>
+                <Button onClick={addOrUpdateAddress}>
+                    {selectedAddress ? 'Update' : 'Add'}
+                </Button>
                 <Button onClick={closeDialog}>Cancel</Button>
             </DialogActions>
             <Snackbar
@@ -223,6 +249,7 @@ const AddAddress = ({ openDialog, setOpenDialog }) => {
 AddAddress.propTypes = {
     openDialog: PropTypes.bool.isRequired,
     setOpenDialog: PropTypes.func.isRequired,
+    selectedAddress: PropTypes.any
 };
 
 export default AddAddress;

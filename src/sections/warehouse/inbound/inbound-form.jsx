@@ -17,6 +17,9 @@ const InboundForm = () => {
 
   const inbounds = useSelector((state) => state.warehouseUpdate.inbounds);
 
+  const isUpdate = Object.keys(inbounds).length === 0;
+
+
   console.log('inbounds',inbounds)
 
   const [formData, setFormData] = useState({
@@ -150,7 +153,7 @@ const InboundForm = () => {
       }
     };
     fetchWareHouseBatchData();
-  }, [selectedUserConfig]);
+  }, [selectedUserConfig,loading]);
 
   useEffect(() => {
     const fetchProductBatchData = async () => {
@@ -199,6 +202,25 @@ const InboundForm = () => {
   }, [formData.warehouse]);
 
 
+  useEffect(() => {
+    if (!isUpdate) {
+     
+      setFormData({
+        inboundNo: inbounds.inbound_num || '',
+        warehouse: inbounds.ware_house.id || '',
+        inboundDate: inbounds.created_date || '',
+        inboundType: inbounds.inbound_type || '',
+        poNumber: inbounds.po_num || '',
+        fromWarehouse: inbounds.from_warehouse || '',
+        createdBy: inbounds.created_by || '',
+        approvedBy: inbounds.approved_by || '',
+      });
+    }
+  }, [inbounds, isUpdate]);
+  
+  
+
+
   console.log('products', products)
 
   return (
@@ -221,6 +243,7 @@ const InboundForm = () => {
                 label="Inbound No"
                 name="inboundNo"
                 value={formData.inboundNo}
+                disabled={!isUpdate}
                 onChange={handleFormChange}
                 fullWidth
               />
@@ -230,6 +253,7 @@ const InboundForm = () => {
                 <Select
                   id="warehouse"
                   name="warehouse"
+                  disabled={!isUpdate}
                   value={formData.warehouse}
                   onChange={handleFormChange}
                 >
@@ -244,6 +268,7 @@ const InboundForm = () => {
                 label="Inbound Date"
                 name="inboundDate"
                 type="date"
+                disabled={!isUpdate}
                 value={formData.inboundDate}
                 onChange={handleFormChange}
                 fullWidth
@@ -254,6 +279,7 @@ const InboundForm = () => {
                 <Select
                   id="inboundType"
                   name="inboundType"
+                  disabled={!isUpdate}
                   value={formData.inboundType}
                   onChange={handleFormChange}
                 >
@@ -315,6 +341,7 @@ const InboundForm = () => {
                     <Autocomplete
                       id="product"
                       name="product"
+                      disabled={isUpdate}
                       options={productOptions}
                       getOptionLabel={(option) => option.product_type} // Use the property that represents the label for each option
                       value={productData.product}
@@ -327,6 +354,7 @@ const InboundForm = () => {
                     <Autocomplete
                       id="batch_num"
                       name="batch_num"
+                      disabled={!isUpdate}
                       options={batchNumberOptions}
                       getOptionLabel={(option) => option.label || ""}
                       value={productData.batch_num}
@@ -339,6 +367,7 @@ const InboundForm = () => {
                     <TextField
                       label="Quantity"
                       name="qty"
+                      disabled={!isUpdate}
                       value={productData.qty}
                       onChange={handleProductChange}
                       type="number"
@@ -363,6 +392,7 @@ const InboundForm = () => {
                         labelId="uom-label"
                         id="uom"
                         value={productData.uom}
+                        disabled={!isUpdate}
                         label="Unit of Measure (UOM)"
                         name="uom"
                         onChange={(event) => {
@@ -408,7 +438,7 @@ const InboundForm = () => {
                         <TableCell>{product.uom}</TableCell>
                         <TableCell>{product.location.value}</TableCell>
                         <TableCell>
-                          <Button variant="outlined" color="secondary" onClick={() => {
+                          <Button disabled={!isUpdate} variant="outlined" color="secondary" onClick={() => {
                             setProducts(products.filter((_, i) => i !== index));
                           }}>
                             Delete

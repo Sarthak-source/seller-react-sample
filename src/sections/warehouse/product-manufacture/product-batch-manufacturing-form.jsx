@@ -81,16 +81,11 @@ export default function ProductMFGBatchForm() {
         try {
             if (isUpdate) {
                 // Logic for updating existing entry
-                await NetworkRepository.updateProductMFGBatch(
-                    productMFGBatch.id,
-                    product,
-                    plant,
-                    batchNumber,
-                    formattedManufacturingDate,
-                    formattedExpiryDate,
-                    manufacturingQty,
-                    uom,
-                    selectedUserConfig.seller.user
+                await NetworkRepository.productBatchMfgEdit({
+                    mfgQty: manufacturingQty,
+                    id: productMFGBatch.id,
+                    updated_by: selectedUserConfig.seller.user
+                }
                 );
 
                 setSnackbarMessage('Data updated successfully');
@@ -169,9 +164,9 @@ export default function ProductMFGBatchForm() {
             setUOM(productMFGBatch.uom || '');
         }
     }, [productMFGBatch, isUpdate]);
-    
 
-console.log('manufacturingDate',manufacturingDate)
+
+    console.log('manufacturingDate', manufacturingDate)
 
 
     return (
@@ -186,9 +181,9 @@ console.log('manufacturingDate',manufacturingDate)
                     boxShadow: '5px 5px 10px rgba(77, 182, 172,0.9)',
                 },
             }}>
-                <Typography variant="h4" sx={{ pb: 2 }}>Add Product Manufacturing Data</Typography>
+                <Typography variant="h4" sx={{ pb: 2 }}>{isUpdate ? 'Update' : 'Add'} Product Manufacturing Data</Typography>
                 <form onSubmit={handleSubmit}>
-                    <FormControl fullWidth margin="normal">
+                    <FormControl fullWidth margin="normal" disabled={isUpdate}>
                         <InputLabel htmlFor="product">Product</InputLabel>
                         <Select
                             labelId="product"
@@ -203,7 +198,7 @@ console.log('manufacturingDate',manufacturingDate)
                             ))}
                         </Select>
                     </FormControl>
-                    <FormControl fullWidth margin="normal">
+                    <FormControl fullWidth margin="normal" disabled={isUpdate}>
                         <InputLabel htmlFor="plant">Plant</InputLabel>
                         <Select
                             labelId="plant"
@@ -221,7 +216,7 @@ console.log('manufacturingDate',manufacturingDate)
                     </FormControl>
 
                     {productData.length > 0 && (
-                        <FormControl fullWidth margin="normal">
+                        <FormControl fullWidth margin="normal" disabled={isUpdate}>
                             <InputLabel htmlFor="batchNumber">Batch Number</InputLabel>
                             <Select
                                 labelId="batchNumber"
@@ -238,13 +233,14 @@ console.log('manufacturingDate',manufacturingDate)
                         </FormControl>
                     )}
 
-                    <Stack direction="row" spacing={2} mt={1}>
+                    <Stack direction="row" spacing={2} mt={1} disabled={isUpdate}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
                                 label="Expiry Date"
                                 value={expiryDate}
                                 onChange={(date) => setExpiryDate(date)}
                                 renderInput={(params) => <TextField {...params} fullWidth margin="normal" required />}
+                                disabled={isUpdate}
                             />
                         </LocalizationProvider>
 
@@ -254,6 +250,7 @@ console.log('manufacturingDate',manufacturingDate)
                                 value={manufacturingDate}
                                 onChange={(date) => setManufacturingDate(date)}
                                 renderInput={(params) => <TextField {...params} fullWidth margin="normal" required />}
+                                disabled={isUpdate}
                             />
                         </LocalizationProvider>
                     </Stack>
@@ -269,7 +266,7 @@ console.log('manufacturingDate',manufacturingDate)
                         onChange={handleChange}
                     />
 
-                    <FormControl fullWidth margin="normal">
+                    <FormControl fullWidth margin="normal" disabled={isUpdate}>
                         <InputLabel htmlFor="uom">Unit of Measure (UOM)</InputLabel>
                         <Select
                             labelId="uom"

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
+import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { updateWarehouse } from 'src/redux/actions/warehouse-update-action';
 import { useRouter } from 'src/routes/hooks';
 
@@ -57,7 +58,9 @@ export default function WarehouseTableView() {
         </Button>
       </Stack>
 
-      <TableContainer component={Paper}>
+      {loading ? ( 
+        <SkeletonLoader  marginTop='-100'/>
+      ) :(<TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
@@ -88,7 +91,7 @@ export default function WarehouseTableView() {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainer>)}
     </Box>
   );
 }

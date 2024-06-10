@@ -110,7 +110,7 @@ const ApiAppConstants = {
     inbound:'inbound/',
     outbound:'outbound/',
     warehouseLocation:'warehouse_location/',
-    stockLedgerList:'/',
+    stockLedgerList:'warehouse_ledger_list/',
 };
 
 export { ApiAppConstants, auth, ip, testip };

@@ -15,8 +15,10 @@ const OutboundForm = () => {
 
   const outbounds = useSelector((state) => state.warehouseUpdate.outbounds);
 
+  const isUpdate = Object.keys(outbounds).length === 0;
 
-  console.log('outbounds',outbounds)
+
+  console.log('outbounds', outbounds)
 
   const [formData, setFormData] = useState({
     outboundNo: '',
@@ -203,205 +205,204 @@ const OutboundForm = () => {
         },
       }}>
         <Typography variant="h4" gutterBottom>Add Outbound</Typography>
-       
-          <form onSubmit={handleSubmit}>
-            <Stack spacing={2}>
-              <TextField
-                label="Outbound No"
-                name="outboundNo"
-                value={formData.outboundNo}
-                onChange={handleFormChange}
-                fullWidth
-              />
 
-              <FormControl fullWidth>
-                <InputLabel htmlFor="warehouse">Warehouse</InputLabel>
-                <Select
-                  id="warehouse"
-                  name="warehouse"
-                  value={formData.warehouse}
-                  onChange={handleFormChange}
-                >
-                  {warehouse.map(item => (
-                    <MenuItem key={item.id} value={item.id}>
-                      {item.name} ({item.code})
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <TextField
-                label="Outbound Date"
-                name="outboundDate"
-                type="date"
-                value={formData.outboundDate}
-                onChange={handleFormChange}
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-              />
-              <FormControl fullWidth>
-                <InputLabel htmlFor="outboundType">Outbound Type</InputLabel>
-                <Select
-                  id="outboundType"
-                  name="outboundType"
-                  value={formData.outboundType}
-                  onChange={handleFormChange}
-                >
-                  <MenuItem value="Production">Production</MenuItem>
-                  <MenuItem value="Purchase">Purchase</MenuItem>
-                  <MenuItem value="StockTransfer">Stock Transfer</MenuItem>
-                  <MenuItem value="Adjustment">Adjustment</MenuItem>
-                  <MenuItem value="Reversal">Reversal</MenuItem>
-                </Select>
-              </FormControl>
-              <TextField
-                label="PO Number"
-                name="poNumber"
-                disabled={formData.outboundType !== 'Purchase'}
-                value={formData.poNumber}
-                onChange={handleFormChange}
-                fullWidth
-              />
+        <form onSubmit={handleSubmit}>
+          <Stack spacing={2}>
+            <TextField
+              label="Outbound No"
+              name="outboundNo"
+              value={formData.outboundNo}
+              onChange={handleFormChange}
+              fullWidth
+            />
 
-              <FormControl fullWidth>
-                <InputLabel htmlFor="toWarehouse">To Warehouse</InputLabel>
-                <Select
-                  id="toWarehouse"
-                  name="toWarehouse"
-                  disabled={formData.outboundType !== 'StockTransfer'}
-                  value={formData.toWarehouse}
-                  onChange={handleFormChange}
-                >
-                  {warehouse.map(item => (
-                    <MenuItem key={item.id} value={item.id}>
-                      {item.name} ({item.code})
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="warehouse">Warehouse</InputLabel>
+              <Select
+                id="warehouse"
+                name="warehouse"
+                value={formData.warehouse}
+                onChange={handleFormChange}
+              >
+                {warehouse.map(item => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.name} ({item.code})
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="Outbound Date"
+              name="outboundDate"
+              type="date"
+              value={formData.outboundDate}
+              onChange={handleFormChange}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+            <FormControl fullWidth>
+              <InputLabel htmlFor="outboundType">Outbound Type</InputLabel>
+              <Select
+                id="outboundType"
+                name="outboundType"
+                value={formData.outboundType}
+                onChange={handleFormChange}
+              >
+                <MenuItem value="Sale">Sale</MenuItem>
+                <MenuItem value="StockTransfer">Stock Transfer</MenuItem>
+                <MenuItem value="Adjustment">Adjustment</MenuItem>
+                <MenuItem value="Reversal">Reversal</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label="PO Number"
+              name="poNumber"
+              disabled={formData.outboundType !== 'Purchase'}
+              value={formData.poNumber}
+              onChange={handleFormChange}
+              fullWidth
+            />
 
-              <TextField
-                label="Created by"
-                name="createdBy"
-                value={formData.createdBy}
+            <FormControl fullWidth>
+              <InputLabel htmlFor="toWarehouse">To Warehouse</InputLabel>
+              <Select
+                id="toWarehouse"
+                name="toWarehouse"
+                disabled={formData.outboundType !== 'StockTransfer'}
+                value={formData.toWarehouse}
                 onChange={handleFormChange}
+              >
+                {warehouse.map(item => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.name} ({item.code})
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <TextField
+              label="Created by"
+              name="createdBy"
+              value={formData.createdBy}
+              onChange={handleFormChange}
+              fullWidth
+              disabled
+            />
+            <TextField
+              label="Approved By Employee"
+              name="approvedBy"
+              value={formData.approvedBy}
+              onChange={handleFormChange}
+              fullWidth
+              disabled
+            />
+          </Stack>
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="h6" gutterBottom>Outbound Product Details</Typography>
+            <Stack direction="row" spacing={2} mb={2}>
+              <Autocomplete
+                id="product"
+                name="product"
+                options={productOptions}
+                getOptionLabel={(option) => option.product_type} // Use the property that represents the label for each option
+                value={productData.product}
+                onChange={(event, newValue) => setProductData({ ...productData, product: newValue })}
+                renderInput={(params) => <TextField {...params} label="Product" />}
                 fullWidth
-                disabled
               />
-              <TextField
-                label="Approved By Employee"
-                name="approvedBy"
-                value={formData.approvedBy}
-                onChange={handleFormChange}
+              <Autocomplete
+                id="batch_num"
+                name="batch_num"
+                options={batchNumberOptions}
+                getOptionLabel={(option) => option.label || ""}
+                value={productData.batch_num}
+                onChange={(event, newValue) => setProductData({ ...productData, batch_num: newValue })}
+                renderInput={(params) => <TextField {...params} label="Batch Number" />}
                 fullWidth
-                disabled
               />
             </Stack>
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="h6" gutterBottom>Outbound Product Details</Typography>
-              <Stack direction="row" spacing={2} mb={2}>
-                <Autocomplete
-                  id="product"
-                  name="product"
-                  options={productOptions}
-                  getOptionLabel={(option) => option.product_type} // Use the property that represents the label for each option
-                  value={productData.product}
-                  onChange={(event, newValue) => setProductData({ ...productData, product: newValue })}
-                  renderInput={(params) => <TextField {...params} label="Product" />}
-                  fullWidth
-                />
-                <Autocomplete
-                  id="batch_num"
-                  name="batch_num"
-                  options={batchNumberOptions}
-                  getOptionLabel={(option) => option.label || ""}
-                  value={productData.batch_num}
-                  onChange={(event, newValue) => setProductData({ ...productData, batch_num: newValue })}
-                  renderInput={(params) => <TextField {...params} label="Batch Number" />}
-                  fullWidth
-                />
-              </Stack>
-              <Stack direction="row" spacing={2} mb={2}>
-                <TextField
-                  label="Quantity"
-                  name="qty"
-                  value={productData.qty}
+            <Stack direction="row" spacing={2} mb={2}>
+              <TextField
+                label="Quantity"
+                name="qty"
+                value={productData.qty}
+                onChange={handleProductChange}
+                fullWidth
+              />
+              <FormControl fullWidth>
+                <InputLabel htmlFor="uom">Unit of Measure</InputLabel>
+                <Select
+                  id="uom"
+                  name="uom"
+                  value={productData.uom}
                   onChange={handleProductChange}
-                  fullWidth
-                />
-                <FormControl fullWidth>
-                  <InputLabel htmlFor="uom">Unit of Measure</InputLabel>
-                  <Select
-                    id="uom"
-                    name="uom"
-                    value={productData.uom}
-                    onChange={handleProductChange}
-                  >
-                    {availableUOMs.map((uoms) => (
-                      <MenuItem key={uoms} value={uoms}>
-                        {uoms}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Stack>
-              <Stack direction="row" spacing={2} mb={2}>
-                <Autocomplete
-                  id="location"
-                  name="location"
-                  options={locationOptions}
-                  getOptionLabel={(option) => option.label || ""}
-                  value={productData.location}
-                  onChange={(event, newValue) => setProductData({ ...productData, location: newValue })}
-                  renderInput={(params) => <TextField {...params} label="Warehouse Location" />}
-                  fullWidth
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={addProduct}
                 >
-                  Add Product
-                </Button>
-              </Stack>
-              <TableContainer component={Card} sx={{ mt: 2 }}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Product</TableCell>
-                      <TableCell>Batch Number</TableCell>
-                      <TableCell>Quantity</TableCell>
-                      <TableCell>UOM</TableCell>
-                      <TableCell>Location</TableCell>
-                      <TableCell>Delete</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {products.map((product, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{product.product.product_type}</TableCell>
-                        <TableCell>{product.batch_num.label}</TableCell>
-                        <TableCell>{product.qty}</TableCell>
-                        <TableCell>{product.uom}</TableCell>
-                        <TableCell>{product.location.label}</TableCell>
-                        <TableCell>
-                          <Button variant="outlined" color="secondary" onClick={() => {
-                            setProducts(products.filter((_, i) => i !== index));
-                          }}>
-                            Delete
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Box>
-            <Stack direction="row" spacing={2} mt={3}>
-              <Button type="submit" variant="contained" color="primary">Submit</Button>
-              <Button variant="outlined" color="secondary" onClick={handleCancel}>Cancel</Button>
+                  {availableUOMs.map((uoms) => (
+                    <MenuItem key={uoms} value={uoms}>
+                      {uoms}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Stack>
-          </form>
-       
+            <Stack direction="row" spacing={2} mb={2}>
+              <Autocomplete
+                id="location"
+                name="location"
+                options={locationOptions}
+                getOptionLabel={(option) => option.label || ""}
+                value={productData.location}
+                onChange={(event, newValue) => setProductData({ ...productData, location: newValue })}
+                renderInput={(params) => <TextField {...params} label="Warehouse Location" />}
+                fullWidth
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={addProduct}
+              >
+                Add Product
+              </Button>
+            </Stack>
+            <TableContainer component={Card} sx={{ mt: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Product</TableCell>
+                    <TableCell>Batch Number</TableCell>
+                    <TableCell>Quantity</TableCell>
+                    <TableCell>UOM</TableCell>
+                    <TableCell>Location</TableCell>
+                    <TableCell>Delete</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {products.map((product, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{product.product.product_type}</TableCell>
+                      <TableCell>{product.batch_num.label}</TableCell>
+                      <TableCell>{product.qty}</TableCell>
+                      <TableCell>{product.uom}</TableCell>
+                      <TableCell>{product.location.label}</TableCell>
+                      <TableCell>
+                        <Button variant="outlined" color="secondary" onClick={() => {
+                          setProducts(products.filter((_, i) => i !== index));
+                        }}>
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+          <Stack direction="row" spacing={2} mt={3}>
+            <Button type="submit" variant="contained" color="primary">Submit</Button>
+            <Button variant="outlined" color="secondary" onClick={handleCancel}>Cancel</Button>
+          </Stack>
+        </form>
+
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}

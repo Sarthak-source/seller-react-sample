@@ -23,13 +23,10 @@ const ProductBatchForm = () => {
 
   const productBatch = useSelector((state) => state.warehouseUpdate.productBatches);
 
-
   console.log('selectedUserConfig', selectedUserConfig);
-
   console.log('lol', productBatch);
 
-  const isUpdate = Object.keys(productBatch).length === 0;
-
+  const isUpdate = Object.keys(productBatch).length !== 0;
 
   const handleAutoGenerate = () => {
     const randomBatchNumber = Math.floor(10000000 + Math.random() * 90000000); // Generate a random 8-digit number
@@ -61,9 +58,25 @@ const ProductBatchForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     if (isUpdate) {
-
+      try {
+        await NetworkRepository.productBatchEdit({
+          id: productBatch.id,
+          productId: product,
+          batchNo: batchNumber,
+          batchStartDate,
+          batchEndDate,
+          status,
+        });
+        setSnackbarMessage('Product batch updated successfully');
+        setSnackbarSeverity('success');
+      } catch (error) {
+        setSnackbarMessage('Failed to update product batch');
+        setSnackbarSeverity('error');
+      } finally {
+        setSnackbarOpen(true);
+      }
+    } else {
       try {
         await NetworkRepository.postProductBatch(product, batchNumber, batchStartDate, batchEndDate, selectedUserConfig.seller.user);
         setSnackbarMessage('Product batch added successfully');
@@ -74,31 +87,15 @@ const ProductBatchForm = () => {
       } finally {
         setSnackbarOpen(true);
       }
-      
-    } else {
-      console.log('helloeoeo')
-
-      try {
-        await NetworkRepository.postProductBatch(product, batchNumber, batchStartDate, batchEndDate, selectedUserConfig.seller.user);
-        setSnackbarMessage('Product batch updated successfully');
-        setSnackbarSeverity('success');
-      } catch (error) {
-        setSnackbarMessage('Failed to updated product batch');
-        setSnackbarSeverity('error');
-      } finally {
-        setSnackbarOpen(true);
-      }
-      
-    }  
+    }
   };
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
-
   useEffect(() => {
-    if (!isUpdate) {
+    if (isUpdate) {
       setProduct(productBatch.product); // Assuming productBatch has a product property
       setBatchNumber(productBatch.batch_num); // Assuming productBatch has a batch_num property
       setBatchStartDate(productBatch.batch_start_date ? productBatch.batch_start_date.split('T')[0] : ''); // Extracting date part only
@@ -108,7 +105,7 @@ const ProductBatchForm = () => {
   }, [isUpdate, productBatch]);
 
   return (
-    <Stack alignItems="center" justifyContent="center" sx={{  pt: 2 }}>
+    <Stack alignItems="center" justifyContent="center" sx={{ pt: 2 }}>
       <Card
         sx={{
           p: 5,
@@ -121,7 +118,9 @@ const ProductBatchForm = () => {
           },
         }}
       >
-        <Typography variant="h4" sx={{ pb: 2 }}>Add Product Batch</Typography>
+        <Typography variant="h4" sx={{ pb: 2 }}>
+          {isUpdate ? 'Update' : 'Add'} Product Batch
+        </Typography>
         <form onSubmit={handleSubmit}>
           <FormControl fullWidth margin="normal">
             <InputLabel htmlFor="product">Product</InputLabel>
@@ -151,7 +150,7 @@ const ProductBatchForm = () => {
               endAdornment: (
                 <Button
                   variant="contained"
-                  sx={{ mt: 2, mr: 2,mb:2 }}
+                  sx={{ mt: 2, mr: 2, mb: 2 }}
                   onClick={handleAutoGenerate}
                 >
                   Auto Generate
@@ -172,7 +171,6 @@ const ProductBatchForm = () => {
             InputLabelProps={{
               shrink: true,
             }}
-            
           />
           <TextField
             margin="normal"
@@ -188,7 +186,22 @@ const ProductBatchForm = () => {
               shrink: true,
             }}
           />
-
+          {isUpdate && (
+            <FormControl fullWidth margin="normal">
+              <InputLabel htmlFor="status">Status</InputLabel>
+              <Select
+                labelId="status"
+                id="status"
+                value={status}
+                label="Status"
+                name="status"
+                onChange={handleChange}
+              >
+                <MenuItem value="Active">Active</MenuItem>
+                <MenuItem value="InActive">Inactive</MenuItem>
+              </Select>
+            </FormControl>
+          )}
           <Button sx={{ mt: 2 }} type="submit" fullWidth variant="contained" color="primary">
             Submit
           </Button>
@@ -200,7 +213,6 @@ const ProductBatchForm = () => {
         onClose={handleSnackbarClose}
         message={snackbarMessage}
       />
-        
     </Stack>
   );
 };
