@@ -44,8 +44,8 @@ vite:build: Build the project for production using Vite.
 **Packages**
 **Dependencies**
 
-@emotion/react: ^11.11.1
-@emotion/styled: ^11.11.0
+`@emotion/react: ^11.11.1`
+`@emotion/styled: ^11.11.0`
 @faker-js/faker: ^8.1.0
 @iconify/react: ^4.1.1
 @mui/lab: ^5.0.0-alpha.147
