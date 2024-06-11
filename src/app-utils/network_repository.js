@@ -417,6 +417,22 @@ const NetworkRepository = {
     }
   },
 
+  searchTransporter: async (mobile_num) => {
+    try {
+      const apiResponse = await NetworkAxios.getAxiosHttpMethod(
+        {
+          url:
+            `${ApiAppConstants.searchTransporter}?mobile_num=${mobile_num}`,
+          header: { authorization: auth },
+        }
+      );
+      return await apiResponse;
+    } catch (e) {
+      alert(e);
+      return e;
+    }
+  },
+
   lrUpdate: async (id, lrNumber) => {
     try {
       const data = new URLSearchParams();
@@ -1263,6 +1279,7 @@ const NetworkRepository = {
   },
 
   getProductDashboard: async (mill, year, month, product, seller) => {
+    console.log('hellohollohollo', `${ApiAppConstants.productDashboard}?mill=${mill}&year=${year}&month=${month}&product=${product}&seller=${seller}`)
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.productDashboard}?mill=${mill}&year=${year}&month=${month}&product=${product}&seller=${seller}`,
@@ -1945,7 +1962,7 @@ const NetworkRepository = {
         url: `${ApiAppConstants.warehouse}${id}/`,
         header: { 'authorization': auth },
         ContentType: 'application/json',
-        data: JSON.stringify({data})
+        data: JSON.stringify({ data })
       });
 
       alert("Warehouse Updated Successfully");
@@ -1966,7 +1983,7 @@ const NetworkRepository = {
         "approved_by": updated_by,
       };
 
-      console.log('inbound',data);
+      console.log('inbound', data);
 
       const response = await NetworkAxios.putAxiosHttpMethod({
         url: `${ApiAppConstants.inbound}`,
@@ -1990,7 +2007,7 @@ const NetworkRepository = {
         "approved_by": updated_by,
       };
 
-      console.log('inbound',data);
+      console.log('inbound', data);
 
       const response = await NetworkAxios.putAxiosHttpMethod({
         url: `${ApiAppConstants.outbound}`,

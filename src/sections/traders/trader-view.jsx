@@ -85,19 +85,33 @@ export default function TraderView() {
                 showSnackbar('Please add a name.', 'error');
             } else if (Number.isNaN(Number(numberController)) || numberController.length !== 10) {
                 showSnackbar('Please add a valid number.', 'error');
-
             } else {
+                const payload = {
+                    name: nameController,
+                    phone: numberController,
+                    userId: selectedUser.id
+                };
+
+                console.log('Payload:', payload); // Log the payload
+
                 const result = await NetworkRepository.traderPostView(nameController, numberController, selectedUser.id);
-                console.log('result', result)
-                setOpenDialog(false)
-                setNameController('')
-                setNumberController('')
-                showSnackbar('Trader created successfully.', 'success');
+                console.log('Result:', result); // Log the result from the server
+
+                if (result) {
+                    setOpenDialog(false);
+                    setNameController('');
+                    setNumberController('');
+                    showSnackbar('Trader created successfully.', 'success');
+                } else {
+                    showSnackbar('Failed to create trader.', 'error');
+                }
             }
         } catch (error) {
             console.error('Error adding trader:', error);
+            showSnackbar('Error adding trader. Please try again later.', 'error');
         }
     };
+
 
     const closeDialog
         = () => {

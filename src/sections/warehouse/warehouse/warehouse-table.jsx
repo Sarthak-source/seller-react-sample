@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
+import Label from 'src/components/label';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { updateWarehouse } from 'src/redux/actions/warehouse-update-action';
 import { useRouter } from 'src/routes/hooks';
@@ -58,9 +59,9 @@ export default function WarehouseTableView() {
         </Button>
       </Stack>
 
-      {loading ? ( 
-        <SkeletonLoader  marginTop='-100'/>
-      ) :(<TableContainer component={Paper}>
+      {loading ? (
+        <SkeletonLoader marginTop='-100' />
+      ) : (<TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
@@ -70,7 +71,7 @@ export default function WarehouseTableView() {
               <TableCell>Area</TableCell>
               <TableCell>Location</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell style={{ position: 'sticky', right: 0, zIndex: 0,  }}>Action</TableCell>
+              <TableCell style={{ position: 'sticky', right: 0, zIndex: 0, }}>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -81,7 +82,13 @@ export default function WarehouseTableView() {
                 <TableCell>{item.mill.name}</TableCell>
                 <TableCell>{item.area}</TableCell>
                 <TableCell>{item.location}</TableCell>
-                <TableCell>{item.is_active}</TableCell>
+                <TableCell>
+
+                  <Label>
+                    {item.is_active === 'Active' ? 'Active' : 'Inactive'}
+                  </Label>
+
+                </TableCell>
                 <TableCell align="right" style={{ position: 'sticky', right: 0, zIndex: 0, backgroundColor: theme.palette.common.white }}>
                   <IconButton onClick={() => handleUpdateWarehouse(item)}>
                     <Iconify icon="eva:edit-fill" />

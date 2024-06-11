@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
+import Label from 'src/components/label';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { updateProductBatch } from 'src/redux/actions/warehouse-update-action';
 import { useRouter } from 'src/routes/hooks';
@@ -90,7 +91,12 @@ export default function ProductsBatch() {
                 <TableCell>{product.batch_num}</TableCell>
                 <TableCell>{new Date(product.batch_start_date).toLocaleDateString()}</TableCell>
                 <TableCell>{new Date(product.batch_end_date).toLocaleDateString()}</TableCell>
-                <TableCell>{product.is_active}</TableCell>
+                <TableCell>
+                  <Label>
+                  {product.is_active==='Active'?'Active':'Inactive'}
+                  </Label>
+                </TableCell>
+
                 <TableCell align="right">
                   <IconButton onClick={() => handleUpdateProduct(product)}>
                     <Iconify icon="eva:edit-fill" />

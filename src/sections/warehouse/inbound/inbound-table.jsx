@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
+import Label from 'src/components/label';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { updateInbound } from 'src/redux/actions/warehouse-update-action';
 import { useRouter } from 'src/routes/hooks';
@@ -22,7 +23,6 @@ export default function InboundTable() {
 
   const handleOpenInboundTable = () => {
     dispatch(updateInbound({}));
-
     router.replace('/home/warehouse-management/add-inbound-form');
   };
 
@@ -33,7 +33,8 @@ export default function InboundTable() {
   };
 
   const handleApprove = async (order) => {
-    setReloading(true)
+    setInboundData([])
+    setReloading(prev => !prev);
     try {
       await NetworkRepository.inboundApprove({ id: order.id, updated_by: selectedUserConfig.seller.user, });
       setSnackbarSeverity('success');
@@ -104,7 +105,11 @@ export default function InboundTable() {
                 <TableCell>{order.from_warehouse ? order.from_warehouse.name : 'N/A'}</TableCell>
                 <TableCell>{order.created_by}</TableCell>
                 <TableCell>{order.approved_by || 'N/A'}</TableCell>
-                <TableCell>{order.is_active}</TableCell>
+                <TableCell>
+                  <Label>
+                  {order.is_active==='Active'?'Active':'Inactive'}
+                  </Label>
+                </TableCell>
                 <TableCell align="right">
                   <Stack direction="row">
                     <Tooltip title="Edit">
@@ -112,16 +117,13 @@ export default function InboundTable() {
                         <Iconify icon="eva:edit-fill" />
                       </IconButton>
                     </Tooltip>
-
                     <Tooltip title="Approve Inbound">
                       <IconButton disabled={order.approved_date} onClick={() => handleApprove(order)}>
                         <Iconify icon="material-symbols:order-approve" />
                       </IconButton>
                     </Tooltip>
-
                   </Stack>
                 </TableCell>
-
               </TableRow>
             ))}
           </TableBody>

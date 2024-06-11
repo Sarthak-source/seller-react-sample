@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 import Iconify from 'src/components/iconify';
+import Label from 'src/components/label';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { updateOutbound } from 'src/redux/actions/warehouse-update-action';
 import { useRouter } from 'src/routes/hooks';
@@ -30,7 +31,8 @@ export default function OutboundTable() {
   };
 
   const handleApprove = async (order) => {
-    setReloading(true)
+    setOutboundData([])
+    setReloading(prev => !prev);
     try {
       await NetworkRepository.outboundApprove({ id: order.id, updated_by: selectedUserConfig.seller.user, });
       setSnackbarMessage('Outbound order approved successfully!');
@@ -99,7 +101,11 @@ export default function OutboundTable() {
                   <TableCell>{order.to_warehouse ? order.to_warehouse.name : 'N/A'}</TableCell>
                   <TableCell>{order.created_by}</TableCell>
                   <TableCell>{order.approved_by || 'N/A'}</TableCell>
-                  <TableCell>{order.is_active}</TableCell>
+                  <TableCell>
+                    <Label>
+                    {order.is_active==='Active'?'Active':'Inactive'}
+                    </Label>
+                  </TableCell>
                   <TableCell align="right">
                     <Stack direction="row">
                       <IconButton onClick={() => handleUpdateOutboundTable(order)}>

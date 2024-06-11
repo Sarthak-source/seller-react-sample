@@ -153,7 +153,7 @@ const InboundForm = () => {
       }
     };
     fetchWareHouseBatchData();
-  }, [selectedUserConfig,loading]);
+  }, [selectedUserConfig]);
 
   useEffect(() => {
     const fetchProductBatchData = async () => {
@@ -208,7 +208,7 @@ const InboundForm = () => {
       setFormData({
         inboundNo: inbounds.inbound_num || '',
         warehouse: inbounds.ware_house.id || '',
-        inboundDate: inbounds.created_date || '',
+        inboundDate: inbounds.created_date ? inbounds.created_date.split('T')[0] : '',
         inboundType: inbounds.inbound_type || '',
         poNumber: inbounds.po_num || '',
         fromWarehouse: inbounds.from_warehouse || '',
@@ -254,6 +254,7 @@ const InboundForm = () => {
                   id="warehouse"
                   name="warehouse"
                   disabled={!isUpdate}
+                  variant= {!isUpdate?"filled":"outlined"}
                   value={formData.warehouse}
                   onChange={handleFormChange}
                 >
@@ -341,7 +342,7 @@ const InboundForm = () => {
                     <Autocomplete
                       id="product"
                       name="product"
-                      disabled={isUpdate}
+                      
                       options={productOptions}
                       getOptionLabel={(option) => option.product_type} // Use the property that represents the label for each option
                       value={productData.product}

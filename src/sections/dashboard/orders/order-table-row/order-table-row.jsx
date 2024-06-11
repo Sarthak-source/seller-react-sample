@@ -118,8 +118,17 @@ export default function OrdersTableRow({
         setNameController(event.target.value);
     };
 
-    const handleNumberChange = (event) => {
+    const handleNumberChange = async (event) => {
         setNumberController(event.target.value);
+        if (event.target.value.length===10) {
+            const data= await   NetworkRepository.searchTransporter(event.target.value)
+            console.log('dataHere',data)
+            setNameController(data.name)
+        }
+
+    
+        
+        
     };
 
     const closeDialog = () => {
@@ -140,6 +149,8 @@ export default function OrdersTableRow({
         } finally {
             setLoading(false);
             setOpenDialog(false);
+            setNameController('')
+            setNumberController('')
         }
 
     }
@@ -247,15 +258,7 @@ export default function OrdersTableRow({
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                 <DialogTitle>Assign Transporter</DialogTitle>
                 <DialogContent >
-                    <TextField
-                        name="remarks"
-                        label="Transporter Name"
-                        value={nameController}
-                        onChange={handleNameChange}
-                        fullWidth
-                        sx={{ marginBottom: 2, marginTop: 2 }}
-                    />
-                    <TextField
+                <TextField
                         name="number"
                         label="Enter transporter mobile number"
                         inputProps={{ maxLength: 10 }}
@@ -264,6 +267,15 @@ export default function OrdersTableRow({
                         fullWidth
                         sx={{ marginBottom: 2 }}
                     />
+                    <TextField
+                        name="remarks"
+                        label="Transporter Name"
+                        value={nameController}
+                        onChange={handleNameChange}
+                        fullWidth
+                        sx={{ marginBottom: 2, marginTop: 2 }}
+                    />
+
                     {/* Your dialog content goes here */}
                 </DialogContent>
                 <DialogActions>

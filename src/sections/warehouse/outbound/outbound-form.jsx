@@ -17,6 +17,25 @@ const OutboundForm = () => {
 
   const isUpdate = Object.keys(outbounds).length === 0;
 
+  useEffect(() => {
+    if (!isUpdate) {
+     
+      setFormData({
+        outboundNo: outbounds.outbound_num || '',
+        warehouse: outbounds.ware_house.id || '',
+        outboundDate: outbounds.created_date ? outbounds.created_date.split('T')[0] : '',
+        outboundType: outbounds.outbound_type || '',
+        poNumber: outbounds.po_num || '',
+        fromWarehouse: outbounds.from_warehouse || '',
+        createdBy: outbounds.created_by || '',
+        approvedBy: outbounds.approved_by || '',
+      });
+    }
+  }, [outbounds, isUpdate]);
+
+
+
+console.log('isUpdate',isUpdate,outbounds)
 
   console.log('outbounds', outbounds)
 
@@ -192,6 +211,8 @@ const OutboundForm = () => {
 
   }, [formData.warehouse]);
 
+  console.log('formData',formData)
+
   return (
     <Stack alignItems="center" justifyContent="center" sx={{ pt: 2 }}>
       <Card sx={{
@@ -211,17 +232,20 @@ const OutboundForm = () => {
             <TextField
               label="Outbound No"
               name="outboundNo"
+              disabled={!isUpdate}
               value={formData.outboundNo}
               onChange={handleFormChange}
               fullWidth
             />
 
-            <FormControl fullWidth>
+            <FormControl fullWidth >
               <InputLabel htmlFor="warehouse">Warehouse</InputLabel>
               <Select
                 id="warehouse"
                 name="warehouse"
+                disabled={!isUpdate}
                 value={formData.warehouse}
+                
                 onChange={handleFormChange}
               >
                 {warehouse.map(item => (
@@ -235,6 +259,7 @@ const OutboundForm = () => {
               label="Outbound Date"
               name="outboundDate"
               type="date"
+              disabled={!isUpdate}
               value={formData.outboundDate}
               onChange={handleFormChange}
               fullWidth
@@ -245,6 +270,7 @@ const OutboundForm = () => {
               <Select
                 id="outboundType"
                 name="outboundType"
+                disabled={!isUpdate}
                 value={formData.outboundType}
                 onChange={handleFormChange}
               >
@@ -359,6 +385,7 @@ const OutboundForm = () => {
               <Button
                 variant="contained"
                 color="primary"
+                disabled={!isUpdate}
                 onClick={addProduct}
               >
                 Add Product

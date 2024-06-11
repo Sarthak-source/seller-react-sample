@@ -73,7 +73,7 @@ export default function AppView() {
   const handleDateRangeChange = (ranges) => {
     setData({})
     setRecentInvoiceDataData({})
-    setRecentProductDashboard({}) 
+    setRecentProductDashboard({})
     setLoading(true);
     setSelectedRange(ranges.selection);
   };
@@ -83,7 +83,7 @@ export default function AppView() {
       setLoading(true);
       try {
         const formattedDate = format(date, "yyyy-MM-dd");
-        const invoiceStats = await NetworkRepository.getInvoiceStatsForDate(formattedDate, selectedOption.toString()??'',selectedProduct.toString() ?? '0',selectedUser.id);
+        const invoiceStats = await NetworkRepository.getInvoiceStatsForDate(formattedDate, selectedOption.toString() ?? '', selectedProduct.toString() ?? '0', selectedUser.id);
         setData(invoiceStats);
       } catch (error) {
         console.error('Error fetching invoice stats:', error);
@@ -97,7 +97,7 @@ export default function AppView() {
       try {
         const formattedStartDate = format(startDate, "yyyy-MM-dd");
         const formattedEndDate = format(endDate, "yyyy-MM-dd");
-        const invoiceStats = await NetworkRepository.getInvoiceStats(formattedStartDate, formattedEndDate, selectedOption.toString()??'',selectedProduct.toString() ?? '0',selectedUser.id);
+        const invoiceStats = await NetworkRepository.getInvoiceStats(formattedStartDate, formattedEndDate, selectedOption.toString() ?? '', selectedProduct.toString() ?? '0', selectedUser.id);
         setData(invoiceStats);
       } catch (error) {
         console.error('Error fetching invoice stats:', error);
@@ -111,8 +111,8 @@ export default function AppView() {
     } else {
       fetchInvoiceStatsForRange(selectedRange.startDate, selectedRange.endDate);
     }
-  }, [selectedRange, selectedOption,selectedProduct,selectedUser]);
-  
+  }, [selectedRange, selectedOption, selectedProduct, selectedUser]);
+
 
   useEffect(() => {
     const fetchLatestInvoice = async () => {
@@ -121,7 +121,7 @@ export default function AppView() {
       try {
         const formattedStartDate = format(selectedRange.startDate, "yyyy-MM-dd");
         const formattedEndDate = format(selectedRange.endDate, "yyyy-MM-dd");
-        const invoiceStats = await NetworkRepository.getRecentInvoices(selectedOption.toString(), formattedStartDate, formattedEndDate, selectedProduct.toString() ?? '0',selectedUser.id);
+        const invoiceStats = await NetworkRepository.getRecentInvoices(selectedOption.toString(), formattedStartDate, formattedEndDate, selectedProduct.toString() ?? '0', selectedUser.id);
         setRecentInvoiceDataData(invoiceStats);
       } catch (error) {
         console.error('Error fetching invoice stats:', error);
@@ -132,14 +132,22 @@ export default function AppView() {
 
     fetchLatestInvoice();
 
-  }, [selectedOption, selectedRange, selectedProduct,selectedUser]);
+  }, [selectedOption, selectedRange, selectedProduct, selectedUser]);
 
+
+  console.log('selectedUserLoo', selectedUser.id)
+  const seller = selectedUser.id;
 
   useEffect(() => {
     const fetchProductDashboard = async () => {
       setLoading(true);
       try {
-        const invoiceStats = await NetworkRepository.getProductDashboard(selectedOption, format(selectedRange.startDate, "yyyy"), format(selectedRange.startDate, "MM"), selectedProduct.toString() ?? '0',selectedUser.id);
+        const invoiceStats = await NetworkRepository.getProductDashboard(
+          selectedOption,
+          format(selectedRange.startDate, "yyyy"),
+          format(selectedRange.startDate, "MM"),
+          selectedProduct ?? '0',
+          seller);
         setRecentProductDashboard(invoiceStats);
       } catch (error) {
         console.error('Error fetching invoice stats:', error);
@@ -152,11 +160,8 @@ export default function AppView() {
       fetchProductDashboard();
     }
 
-  }, [selectedProduct, selectedRange, selectedOption,selectedUser]);
+  }, [selectedProduct, selectedRange, selectedOption, seller]);
 
-
-
-  
 
   console.log('datalalal', data);
 
