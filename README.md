@@ -5,43 +5,38 @@ This is the Sutra React web application developed by GoFlamingo. The project lev
 
 **Requirements**
 
-Node.js v18.x
+Node.js **v18.x**
 
 **Installation**
 
 To install the project dependencies, run the following command:
 
-bash
-Copy code
-yarn install
-Development
-To start the development server, run:
+| Task                   | Command        |
+|------------------------|----------------|
+| Install dependencies   | `yarn install` |
+| Start development      | `yarn dev`     |
+| Build for production   | `yarn build`   |
+| Deploy                 | `./deploy.sh`  |
 
-bash
-Copy code
-yarn dev
-Build
-To build the project for production, run:
 
-bash
-Copy code
-yarn build
-Scripts
 The project provides several scripts to streamline development and maintenance tasks:
 
-dev: Start the development server using Vite.
-start: Preview the production build using Vite.
-build: Build the project for production using Vite.
-lint: Lint the codebase using ESLint.
-lint:fix: Lint and fix issues in the codebase using ESLint.
-prettier: Format the codebase using Prettier.
-rm:all: Remove all build artifacts and dependencies.
-re:start: Clean the project, reinstall dependencies, and start the development server.
-re:build: Clean the project, reinstall dependencies, and build the project for production.
-re:build-npm: Clean the project, reinstall dependencies using npm, and build the project for production.
-dev:host: Start the development server with host binding.
-vite:start: Start the development server using Vite.
-vite:build: Build the project for production using Vite.
+| Script        | Description                                                                                   |
+|---------------|-----------------------------------------------------------------------------------------------|
+| dev           | Start the development server using Vite.                                                      |
+| start         | Preview the production build using Vite.                                                      |
+| build         | Build the project for production using Vite.                                                  |
+| lint          | Lint the codebase using ESLint.                                                               |
+| lint:fix      | Lint and fix issues in the codebase using ESLint.                                              |
+| prettier      | Format the codebase using Prettier.                                                            |
+| rm:all        | Remove all build artifacts and dependencies.                                                  |
+| re:start      | Clean the project, reinstall dependencies, and start the development server.                  |
+| re:build      | Clean the project, reinstall dependencies, and build the project for production.              |
+| re:build-npm  | Clean the project, reinstall dependencies using npm, and build the project for production.   |
+| dev:host      | Start the development server with host binding.                                                |
+| vite:start    | Start the development server using Vite.                                                       |
+| vite:build    | Build the project for production using Vite.                                                   |
+
 
 **Packages**
 **Dependencies**
