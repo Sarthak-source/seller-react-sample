@@ -6,7 +6,9 @@ This is the Sutra React web application developed by GoFlamingo. The project lev
 **Requirements**
 
 Node.js v18.x
-Installation
+
+**Installation**
+
 To install the project dependencies, run the following command:
 
 bash

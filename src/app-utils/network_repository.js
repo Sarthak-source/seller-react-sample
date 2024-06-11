@@ -1214,13 +1214,13 @@ const NetworkRepository = {
     }
   },
 
-  getInvoiceStats: async (from, to, mill, product) => {
+  getInvoiceStats: async (from, to, mill, product, seller) => {
     console.log('count124', `${ApiAppConstants.invoiceStats}?from_date=${from}&to_date=${to}&mill=${mill}&product=${product}`)
 
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url:
-          `${ApiAppConstants.invoiceStats}?from_date=${from}&to_date=${to}&mill=${mill}&product=${product}`,
+          `${ApiAppConstants.invoiceStats}?from_date=${from}&to_date=${to}&mill=${mill}&product=${product}&seller=${seller}`,
         header: { authorization: auth },
       });
 
@@ -1231,11 +1231,11 @@ const NetworkRepository = {
     }
   },
 
-  getInvoiceStatsForDate: async (date, mill, product) => {
+  getInvoiceStatsForDate: async (date, mill, product, seller) => {
     console.log('count124', `${ApiAppConstants.invoiceStats}?date=${date}&mill=${mill}&product=${product}`)
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.invoiceStats}?date=${date}&mill=${mill}&product=${product}`,
+        url: `${ApiAppConstants.invoiceStats}?date=${date}&mill=${mill}&product=${product}&seller=${seller}`,
         header: { authorization: auth },
       });
 
@@ -1262,10 +1262,10 @@ const NetworkRepository = {
     }
   },
 
-  getProductDashboard: async (mill, year, month, product) => {
+  getProductDashboard: async (mill, year, month, product, seller) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.productDashboard}?mill=${mill}&year=${year}&month=${month}&product=${product}`,
+        url: `${ApiAppConstants.productDashboard}?mill=${mill}&year=${year}&month=${month}&product=${product}&seller=${seller}`,
         header: { authorization: auth },
       });
 
@@ -1276,10 +1276,10 @@ const NetworkRepository = {
     }
   },
 
-  yearDispatches: async (mill) => {
+  yearDispatches: async (mill, seller) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.yearDispatches}?mill=${mill}`,
+        url: `${ApiAppConstants.yearDispatches}?mill=${mill}&seller=${seller}`,
         header: { authorization: auth },
       });
 
