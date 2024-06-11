@@ -1,6 +1,7 @@
 **Sutra React Web App**
 
 **Overview**
+
 This is the Sutra React web application developed by GoFlamingo. The project leverages several modern web development tools and libraries to ensure a robust, maintainable, and scalable codebase. The following sections detail the installation, development, and build processes, as well as a comprehensive list of the packages used in the project.
 
 **Requirements**
