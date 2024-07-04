@@ -34,10 +34,9 @@ export default function ProductMFGBatchForm() {
     const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
     const productMFGBatch = useSelector((state) => state.warehouseUpdate.productMFGbatches);
 
-    console.log('productMFGBatch', productMFGBatch)
+    console.log('productMFGBatchHello',productMFGBatch)
 
     const isUpdate = Object.keys(productMFGBatch).length !== 0;
-
 
     const availableUOMs = ['Mt', 'Qtl'];
 
@@ -64,20 +63,23 @@ export default function ProductMFGBatchForm() {
         }
     };
 
-    console.log('selectedUserConfig', selectedUserConfig)
-
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+    
         const formattedManufacturingDate = manufacturingDate ? formatDate(manufacturingDate) : null;
         const formattedExpiryDate = expiryDate ? formatDate(expiryDate) : null;
-
+    
         // Form validation (optional)
         if (!product || !plant || !manufacturingQty || !expiryDate || !uom) {
             alert('Please fill in all required fields.');
             return;
         }
-
+        
+        if (!(productData.length > 0)) {
+            alert('Batch is empty for the selected product, please add a batch');
+            return;
+        }
+    
         try {
             if (isUpdate) {
                 // Logic for updating existing entry
@@ -85,9 +87,8 @@ export default function ProductMFGBatchForm() {
                     mfgQty: manufacturingQty,
                     id: productMFGBatch.id,
                     updated_by: selectedUserConfig.seller.user
-                }
-                );
-
+                });
+    
                 setSnackbarMessage('Data updated successfully');
             } else {
                 // Logic for adding new entry
@@ -101,12 +102,12 @@ export default function ProductMFGBatchForm() {
                     uom,
                     selectedUserConfig.seller.user
                 );
-
+    
                 setSnackbarMessage('Data saved successfully');
             }
-
+    
             setSnackbarOpen(true);
-
+    
             // Clear the form after successful submission
             setProduct('');
             setPlant('');
@@ -115,13 +116,13 @@ export default function ProductMFGBatchForm() {
             setManufacturingQty('');
             setExpiryDate(null);
             setUOM('');
-
+    
         } catch (error) {
             setSnackbarMessage('Failed to save/update data');
             setSnackbarOpen(true);
         }
     };
-
+    
 
     const formatDate = (date) => {
         const formattedDate = new Date(date);
@@ -139,6 +140,7 @@ export default function ProductMFGBatchForm() {
             try {
                 setLoading(true);
                 const data = await NetworkRepository.getProductBatchList(product);
+                console.log('data', data)
                 setProductData(data);
             } catch (error) {
                 console.log(error);
@@ -152,10 +154,11 @@ export default function ProductMFGBatchForm() {
         }
     }, [product]);
 
-
     useEffect(() => {
         if (isUpdate) {
-            setProduct(productMFGBatch.id || '');
+            console.log('productMFGBatchdatat',productMFGBatch)
+            
+            setProduct(productMFGBatch.product || '');
             setPlant(productMFGBatch.mill || '');
             setBatchNumber(productMFGBatch.batch_num || '');
             setManufacturingDate(productMFGBatch.mfg_date ? dayjs(productMFGBatch.mfg_date) : null);
@@ -165,12 +168,22 @@ export default function ProductMFGBatchForm() {
         }
     }, [productMFGBatch, isUpdate]);
 
+    const getMillsProducts = () => {
+        const mills = selectedUserConfig.seller.mills || [];
+        const products = [];
+        mills.forEach(mill => {
+            products.push(...mill.products);
+        });
+        return products;
+    };
 
-    console.log('manufacturingDate', manufacturingDate)
+    const millsProducts = getMillsProducts();
+
+    console.log('product', product, 'data', millsProducts);
 
 
     return (
-        <Stack alignItems="center" justifyContent="center" sx={{ height: '100vh', pt: 2 }}>
+        <Stack alignItems="center" justifyContent="center" sx={{  pt: 2 }}>
             <Card sx={{
                 p: 5,
                 width: 1,
@@ -193,8 +206,8 @@ export default function ProductMFGBatchForm() {
                             name="product"
                             onChange={handleChange}
                         >
-                            {selectedUserConfig.seller.products.map((item) => (
-                                <MenuItem key={item.id} value={item.id}>{item.product_type}</MenuItem>
+                            {millsProducts.map((item) => (
+                                <MenuItem key={item.id} value={item.id}>{`${item.product_type.product_type} (${item.code})`}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
@@ -210,7 +223,7 @@ export default function ProductMFGBatchForm() {
                             required
                         >
                             {selectedUserConfig.seller.mills.map((item) => (
-                                <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                                <MenuItem key={item.id} value={item.id}>{item.address}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
@@ -282,17 +295,19 @@ export default function ProductMFGBatchForm() {
                         </Select>
                     </FormControl>
 
-                    <Button sx={{ mt: 2 }} type="submit" fullWidth variant="contained" color="primary">
-                        Save
-                    </Button>
-                    <Button sx={{ mt: 2 }} type="button" fullWidth variant="outlined" color="secondary">
-                        Cancel
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        {isUpdate ? 'Update' : 'Add'}
                     </Button>
                 </form>
             </Card>
             <Snackbar
                 open={snackbarOpen}
-                autoHideDuration={6000}
+                autoHideDuration={3000}
                 onClose={handleSnackbarClose}
                 message={snackbarMessage}
             />

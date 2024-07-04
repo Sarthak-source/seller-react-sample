@@ -1,13 +1,14 @@
 import { LoadingButton } from '@mui/lab';
-import { Alert, Box, Card, Container, Grid, Stack, TextField, Typography } from '@mui/material';
+import { Box, Card, Container, Grid, Snackbar, Stack, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
 
 export default function UpdateTraderForm() {
   const currentState = useSelector((state) => state.traders.updateTraderData);
-  const [loading, setLoading] = useState(false); // New state variable for loading state
-
+  const [loading, setLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const initialData = {
     bank_file: "",
@@ -17,7 +18,7 @@ export default function UpdateTraderForm() {
     trader_id: "",
     trader_name: "",
     gstin: "",
-    city: "kdp",
+    city: "",
     address: "",
     email: "",
     pin: ""
@@ -38,16 +39,15 @@ export default function UpdateTraderForm() {
         pan_file: currentState.pan_file || "",
         gst_file: currentState.gst_file || "",
         address_file: currentState.address_file || "",
-        trader_id: currentState.id || 176,
+        trader_id: currentState.id,
         gstin: currentState.billing_gstin.gstin || "",
         trader_name: currentState.name || "",
-        city: currentState.city || "kdp",
+        city: currentState.city || "",
         address: currentState.address || "",
         email: currentState.email || "",
         pin: currentState.pin || ""
       });
 
-      // Set filePreviews directly for testing purposes
       setFilePreviews({
         bank_file: currentState.bank_file,
         pan_file: currentState.pan_file,
@@ -83,7 +83,7 @@ export default function UpdateTraderForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Set loading to true when form is submitted
+    setLoading(true);
 
     try {
       console.log(formData);
@@ -102,22 +102,25 @@ export default function UpdateTraderForm() {
         formData.address_file
       );
 
-      // You can add further handling here based on the response
+      setSnackbarMessage('Trader data updated successfully!');
+      setSnackbarOpen(true);
     } catch (error) {
-      // Handle errors here
       console.error('Error occurred while updating trader data:', error);
+      setSnackbarMessage('Failed to update trader data. Please try again.');
+      setSnackbarOpen(true);
     } finally {
-      setLoading(false); // Set loading back to false regardless of success or failure
+      setLoading(false);
     }
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const isValidGSTIN = (gstin) => {
     const gstinPattern = /^\d{2}[A-Z]{5}\d{4}[A-Z]{1}\d[Z]{1}[A-Z\d]{1}$/;
     return gstinPattern.test(gstin);
   };
-
-  console.log('currentState', currentState)
 
   return (
     <Stack alignItems="center" justifyContent="center" sx={{ height: 1, pt: 2 }}>
@@ -194,7 +197,6 @@ export default function UpdateTraderForm() {
                   onChange={handleChange}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="PIN"
@@ -220,7 +222,6 @@ export default function UpdateTraderForm() {
                   }}
                 >
                   {filePreviews.bank_file ? "Change Bank File" : "Upload Bank File"}
-
                   <input
                     type="file"
                     name="bank_file"
@@ -231,10 +232,7 @@ export default function UpdateTraderForm() {
                 {filePreviews.bank_file && (
                   <Box mt={2}>
                     <img src={filePreviews.bank_file} alt="Bank File" style={{ maxWidth: '100%' }} />
-                    {!filePreviews.bank_file && <Alert severity="error">Address file not found</Alert>}
-
                   </Box>
-
                 )}
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -330,6 +328,12 @@ export default function UpdateTraderForm() {
           </form>
         </Container>
       </Card>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message={snackbarMessage}
+      />
     </Stack>
   );
 }

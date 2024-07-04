@@ -23,14 +23,11 @@ const ProductBatchForm = () => {
 
   const productBatch = useSelector((state) => state.warehouseUpdate.productBatches);
 
-  console.log('selectedUserConfig', selectedUserConfig);
-  console.log('lol', productBatch);
-
   const isUpdate = Object.keys(productBatch).length !== 0;
 
   const handleAutoGenerate = () => {
-    const randomBatchNumber = Math.floor(10000000 + Math.random() * 90000000); // Generate a random 8-digit number
-    setBatchNumber(randomBatchNumber.toString()); // Convert the number to a string and set it as the batch number
+    const randomBatchNumber = Math.floor(10000000 + Math.random() * 90000000);
+    setBatchNumber(randomBatchNumber.toString());
   };
 
   const handleChange = (event) => {
@@ -78,7 +75,13 @@ const ProductBatchForm = () => {
       }
     } else {
       try {
-        await NetworkRepository.postProductBatch(product, batchNumber, batchStartDate, batchEndDate, selectedUserConfig.seller.user);
+        await NetworkRepository.postProductBatch(
+          product,
+          batchNumber,
+          batchStartDate,
+          batchEndDate,
+          selectedUserConfig.seller.user
+        );
         setSnackbarMessage('Product batch added successfully');
         setSnackbarSeverity('success');
       } catch (error) {
@@ -96,13 +99,31 @@ const ProductBatchForm = () => {
 
   useEffect(() => {
     if (isUpdate) {
+      console.log('productBatch',productBatch)
       setProduct(productBatch.product); // Assuming productBatch has a product property
       setBatchNumber(productBatch.batch_num); // Assuming productBatch has a batch_num property
-      setBatchStartDate(productBatch.batch_start_date ? productBatch.batch_start_date.split('T')[0] : ''); // Extracting date part only
-      setBatchEndDate(productBatch.batch_end_date ? productBatch.batch_end_date.split('T')[0] : ''); // Extracting date part only
+      setBatchStartDate(
+        productBatch.batch_start_date ? productBatch.batch_start_date.split('T')[0] : ''
+      ); // Extracting date part only
+      setBatchEndDate(
+        productBatch.batch_end_date ? productBatch.batch_end_date.split('T')[0] : ''
+      ); // Extracting date part only
       setStatus(productBatch.is_active); // Assuming productBatch has an is_active property
     }
   }, [isUpdate, productBatch]);
+
+  const getMillsProducts = () => {
+    const mills = selectedUserConfig.seller.mills || [];
+    const products = [];
+    mills.forEach((mill) => {
+      products.push(...mill.products);
+    });
+    return products;
+  };
+
+  const millsProducts = getMillsProducts();
+
+  console.log('product', product, 'data', millsProducts);
 
   return (
     <Stack alignItems="center" justifyContent="center" sx={{ pt: 2 }}>
@@ -132,8 +153,8 @@ const ProductBatchForm = () => {
               name="product"
               onChange={handleChange}
             >
-              {selectedUserConfig.seller.products.map((item) => (
-                <MenuItem key={item.id} value={item.id}>{item.product_type}</MenuItem>
+              {millsProducts.map((item) => (
+                <MenuItem key={item.id} value={item.id}>{`${item.product_type.product_type} (${item.code})`}</MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -212,6 +233,7 @@ const ProductBatchForm = () => {
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
         message={snackbarMessage}
+        severity={snackbarSeverity}
       />
     </Stack>
   );

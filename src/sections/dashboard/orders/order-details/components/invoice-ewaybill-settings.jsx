@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Box, Checkbox, Dialog, DialogContent, DialogTitle, FormControlLabel, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Autocomplete, Box, Checkbox, Dialog, DialogContent, DialogTitle, FormControlLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -14,6 +14,13 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [selectedSupplyType, setSelectedSupplyType] = useState('');
   const [selectedSubType, setSelectedSubType] = useState('');
+
+  const [selectedSubEInvoiceType, setSelectedSubEInvoiceType] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedPort, setSelectedPort] = useState('');
+
+  const [selectedShip, setSelectedShip] = useState('');
+
   const [selectedDocumentType, setSelectedDocumentType] = useState('');
   const [selectedTransactionType, setSelectedTransactionType] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,6 +41,14 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
   const orderDocument = orderSummary.order.document;
 
   console.log('orderDocument', orderDocument, checkboxValues)
+
+  function getKeyByValue(object, value) {
+
+    return Object.keys(object).find(key => object[key] === value) === null ?
+      value :
+      Object.keys(object).find(key => object[key] === value);
+  }
+
 
 
   useEffect(() => {
@@ -56,7 +71,25 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
       if (orderSummary.order.transaction_type) {
         setSelectedTransactionType(orderSummary.order.transaction_type);
       }
-     
+
+      if (orderSummary.order.Port) {
+        setSelectedPort(orderSummary.order.Port);
+      }
+
+      if (orderSummary.order.e_invocie_sup_type) {
+        setSelectedSubEInvoiceType(orderSummary.order.e_invocie_sup_type);
+      }
+
+      if (orderSummary.order.country_code) {
+
+        setSelectedCountry(selectedUserConfig.country_code[orderSummary.order.country_code]);
+      }
+
+
+      if (orderSummary.order.ShipBNo) {
+        setSelectedShip(orderSummary.order.ShipBNo);
+      }
+
 
       if (orderSummary.order.document) {
         setCheckboxData(orderSummary.order.document.map(doc => doc.id));
@@ -64,12 +97,15 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
     }
   }, [
     orderDocument,
-    
     orderSummary.order.supply_type,
     orderSummary.order.sub_supply_type,
     orderSummary.order.document_type,
     orderSummary.order.document,
-    orderSummary.order.transaction_type,])
+    orderSummary.order.transaction_type,
+    orderSummary.order.Port,
+    orderSummary.order.country_code,
+    orderSummary.order.e_invocie_sup_type,
+    orderSummary.order.ShipBNo, selectedUserConfig.country_code])
 
   useEffect(() => {
     if (orderDocument && orderDocument.length > 0) {
@@ -147,12 +183,6 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
   useEffect(() => {
     console.log('verifyAndUpdate', result)
 
-    function getKeyByValue(object, value) {
-
-      return Object.keys(object).find(key => object[key] === value) === null ?
-        value :
-        Object.keys(object).find(key => object[key] === value);
-    }
 
 
     const verifyAndUpdate = async () => {
@@ -170,7 +200,11 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
           checkboxData,
           getKeyByValue(selectedUserConfig.suply_type, selectedSupplyType),
           getKeyByValue(selectedUserConfig.sub_suply_type, selectedSubType),
-          getKeyByValue(selectedUserConfig.document_type, selectedDocumentType)
+          getKeyByValue(selectedUserConfig.document_type, selectedDocumentType),
+          selectedSubEInvoiceType,
+          selectedShip,
+          selectedPort,
+          getKeyByValue(selectedUserConfig.country_code, selectedCountry),
         )
         setDialogOpen(false);
         setResult('')
@@ -189,15 +223,98 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
     selectedDocumentType,
     selectedUserConfig.suply_type,
     selectedUserConfig.sub_suply_type,
-    selectedUserConfig.document_type
+    selectedUserConfig.document_type,
+    selectedSubEInvoiceType,
+    selectedShip,
+    selectedPort,
+    selectedCountry,
+    selectedUserConfig.country_code,
+    selectedUserConfig.Port,
+
   ])
 
+
+  function getKeyByValueC(object, value) {
+
+
+    return Object.keys(object).find(key => object[key] === value);
+  }
+
+
+  console.log('selectedUserConfig.Port', getKeyByValue(selectedUserConfig.country_code, selectedCountry),)
 
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" width="400px">
+      <Typography variant='subtitle2' sx={{ mb: 2 }}>E-Invoice settings</Typography>
+      <Box sx={{ width: '100%' }}>
+
+        <Select
+          value={selectedSubEInvoiceType}
+          onChange={(e) => setSelectedSubEInvoiceType(e.target.value)}
+          sx={{ width: '100%', mb: 2 }}
+          size='small'
+          displayEmpty
+          inputProps={{ 'aria-label': 'Without label' }}
+        >
+          <MenuItem value={selectedSubEInvoiceType} disabled>
+
+            {selectedSubEInvoiceType.length === 0 ? 'Sub Type' : selectedUserConfig.e_invocie_sup_type[selectedSubEInvoiceType]}
+
+          </MenuItem>
+          {selectedUserConfig && selectedUserConfig.e_invocie_sup_type && Object.values(selectedUserConfig.e_invocie_sup_type).map((type) => (
+            <MenuItem key={type} value={type}>
+              {type}
+            </MenuItem>
+          ))}
+        </Select>
+
+
+        <TextField
+          label="Ship B.No"
+          value={selectedShip}
+          onChange={(e) => setSelectedShip(e.target.value)}
+          fullWidth
+          sx={{ width: '100%', mb: 2 }}
+        />
+
+
+        <Select
+          value={selectedPort}
+          onChange={(e) => setSelectedPort(e.target.value)}
+          sx={{ width: '100%', mb: 2 }}
+          size='small'
+          displayEmpty
+          inputProps={{ 'aria-label': 'Without label' }}
+        >
+          <MenuItem value="" disabled>
+            {selectedPort.length === 0 ? 'Select Port' : selectedUserConfig.Port[selectedPort]}
+          </MenuItem>
+          {Object.entries(selectedUserConfig.Port).map(([key, value]) => (
+            <MenuItem key={key} value={key}>
+              {value}
+            </MenuItem>
+          ))}
+        </Select>
+
+
+
+        <Autocomplete
+          value={selectedCountry}
+          onChange={(event, value) => setSelectedCountry(value)}
+          options={Object.values(selectedUserConfig.country_code)}
+          getOptionLabel={(option) => option}
+          renderInput={(params) => <TextField {...params} label="Country code" />}
+          sx={{ width: '100%', mb: 2 }}
+        />
+
+
+
+      </Box>
+
       <Typography variant='subtitle2' sx={{ mb: 2 }}>E-waybill settings</Typography>
       <Box sx={{ width: '100%' }}>
+
         <Select
           value={selectedSupplyType}
           onChange={(e) => setSelectedSupplyType(e.target.value)}
@@ -275,8 +392,7 @@ export default function InvoiceEwaybillSetting({ orderSummary }) {
         </Select>
 
       </Box>
-
-      <Typography variant='subtitle2' sx={{ mb: 2 }}>Invoice setting</Typography>
+      <Typography variant='subtitle2' sx={{ mb: 2 }}>Document setting</Typography>
 
       <Box display="flex" flexDirection="row" justifyContent="flex-start" alignItems="start" sx={{ flexWrap: 'wrap', mb: 2 }}>
         {checkboxLabels.map((label, index) => (

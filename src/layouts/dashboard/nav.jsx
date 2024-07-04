@@ -30,7 +30,9 @@ export default function Nav({ openNav, onCloseNav }) {
   const selectedUser = useSelector((state) => state.user.selectedUser);
   const [isHovered, setIsHovered] = useState(false);
 
-  
+  console.log('selectedUser',selectedUser)
+  const canAccessItem = selectedUser.seller_role;
+
 
   useEffect(() => {
     if (openNav) {
@@ -65,9 +67,11 @@ export default function Nav({ openNav, onCloseNav }) {
 
   const renderMenu = (
     <Stack component="nav" spacing={1} sx={{ px: 2 }}>
-      {navConfig.map((item) => (
-        <NavItem key={item.title} item={item} />
-      ))}
+      {navConfig
+        ?.filter(item => item.access_role.some(role => canAccessItem?.includes(role)))
+        .map(item => (
+          <NavItem key={item.title} item={item} />
+        ))}
     </Stack>
   );
 

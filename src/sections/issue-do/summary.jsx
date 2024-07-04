@@ -71,14 +71,6 @@ function SummaryScreen() {
                         }
                     }
                     await NetworkRepository.sendStoreHouseData(sendData);
-                    // Fluttertoast.showToast({
-                    //   msg: generateInvoiceSuc,
-                    //   toastLength: Toast.LENGTH_LONG
-                    // });
-                    // Get.off(() => PDFdemo2({
-                    //   tittle: "Invoice",
-                    //   url: `http://${ip}/get_doc/invoice/${props.data.id}`
-                    // }));
                 } catch (e) {
                     console.log(e.toString());
                 } finally {

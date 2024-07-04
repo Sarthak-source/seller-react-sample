@@ -20,7 +20,6 @@ export default function InboundTable() {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
-
   const handleOpenInboundTable = () => {
     dispatch(updateInbound({}));
     router.replace('/home/warehouse-management/add-inbound-form');
@@ -28,15 +27,19 @@ export default function InboundTable() {
 
   const handleUpdateInboundTable = (row) => {
     dispatch(updateInbound(row));
-
     router.replace('/home/warehouse-management/add-inbound-form');
   };
 
   const handleApprove = async (order) => {
-    setInboundData([])
-    setReloading(prev => !prev);
+    setTimeout(() => {
+      setInboundData([]);
+      setReloading((prev) => !prev);
+    }, 3000);
     try {
-      await NetworkRepository.inboundApprove({ id: order.id, updated_by: selectedUserConfig.seller.user, });
+      await NetworkRepository.inboundApprove({
+        id: order.id,
+        updated_by: selectedUserConfig.seller.user,
+      });
       setSnackbarSeverity('success');
       setSnackbarMessage('Inbound approved successfully');
       setSnackbarOpen(true);
@@ -45,7 +48,7 @@ export default function InboundTable() {
       setSnackbarMessage('Failed to approve inbound');
       setSnackbarOpen(true);
       console.error('Error approving inbound:', error);
-      setReloading(false)
+      setReloading(false);
     }
   };
 
@@ -64,8 +67,7 @@ export default function InboundTable() {
     fetchInboundBatchData();
   }, [reloading]);
 
-
-  console.log('datadata', inbounds)
+  console.log('datadata', inbounds);
 
   return (
     <Box>
@@ -78,57 +80,56 @@ export default function InboundTable() {
         </Button>
       </Stack>
       {loading ? (
-        <SkeletonLoader marginTop='-100' />
-      ) : (<TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Inbound #</TableCell>
-              <TableCell>Warehouse</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Sale Order No</TableCell>
-              <TableCell>To Warehouse</TableCell>
-              <TableCell>Created by</TableCell>
-              <TableCell>Approved by</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell align="right">Action</TableCell>
-
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {inbounds.inbound_data?.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell>{order.inbound_num}</TableCell>
-                <TableCell>{order.ware_house.name}</TableCell>
-                <TableCell>{order.inbound_type}</TableCell>
-                <TableCell>{order.po_num || 'N/A'}</TableCell>
-                <TableCell>{order.from_warehouse ? order.from_warehouse.name : 'N/A'}</TableCell>
-                <TableCell>{order.created_by}</TableCell>
-                <TableCell>{order.approved_by || 'N/A'}</TableCell>
-                <TableCell>
-                  <Label>
-                  {order.is_active==='Active'?'Active':'Inactive'}
-                  </Label>
-                </TableCell>
-                <TableCell align="right">
-                  <Stack direction="row">
-                    <Tooltip title="Edit">
-                      <IconButton onClick={() => handleUpdateInboundTable(order)}>
-                        <Iconify icon="eva:edit-fill" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Approve Inbound">
-                      <IconButton disabled={order.approved_date} onClick={() => handleApprove(order)}>
-                        <Iconify icon="material-symbols:order-approve" />
-                      </IconButton>
-                    </Tooltip>
-                  </Stack>
-                </TableCell>
+        <SkeletonLoader marginTop="-100" />
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Inbound #</TableCell>
+                <TableCell>Warehouse</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>Sale Order No</TableCell>
+                <TableCell>To Warehouse</TableCell>
+                <TableCell>Created by</TableCell>
+                <TableCell>Approved by</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell align="right">Action</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>)}
+            </TableHead>
+            <TableBody>
+              {inbounds.inbound_data?.map((order) => (
+                <TableRow key={order.id}>
+                  <TableCell>{order.inbound_num}</TableCell>
+                  <TableCell>{order.ware_house.name}</TableCell>
+                  <TableCell>{order.inbound_type}</TableCell>
+                  <TableCell>{order.po_num || 'N/A'}</TableCell>
+                  <TableCell>{order.from_warehouse ? order.from_warehouse.name : 'N/A'}</TableCell>
+                  <TableCell>{order.created_by?.first_name || 'N/A'}</TableCell>
+                  <TableCell>{order.approved_by?.first_name || 'N/A'}</TableCell>
+                  <TableCell>
+                    <Label>{order.is_active === 'Active' ? 'Active' : 'Inactive'}</Label>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Stack direction="row">
+                      <Tooltip title="Edit">
+                        <IconButton onClick={() => handleUpdateInboundTable(order)}>
+                          <Iconify icon="eva:edit-fill" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Approve Inbound">
+                        <IconButton disabled={!!order.approved_date} onClick={() => handleApprove(order)}>
+                          <Iconify icon="material-symbols:order-approve" />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

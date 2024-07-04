@@ -9,7 +9,17 @@ const OutboundForm = () => {
   const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
   const availableUOMs = ['Mt', 'Qtl'];
   const [uom, setUOM] = useState('');
-  const [productOptions, setProductOption] = useState(selectedUserConfig.seller.products);
+  const getMillsProducts = () => {
+    const mills = selectedUserConfig.seller.mills || [];
+    const products = [];
+    mills.forEach(mill => {
+      products.push(...mill.products);
+    });
+    return products;
+  };
+
+  const millsProducts = getMillsProducts();
+  const [productOptions, setProductOption] = useState(millsProducts);
   const [batchNumberOptions, setBatchNumberOptions] = useState([]);
   const [locationOptions, setLocationOptions] = useState([]);
 
@@ -17,9 +27,9 @@ const OutboundForm = () => {
 
   const isUpdate = Object.keys(outbounds).length === 0;
 
+  console.log('outbounds',outbounds)
   useEffect(() => {
     if (!isUpdate) {
-     
       setFormData({
         outboundNo: outbounds.outbound_num || '',
         warehouse: outbounds.ware_house.id || '',
@@ -27,15 +37,17 @@ const OutboundForm = () => {
         outboundType: outbounds.outbound_type || '',
         poNumber: outbounds.po_num || '',
         fromWarehouse: outbounds.from_warehouse || '',
-        createdBy: outbounds.created_by || '',
-        approvedBy: outbounds.approved_by || '',
+        createdBy: outbounds.created_by?.seller?.name || '',
+        approvedBy: outbounds.approved_by?.seller?.name || '',
       });
+
+      setProducts(outbounds.outbound_details)
     }
   }, [outbounds, isUpdate]);
 
 
 
-console.log('isUpdate',isUpdate,outbounds)
+  console.log('isUpdate', isUpdate, outbounds)
 
   console.log('outbounds', outbounds)
 
@@ -211,7 +223,7 @@ console.log('isUpdate',isUpdate,outbounds)
 
   }, [formData.warehouse]);
 
-  console.log('formData',formData)
+  console.log('formData', formData)
 
   return (
     <Stack alignItems="center" justifyContent="center" sx={{ pt: 2 }}>
@@ -229,23 +241,24 @@ console.log('isUpdate',isUpdate,outbounds)
 
         <form onSubmit={handleSubmit}>
           <Stack spacing={2}>
-            <TextField
+            {/* <TextField
               label="Outbound No"
               name="outboundNo"
               disabled={!isUpdate}
               value={formData.outboundNo}
               onChange={handleFormChange}
               fullWidth
-            />
+            /> */}
 
             <FormControl fullWidth >
-              <InputLabel htmlFor="warehouse">Warehouse</InputLabel>
+              <InputLabel htmlFor="warehouse">{isUpdate?"Warehouse":""}</InputLabel>
               <Select
                 id="warehouse"
                 name="warehouse"
                 disabled={!isUpdate}
-                value={formData.warehouse}
                 
+                value={formData.warehouse}
+
                 onChange={handleFormChange}
               >
                 {warehouse.map(item => (
@@ -274,16 +287,16 @@ console.log('isUpdate',isUpdate,outbounds)
                 value={formData.outboundType}
                 onChange={handleFormChange}
               >
-                <MenuItem value="Sale">Sale</MenuItem>
-                <MenuItem value="StockTransfer">Stock Transfer</MenuItem>
+                <MenuItem value="Sales">Sale</MenuItem>
+                <MenuItem value="Stock Transfer">Stock Transfer</MenuItem>
                 <MenuItem value="Adjustment">Adjustment</MenuItem>
                 <MenuItem value="Reversal">Reversal</MenuItem>
               </Select>
             </FormControl>
             <TextField
-              label="PO Number"
+              label="SO Number"
               name="poNumber"
-              disabled={formData.outboundType !== 'Purchase'}
+              disabled={formData.outboundType !== 'Stock Transfer'}
               value={formData.poNumber}
               onChange={handleFormChange}
               fullWidth
@@ -330,7 +343,7 @@ console.log('isUpdate',isUpdate,outbounds)
                 id="product"
                 name="product"
                 options={productOptions}
-                getOptionLabel={(option) => option.product_type} // Use the property that represents the label for each option
+                getOptionLabel={(option) => `${option.product_type.product_type} (${option.code})`} // Use the property that represents the label for each option
                 value={productData.product}
                 onChange={(event, newValue) => setProductData({ ...productData, product: newValue })}
                 renderInput={(params) => <TextField {...params} label="Product" />}
@@ -406,13 +419,13 @@ console.log('isUpdate',isUpdate,outbounds)
                 <TableBody>
                   {products.map((product, index) => (
                     <TableRow key={index}>
-                      <TableCell>{product.product.product_type}</TableCell>
-                      <TableCell>{product.batch_num.label}</TableCell>
+                      <TableCell>{product.product.code ? product.product.code : product.product.product_type}</TableCell>
+                      <TableCell>{product.batch_num.batch_num ? product.batch_num.batch_num : product.batch_num.label}</TableCell>
                       <TableCell>{product.qty}</TableCell>
                       <TableCell>{product.uom}</TableCell>
-                      <TableCell>{product.location.label}</TableCell>
+                      <TableCell>{product.location ? product.location.label : 'N/A'}</TableCell>
                       <TableCell>
-                        <Button variant="outlined" color="secondary" onClick={() => {
+                        <Button variant="outlined" disabled={!isUpdate} color="secondary" onClick={() => {
                           setProducts(products.filter((_, i) => i !== index));
                         }}>
                           Delete

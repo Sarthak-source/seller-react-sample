@@ -18,8 +18,7 @@ const ProductForm = () => {
   const selectedUser = useSelector((state) => state.user.selectedUser);
   const currentState = useSelector((state) => state.productUpdate.selectedProducts);
 
-  console.log('currentState', currentState)
-
+  const isUpdate = Object.keys(currentState).length === 0;
 
   const navigate = useNavigate();
 
@@ -30,7 +29,7 @@ const ProductForm = () => {
   };
 
   useEffect(() => {
-    if (currentState) {
+    if (currentState && currentState.product_type) {
       setProductType(currentState.product_type.id);
       setProductCode(currentState.code);
       setStatus(currentState.status.toLowerCase());
@@ -59,14 +58,21 @@ const ProductForm = () => {
     }
     setLoading(true);
     try {
-      const response = await NetworkRepository.createProduct(productType, productCode, selectedUser.id);
+      let response;
+      if (!isUpdate) {
+        alert('try again') // response = await NetworkRepository.updateProduct(currentState.id, productType, productCode, selectedUser.id);
+      } else {
+        response = await NetworkRepository.createProduct(productType, productCode, selectedUser.id);
+      }
       console.log(response);
       if (response.status === 200 && response.data.Success) {
         setSuccessMessage(response.data.Success);
         setOpenSnackbar(true); // Open the Snackbar
       }
     } catch (error) {
-      console.error('Error creating product:', error);
+      console.error(`Error ${isUpdate ? 'updating' : 'creating'} product:`, error);
+      setErrorMessage(`Failed to ${isUpdate ? 'update' : 'create'} product.`);
+      setOpenSnackbar(true);
     } finally {
       setLoading(false);
       nav();

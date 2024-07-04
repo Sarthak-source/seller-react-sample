@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useResponsive } from 'src/hooks/use-responsive';
 import { setToggleAction } from 'src/redux/actions/toggle-screen';
 import Header from './header';
@@ -18,20 +19,32 @@ export default function DashboardLayout({ children }) {
 
   const lgUp = useResponsive('up', 'lg');
   const [openNav, setOpenNav] = useState(lgUp);
+  const navigate = useNavigate();
+
+  const selectedUser = useSelector((state) => state.user.selectedUser);
 
 
-  console.log('toggle',toggle);
+
+  console.log('toggle', toggle);
   const dispatch = useDispatch();
 
+  useEffect(() => {
 
-  useEffect(()=>{
+    if (selectedUser.id === null) {
+      navigate(`/404`);
+    }
+
+  }, [navigate,selectedUser])
+
+
+  useEffect(() => {
 
     dispatch(setToggleAction(lgUp));
 
-  },[lgUp,dispatch])
+  }, [lgUp, dispatch])
 
-  useEffect(()=>{
-  },[toggle])
+  useEffect(() => {
+  }, [toggle])
 
 
   const handleOpenNav = () => {
@@ -50,7 +63,7 @@ export default function DashboardLayout({ children }) {
         }}
       >
 
-        {isFullScreen && toggle&& (<Nav openNav onCloseNav={() => setOpenNav(false)} />)}
+        {isFullScreen && toggle && (<Nav openNav onCloseNav={() => setOpenNav(false)} />)}
         <Main >{children}</Main>
       </Box>
     </>

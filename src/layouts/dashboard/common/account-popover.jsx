@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
@@ -11,6 +11,7 @@ import { alpha } from '@mui/material/styles';
 
 import { Stack } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { ip } from 'src/app-utils/api-constants';
 import Label from 'src/components/label';
 import { LongPressableBox } from 'src/components/long-press/long-press';
@@ -42,6 +43,16 @@ export default function AccountPopover() {
   const dispatch = useDispatch();
   const router = useRouter();
   const [checked, setChecked] = useState(localStorage.getItem('isTestEnvironment') === 'true');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+
+    if (selectedUser.id === null) {
+      navigate(`/404`);
+    }
+
+  }, [navigate,selectedUser])
+
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -89,7 +100,7 @@ export default function AccountPopover() {
             border: (theme) => `solid 2px ${theme.palette.background.default}`,
           }}
         >
-          {selectedUser.name.charAt(0).toUpperCase()}
+          {selectedUser?.name?.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
@@ -110,10 +121,10 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2 }}>
           <Typography variant="subtitle2" noWrap>
-            {selectedUser.name}
+            {selectedUser?.name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {selectedUser.phone_number}
+            {selectedUser?.phone_number}
           </Typography>
 
         </Box>

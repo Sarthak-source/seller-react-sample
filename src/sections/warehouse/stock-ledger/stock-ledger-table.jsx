@@ -67,7 +67,7 @@ export default function StockLedgerTable() {
                   <TableCell>{entry.outbound ? entry.outbound.outbound_num : 'N/A'}</TableCell>
                   <TableCell>{new Date(entry.date).toLocaleDateString()}</TableCell>
                   <TableCell>{entry.product.code}</TableCell>
-                  <TableCell>{entry.batch_num.batch_num}</TableCell>
+                  <TableCell>{entry.batch_num ? entry.batch_num.batch_num : 'N/A'}</TableCell>
                   <TableCell>{entry.qty}</TableCell>
                 </TableRow>
               ))}

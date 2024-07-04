@@ -69,6 +69,8 @@ const useRenderFunctions = () => {
         return 'Remarks';
       case 'ewaybill':
         return 'Eway Bill';
+      case 'irn':
+        return 'IRN no';
       case 'product':
         return 'Product';
       case 'cgst':
@@ -141,6 +143,7 @@ const useRenderFunctions = () => {
     transporterName: true,
     millName: true,
     status: true,
+    irn: true,
     traderName: true,
     deliveryOrderNo: true,
     invoiceNo: true,
@@ -225,6 +228,8 @@ const useRenderFunctions = () => {
         return item.mill;
       case 'traderName':
         return item.trader_name;
+      case 'irn':
+        return item.irn;
       case 'deliveryOrderNo':
         return item.delivery_order?.do_num;
       case 'invoiceNo':

@@ -9,7 +9,19 @@ const InboundForm = () => {
   const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
   const availableUOMs = ['Mt', 'Qtl'];
   const [uom, setUOM] = useState('');
-  const [productOptions, setProductOption] = useState(selectedUserConfig.seller.products);
+
+  const getMillsProducts = () => {
+    const mills = selectedUserConfig.seller.mills || [];
+    const products = [];
+    mills.forEach(mill => {
+      products.push(...mill.products);
+    });
+    return products;
+  };
+
+  const millsProducts = getMillsProducts();
+
+  const [productOptions, setProductOption] = useState(millsProducts);
   const [batchNumberOptions, setBatchNumberOptions] = useState([]);
   const [locationOptions, setLocationOptions] = useState([]);
   console.log('batchNumberOptions', batchNumberOptions)
@@ -20,7 +32,6 @@ const InboundForm = () => {
   const isUpdate = Object.keys(inbounds).length === 0;
 
 
-  console.log('inbounds',inbounds)
 
   const [formData, setFormData] = useState({
     inboundNo: '',
@@ -204,7 +215,7 @@ const InboundForm = () => {
 
   useEffect(() => {
     if (!isUpdate) {
-     
+
       setFormData({
         inboundNo: inbounds.inbound_num || '',
         warehouse: inbounds.ware_house.id || '',
@@ -212,16 +223,19 @@ const InboundForm = () => {
         inboundType: inbounds.inbound_type || '',
         poNumber: inbounds.po_num || '',
         fromWarehouse: inbounds.from_warehouse || '',
-        createdBy: inbounds.created_by || '',
-        approvedBy: inbounds.approved_by || '',
+        createdBy: inbounds.created_by?.seller?.name || '',
+        approvedBy: inbounds.approved_by?.seller?.name || '',
       });
+
+      setProducts(inbounds.inbound_details)
     }
   }, [inbounds, isUpdate]);
-  
-  
 
 
   console.log('products', products)
+
+  console.log('inboundsformData', inbounds,formData)
+
 
   return (
     <Stack alignItems="center" justifyContent="center" sx={{ pt: 2 }}>
@@ -239,22 +253,21 @@ const InboundForm = () => {
         <Card sx={{ p: 3, mb: 3 }}>
           <form onSubmit={handleSubmit}>
             <Stack spacing={2}>
-              <TextField
+              {/* <TextField
                 label="Inbound No"
                 name="inboundNo"
                 value={formData.inboundNo}
                 disabled={!isUpdate}
                 onChange={handleFormChange}
                 fullWidth
-              />
+              /> */}
 
               <FormControl fullWidth>
-                <InputLabel htmlFor="warehouse">Warehouse</InputLabel>
+                <InputLabel htmlFor="warehouse">{isUpdate?"Warehouse":""}</InputLabel>
                 <Select
                   id="warehouse"
                   name="warehouse"
-                  disabled={!isUpdate}
-                  variant= {!isUpdate?"filled":"outlined"}
+                  disabled={!isUpdate} // variant={!isUpdate ? "filled" : "outlined"}
                   value={formData.warehouse}
                   onChange={handleFormChange}
                 >
@@ -320,6 +333,7 @@ const InboundForm = () => {
               <TextField
                 label="Created by"
                 name="createdBy"
+                focused={formData.approvedBy?.seller?.name!==null}
                 value={formData.createdBy}
                 onChange={handleFormChange}
                 fullWidth
@@ -328,7 +342,8 @@ const InboundForm = () => {
               <TextField
                 label="Approved By Employee"
                 name="approvedBy"
-                value={formData.approvedBy}
+                focused={formData.approvedBy?.seller?.name===null}
+                value={formData.approvedBy?.seller?.name}
                 onChange={handleFormChange}
                 fullWidth
                 disabled
@@ -342,14 +357,14 @@ const InboundForm = () => {
                     <Autocomplete
                       id="product"
                       name="product"
-                      
                       options={productOptions}
-                      getOptionLabel={(option) => option.product_type} // Use the property that represents the label for each option
+                      getOptionLabel={(option) => `${option.product_type.product_type} (${option.code})`} // Assuming 'name' is the property you want to use
                       value={productData.product}
                       onChange={(event, newValue) => setProductData({ ...productData, product: newValue })}
                       renderInput={(params) => <TextField {...params} label="Product" />}
                       fullWidth
                     />
+
                   </Grid>
                   <Grid item xs={6}>
                     <Autocomplete
@@ -407,7 +422,7 @@ const InboundForm = () => {
                     </FormControl>
                   </Grid>
                   <Grid item xs={6}>
-                    <Button variant="contained" onClick={addProduct}>
+                    <Button variant="contained" disabled={!isUpdate} onClick={addProduct}>
                       <Box m={1}>
                         Add Product
                       </Box>
@@ -420,7 +435,6 @@ const InboundForm = () => {
                 <Table>
                   <TableHead>
                     <TableRow>
-                     
                       <TableCell>Product</TableCell>
                       <TableCell>Batch Number</TableCell>
                       <TableCell>Quantity</TableCell>
@@ -432,14 +446,13 @@ const InboundForm = () => {
                   <TableBody>
                     {products.map((product, index) => (
                       <TableRow key={index}>
-                       
-                        <TableCell>{product.product.product_type}</TableCell>
-                        <TableCell>{product.batch_num.value}</TableCell>
+                        <TableCell>{product.product.code ? product.product.code : product.product.product_type}</TableCell>
+                        <TableCell>{product.batch_num?.batch_num ? product.batch_num.batch_num : product.batch_num?.label}</TableCell>
                         <TableCell>{product.qty}</TableCell>
                         <TableCell>{product.uom}</TableCell>
-                        <TableCell>{product.location.value}</TableCell>
+                        <TableCell>{product.location ? product.location.label : 'N/A'}</TableCell>
                         <TableCell>
-                          <Button disabled={!isUpdate} variant="outlined" color="secondary" onClick={() => {
+                          <Button variant="outlined" disabled={!isUpdate} color="secondary" onClick={() => {
                             setProducts(products.filter((_, i) => i !== index));
                           }}>
                             Delete
@@ -449,10 +462,11 @@ const InboundForm = () => {
                     ))}
                   </TableBody>
                 </Table>
+
               </TableContainer>
             </Box>
             <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 3 }}>
-              <Button variant="contained" color="primary" type="submit">Save</Button>
+              <Button variant="contained" disabled={!isUpdate} color="primary" type="submit">Save</Button>
               <Button variant="outlined" color="secondary" onClick={handleCancel}>Cancel</Button>
             </Stack>
           </form>

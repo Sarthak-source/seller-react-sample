@@ -31,10 +31,14 @@ export default function OutboundTable() {
   };
 
   const handleApprove = async (order) => {
-    setOutboundData([])
-    setReloading(prev => !prev);
+    
+    setTimeout(() => {
+      setOutboundData([]);
+      setReloading(prev => !prev);
+    }, 3000);
+
     try {
-      await NetworkRepository.outboundApprove({ id: order.id, updated_by: selectedUserConfig.seller.user, });
+      await NetworkRepository.outboundApprove({ id: order.id, updated_by: selectedUserConfig.seller.user });
       setSnackbarMessage('Outbound order approved successfully!');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
@@ -43,7 +47,7 @@ export default function OutboundTable() {
       setSnackbarMessage('Failed to approve outbound order.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
-      setReloading(false)
+      setReloading(false);
     }
   };
 
@@ -62,6 +66,8 @@ export default function OutboundTable() {
     };
     fetchOutboundBatchData();
   }, [reloading]);
+
+  console.log('outbounds', outbounds);
 
   return (
     <Box>
@@ -99,11 +105,11 @@ export default function OutboundTable() {
                   <TableCell>{order.outbound_type}</TableCell>
                   <TableCell>{order.sale_order_num || 'N/A'}</TableCell>
                   <TableCell>{order.to_warehouse ? order.to_warehouse.name : 'N/A'}</TableCell>
-                  <TableCell>{order.created_by}</TableCell>
-                  <TableCell>{order.approved_by || 'N/A'}</TableCell>
+                  <TableCell>{order.created_by.first_name || order.created_by.username || 'N/A'}</TableCell>
+                  <TableCell>{order.approved_by ? (order.approved_by.first_name || order.approved_by.username) : 'N/A'}</TableCell>
                   <TableCell>
                     <Label>
-                    {order.is_active==='Active'?'Active':'Inactive'}
+                      {order.is_active === 'Active' ? 'Active' : 'Inactive'}
                     </Label>
                   </TableCell>
                   <TableCell align="right">

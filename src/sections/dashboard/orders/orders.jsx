@@ -83,10 +83,10 @@ export default function OrdersView() {
     };
 
     useEffect(() => {
-        const fetchOrdersData = async (ordersPage, status, millId) => {
+        const fetchOrdersData = async (ordersPage, status, millId, text) => {
             try {
                 setLoading(true);
-                const data = await NetworkRepository.allOrders(status, ordersPage, millId, selectedUser.id);
+                const data = await NetworkRepository.allOrders(status, ordersPage, millId, selectedUser.id, text);
                 console.log('here', data.results)
                 setTotalDataCount(data.count);
 
@@ -97,8 +97,8 @@ export default function OrdersView() {
                 setLoading(false); // Set loading to false when data is fetched (whether successful or not)
             }
         };
-        fetchOrdersData(page, querySteps[activeStep], selectedMill.id);
-    }, [page, pagination, querySteps, selectedMill, activeStep, currentState, selectedUser.id]);
+        fetchOrdersData(page, querySteps[activeStep], selectedMill.id, searchTerm);
+    }, [page, pagination, querySteps, selectedMill, activeStep, currentState, selectedUser.id, searchTerm]);
 
 
     const handleSort = (event, id) => {
@@ -152,7 +152,7 @@ export default function OrdersView() {
         loading: `${formatQuantity(row, 'yet_to_load', row.yet_to_load)} ${row.tender_head.product.product_type.unit}`,
         dispatched: `${formatQuantity(row, 'dispatched_qty', row.dispatched_qty)} ${row.tender_head.product.product_type.unit}`,
         balance: `${formatQuantity(row, 'available_qty', row.available_qty)} ${row.tender_head.product.product_type.unit}`,
-        remark:row.remark,
+        remark: row.remark,
         order: row,
     }));
 
@@ -202,7 +202,7 @@ export default function OrdersView() {
 
     return (
         <>
-           {isFullScreen && (  <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+            {isFullScreen && (<Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                 <Typography variant="h4">Orders</Typography>
                 <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenSelfOrder}>
                     Self order
@@ -231,79 +231,81 @@ export default function OrdersView() {
                 </Stepper>
             </Box>
 
-            {!loading ? (
-                <Card>
+
+            <Card>
 
 
-                    <TableToolbar
-                        numSelected={selected.length}
-                        onDownload={handleExportCSV}
-                        onFullScreen={() => fullScreen()}
-                        label='Search orders..'
-                    />
-                    <Scrollbar>
-                        <TableContainer sx={{ height:  '70vh', overflow: 'auto' }}>
-                            <Table stickyHeader sx={{ minWidth: 800 }}>
-                                <SharedTableHead
-                                    order={order}
-                                    orderBy={orderBy}
-                                    rowCount={ordersData.length}
-                                    numSelected={selected.length}
-                                    onRequestSort={handleSort}
-                                    headLabel={orderHeaderRow}
+                <TableToolbar
+                    numSelected={selected.length}
+                    onDownload={handleExportCSV}
+                    onFullScreen={() => fullScreen()}
+                    label='Search orders..'
+                />
+                <Scrollbar>
+                    <TableContainer sx={{ height: '70vh', overflow: 'auto' }}>
+                        <Table stickyHeader sx={{ minWidth: 800 }}>
+                            <SharedTableHead
+                                order={order}
+                                orderBy={orderBy}
+                                rowCount={ordersData.length}
+                                numSelected={selected.length}
+                                onRequestSort={handleSort}
+                                headLabel={orderHeaderRow}
+                            />
+                            <TableBody>
+                                {!loading
+                                    ? dataFormated.map((row) => (
+                                        <OrderTableRow
+                                            key={row.ordersId}
+                                            ordersId={row.ordersId}
+                                            traderName={row.traderName}
+                                            millName={row.millName}
+                                            date={row.date}
+                                            price={row.price}
+                                            status={row.status}
+                                            tenderType={row.tenderType}
+                                            productType={row.productType}
+                                            grade={row.grade}
+                                            season={row.season}
+                                            sale={row.sale}
+                                            loading={row.loading}
+                                            dispatched={row.dispatched}
+                                            balance={row.balance}
+                                            remark={row.remark}
+                                            order={row.order}
+                                        />
+                                    ))
+                                    : (
+                                        <Box sx={{ display: 'flex', justifyContent: 'center', marginLeft: 2, alignItems: 'center', height: '250px', transform: 'scaleX(90)' }}>
+                                            <SkeletonLoader />
+                                        </Box>
+                                    )
+                                }
+                                <TableEmptyRows
+                                    height={77}
+                                    emptyRows={emptyRows(page - 1, rowsPerPage / 15, dataFiltered.length)}
                                 />
-                                <TableBody>
-                                    {dataFormated
-                                        .map((row) => (
-                                            <OrderTableRow
-                                                key={row.ordersId}
-                                                ordersId={row.ordersId}
-                                                traderName={row.traderName}
-                                                millName={row.millName}
-                                                date={row.date}
-                                                price={row.price}
-                                                status={row.status}
-                                                tenderType={
-                                                    row.tenderType}
-                                                productType={row.productType}
-                                                grade={row.grade}
-                                                season={row.season}
-                                                sale={row.sale}
-                                                loading={row.loading}
-                                                dispatched={row.dispatched}
-                                                balance={row.balance}
-                                                remark={row.remark}
-                                                order={row.order}
-                                            />
-                                        ))}
+                            </TableBody>
 
-                                    <TableEmptyRows
-                                        height={77}
-                                        emptyRows={emptyRows(page - 1, rowsPerPage / 15, dataFiltered.length)}
-                                    />
 
-                                    {notFound && <TableNoData query={searchTerm} />}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Scrollbar>
+                            {notFound && <TableNoData query={searchTerm} />}
 
-                    <TablePagination
-                        page={page}
-                        component="div"
-                        count={ordersData.length}
-                        rowsPerPage={rowsPerPage}
-                        nextIconButtonProps={{ disabled: page >= totalPages }}
-                        backIconButtonProps={{ disabled: !(page > 1) }}
-                        onPageChange={handleChangePage}
-                        rowsPerPageOptions={[15, 30, 45]}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </Card>) : (
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-                    <SkeletonLoader />
-                </Box>
-            )}
+                        </Table>
+                    </TableContainer>
+                </Scrollbar>
+
+                <TablePagination
+                    page={page}
+                    component="div"
+                    count={ordersData.length}
+                    rowsPerPage={rowsPerPage}
+                    nextIconButtonProps={{ disabled: page >= totalPages }}
+                    backIconButtonProps={{ disabled: !(page > 1) }}
+                    onPageChange={handleChangePage}
+                    rowsPerPageOptions={[15, 30, 45]}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            </Card>
         </>
     );
 }

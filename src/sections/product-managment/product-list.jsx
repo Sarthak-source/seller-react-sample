@@ -70,7 +70,7 @@ export default function ProductTableView() {
     const notFound = !dataFiltered.length;
 
     const handleOpenProduct = () => {
-        dispatch(selectProductData(null));
+        dispatch(selectProductData({}));
         router.replace('/home/products/add-products');
     }
 

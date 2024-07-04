@@ -90,8 +90,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -137,9 +137,9 @@ const NetworkRepository = {
     }
   },
 
-  allOrders: async (status, page, millId, sellerId) => {
+  allOrders: async (status, page, millId, sellerId, text) => {
     try {
-      const ordersUrl = `${ApiAppConstants.orderListView}?seller=${sellerId}&status=${status}&page=${page}&mill_pk=${millId || ''}`;
+      const ordersUrl = text !== '' ? `${ApiAppConstants.orderListView}?seller=${sellerId}&status=${status}&mill_pk=${millId || ''}&characters=${text}` : `${ApiAppConstants.orderListView}?seller=${sellerId}&status=${status}&page=${page}&mill_pk=${millId || ''}`;
 
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: ordersUrl,
@@ -340,10 +340,10 @@ const NetworkRepository = {
       data.append("mill", mill.toString());
       data.append("product", product.toString());
       data.append("qty", qty.toString());
-      data.append("price", price.toString());
+      data.append("price", price);
       data.append("seller", seller.toString());
       data.append("remark", remark);
-      data.append("is_exclusive", isExclusive.toString());
+      data.append("is_exclusive", isExclusive);
       data.append("tender_type", tenderType);
       traderIdsArray.forEach((traderId) => {
         data.append("trader_ids", traderId);
@@ -380,8 +380,8 @@ const NetworkRepository = {
 
       const data = new URLSearchParams();
 
-      data.append("price", price.toString());
-      data.append("freight_rate", freight_rate.toString());
+      data.append("price", price);
+      data.append("freight_rate", freight_rate);
       data.append("qty", qty.toString());
       data.append("trader", sellerId);
       data.append("tender", tender.toString());
@@ -395,8 +395,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -484,8 +484,8 @@ const NetworkRepository = {
 
       return apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -521,8 +521,8 @@ const NetworkRepository = {
 
       return apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -537,8 +537,8 @@ const NetworkRepository = {
       });
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -555,8 +555,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -598,8 +598,8 @@ const NetworkRepository = {
       });
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -643,8 +643,8 @@ const NetworkRepository = {
       });
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -660,8 +660,8 @@ const NetworkRepository = {
       });
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -677,8 +677,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -822,7 +822,7 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      return console.log(e.toString());
+      return console.log(e);
     }
   },
 
@@ -833,6 +833,10 @@ const NetworkRepository = {
     supType,
     subSupType,
     docType,
+     invoiceSupType,
+     shipBNo,
+     port,
+     countryCode,
   ) => {
     try {
       const data = JSON.stringify({
@@ -840,7 +844,11 @@ const NetworkRepository = {
         'document': documents,
         'supply_type': supType,
         'sub_supply_type': subSupType,
-        'document_type': docType
+        'document_type': docType,
+        "e_invocie_sup_type": invoiceSupType,
+        "ShipBNo": shipBNo,
+        "Port": port,
+        "country_code": countryCode,
       });
 
       console.log('eoiSetting212', data, {
@@ -860,8 +868,8 @@ const NetworkRepository = {
         });
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -878,8 +886,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -893,8 +901,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -914,8 +922,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -935,8 +943,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -961,8 +969,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -982,8 +990,8 @@ const NetworkRepository = {
       console.log('paymentHeadUpdateStatus', await apiResponse)
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1010,8 +1018,8 @@ const NetworkRepository = {
       });
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1061,8 +1069,8 @@ const NetworkRepository = {
       });
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1075,8 +1083,8 @@ const NetworkRepository = {
       })
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1089,8 +1097,8 @@ const NetworkRepository = {
       })
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1104,15 +1112,15 @@ const NetworkRepository = {
         url: `${ApiAppConstants.sendOtp}`,
         header: { 'authorization': auth },
         data: {
-          "mobile": mobile.toString(),
+          "mobile": mobile,
           "vehicle": vehicleNo.toString(),
           "seller_pk": sellerId
         },
       });
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1154,8 +1162,8 @@ const NetworkRepository = {
 
       return apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1171,8 +1179,8 @@ const NetworkRepository = {
 
       return apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1187,8 +1195,8 @@ const NetworkRepository = {
       })
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1226,7 +1234,7 @@ const NetworkRepository = {
 
       return apiResponse;
     } catch (e) {
-      return e.toString();
+      return e;
     }
   },
 
@@ -1242,8 +1250,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1257,8 +1265,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1273,8 +1281,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1288,8 +1296,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1302,8 +1310,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1316,8 +1324,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1330,8 +1338,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1374,8 +1382,8 @@ const NetworkRepository = {
       });
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1419,8 +1427,8 @@ const NetworkRepository = {
       });
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1433,8 +1441,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1452,8 +1460,27 @@ const NetworkRepository = {
 
       return apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
+    }
+  },
+
+  updateProduct: async (productType, code, seller) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.product}create/`,
+        data: {
+          product_type: productType,
+          code,
+          seller
+        },
+        header: { authorization: auth },
+      });
+
+      return apiResponse;
+    } catch (e) {
+      alert(e);
+      return e;
     }
   },
 
@@ -1466,13 +1493,14 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
   getAddressList: async (seller) => {
     try {
+      console.log(`data link ${ApiAppConstants.sellerAddressList}?seller=${seller}`)
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.sellerAddressList}?seller=${seller}`,
         header: { authorization: auth },
@@ -1480,8 +1508,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1501,7 +1529,7 @@ const NetworkRepository = {
   ) => {
     try {
       const formData = new FormData();
-      formData.append("trader_name", traderName.toString());
+      formData.append("trader_name", traderName);
       formData.append("trader_id", traderId.toString());
       formData.append("gstin", gstin);
       formData.append("city", city);
@@ -1546,8 +1574,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1561,8 +1589,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1576,8 +1604,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1591,8 +1619,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1606,8 +1634,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1620,8 +1648,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1634,8 +1662,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1669,8 +1697,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1714,8 +1742,8 @@ const NetworkRepository = {
 
       return await apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1779,8 +1807,8 @@ const NetworkRepository = {
 
       return apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1824,8 +1852,8 @@ const NetworkRepository = {
 
       return apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1870,8 +1898,8 @@ const NetworkRepository = {
 
       return apiResponse;
     } catch (e) {
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1908,8 +1936,8 @@ const NetworkRepository = {
       return apiResponse.body;
     } catch (e) {
       console.error(e);
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1938,8 +1966,8 @@ const NetworkRepository = {
       return apiResponse;
     } catch (e) {
       console.error(e);
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1970,8 +1998,8 @@ const NetworkRepository = {
       return apiResponse;
     } catch (e) {
       console.error(e);
-      alert(e.toString());
-      return e.toString();
+      alert(e);
+      return e;
     }
   },
 
@@ -1995,7 +2023,7 @@ const NetworkRepository = {
       return response.data;
     } catch (error) {
       console.error('Error:', error);
-      return error.toString();
+      return error;
     }
   },
 
