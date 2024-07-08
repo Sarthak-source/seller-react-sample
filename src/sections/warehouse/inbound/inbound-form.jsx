@@ -42,6 +42,7 @@ const InboundForm = () => {
     fromWarehouse: '',
     createdBy: selectedUserConfig.seller.name,
     approvedBy: '',
+    mill: '',
   });
 
   const [products, setProducts] = useState([]);
@@ -76,8 +77,7 @@ const InboundForm = () => {
   const addProduct = () => {
     console.log('productData', productData)
     if (
-      productData.product &&
-      productData.batch_num &&
+      productData.product && // productData.batch_num &&
       productData.qty &&
       productData.uom &&
       productData.location
@@ -98,11 +98,9 @@ const InboundForm = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-
-
     const formattedProducts = products.map(product => ({
       product: product.product.id,
-      batch_num: product.batch_num.value,
+      batch_num: product?.batch_num?.value??null,
       qty: product.qty,
       uom: product.uom,
       location: product.location.value,
@@ -147,6 +145,7 @@ const InboundForm = () => {
       fromWarehouse: '',
       createdBy: selectedUserConfig.seller.name,
       approvedBy: selectedUserConfig.seller.name,
+      mill: '',
     });
     setProducts([]);
   };
@@ -155,7 +154,7 @@ const InboundForm = () => {
     const fetchWareHouseBatchData = async () => {
       try {
         setLoading(true);
-        const data = await NetworkRepository.getWarehouseList(selectedUserConfig.seller.id);
+        const data = await NetworkRepository.getWarehouseList(formData.mill);
         setWarehouseData(data);
       } catch (error) {
         console.error(error);
@@ -164,7 +163,7 @@ const InboundForm = () => {
       }
     };
     fetchWareHouseBatchData();
-  }, [selectedUserConfig]);
+  }, [formData.mill]);
 
   useEffect(() => {
     const fetchProductBatchData = async () => {
@@ -225,6 +224,7 @@ const InboundForm = () => {
         fromWarehouse: inbounds.from_warehouse || '',
         createdBy: inbounds.created_by?.seller?.name || '',
         approvedBy: inbounds.approved_by?.seller?.name || '',
+        mill: '',
       });
 
       setProducts(inbounds.inbound_details)
@@ -234,7 +234,7 @@ const InboundForm = () => {
 
   console.log('products', products)
 
-  console.log('inboundsformData', inbounds,formData)
+  console.log('inboundsformData', selectedUserConfig.seller.mills)
 
 
   return (
@@ -262,16 +262,37 @@ const InboundForm = () => {
                 fullWidth
               /> */}
 
+
+              <Stack spacing={2}>
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="mill">Mill</InputLabel>
+                  <Select
+                    id="mill"
+                    name="mill"
+                    value={formData.mill}
+                    onChange={handleFormChange}
+                  >
+                    {selectedUserConfig.seller.mills.map(mill => (
+                      <MenuItem key={mill.id} value={mill.id}>
+                        {mill.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                {/* Your other form fields */}
+              </Stack>
+
+
               <FormControl fullWidth>
-                <InputLabel htmlFor="warehouse">{isUpdate?"Warehouse":""}</InputLabel>
+                <InputLabel htmlFor="warehouse">{isUpdate ? "Warehouse" : ""}</InputLabel>
                 <Select
                   id="warehouse"
                   name="warehouse"
-                  disabled={!isUpdate} // variant={!isUpdate ? "filled" : "outlined"}
+                  disabled={!isUpdate || !formData.mill}
                   value={formData.warehouse}
                   onChange={handleFormChange}
                 >
-                  {warehouse.map(item => (
+                  {warehouse?.map(item => (
                     <MenuItem key={item.id} value={item.id}>
                       {item.name} ({item.code})
                     </MenuItem>
@@ -304,14 +325,14 @@ const InboundForm = () => {
                   <MenuItem value="Reversal">Reversal</MenuItem>
                 </Select>
               </FormControl>
-              <TextField
+              {!(formData.inboundType !== 'Purchase') && (<TextField
                 label="PO Number"
                 name="poNumber"
-                disabled={formData.inboundType !== 'Purchase'}
+
                 value={formData.poNumber}
                 onChange={handleFormChange}
                 fullWidth
-              />
+              />)}
 
               <FormControl fullWidth>
                 <InputLabel htmlFor="fromWarehouse">From Warehouse</InputLabel>
@@ -333,7 +354,7 @@ const InboundForm = () => {
               <TextField
                 label="Created by"
                 name="createdBy"
-                focused={formData.approvedBy?.seller?.name!==null}
+                focused={formData.approvedBy?.seller?.name !== null}
                 value={formData.createdBy}
                 onChange={handleFormChange}
                 fullWidth
@@ -342,7 +363,7 @@ const InboundForm = () => {
               <TextField
                 label="Approved By Employee"
                 name="approvedBy"
-                focused={formData.approvedBy?.seller?.name===null}
+                focused={formData.approvedBy?.seller?.name === null}
                 value={formData.approvedBy?.seller?.name}
                 onChange={handleFormChange}
                 fullWidth
@@ -447,7 +468,9 @@ const InboundForm = () => {
                     {products.map((product, index) => (
                       <TableRow key={index}>
                         <TableCell>{product.product.code ? product.product.code : product.product.product_type}</TableCell>
-                        <TableCell>{product.batch_num?.batch_num ? product.batch_num.batch_num : product.batch_num?.label}</TableCell>
+                        <TableCell>
+                          {product.batch_num ? (product.batch_num.batch_num || product.batch_num.label || 'N/A') : 'N/A'}
+                        </TableCell>
                         <TableCell>{product.qty}</TableCell>
                         <TableCell>{product.uom}</TableCell>
                         <TableCell>{product.location ? product.location.label : 'N/A'}</TableCell>

@@ -93,7 +93,7 @@ export default function AccountPopover() {
       >
         <Avatar
           src='/assets/logo.png'
-          alt={selectedUser.name}
+          alt={selectedUser?.name}
           sx={{
             width: 45,
             height: 45,

@@ -1,17 +1,17 @@
 import SvgColor from 'src/components/svg-color';
 
-// ----------------------------------------------------------------------
-
+// Function to generate SVG icons with dynamic colors
 const icon = (name) => (
   <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
 );
 
+// Array of navigation configuration objects
 const navConfig = [
   {
     title: 'home',
     path: '/home',
-    icon: icon('ic_home'),
-    access_role: [1]
+    icon: icon('ic_home'), // Example of using the icon function to generate an icon component
+    access_role: [1] // Array of roles that can access this navigation item (role IDs)
   },
   {
     title: 'dashboard',
@@ -23,7 +23,7 @@ const navConfig = [
     title: 'reports',
     path: '/home/reports',
     icon: icon('ic_report'),
-    access_role: [1, 4, 2],
+    access_role: [1, 4, 2], // Example of multiple roles allowed to access this item
   },
   {
     title: 'Warehouse',
@@ -37,7 +37,6 @@ const navConfig = [
     icon: icon('ic_trading'),
     access_role: [1, 2],
   },
-
   {
     title: 'sellers',
     path: '/home/sellers-view',
@@ -62,7 +61,6 @@ const navConfig = [
     icon: icon('ic_vehilcle'),
     access_role: [1],
   },
-
   {
     title: 'Address',
     path: '/home/address-view',
@@ -73,8 +71,9 @@ const navConfig = [
     title: 'profile',
     path: '/home/profile',
     icon: icon('ic_lock'),
-    access_role: [1, 2, 3, 4, 5, 6],
+    access_role: [1, 2, 3, 4, 5, 6], // Example of allowing multiple roles to access this item
   },
+  // Uncomment or add additional items as needed for your application
   // {
   //   title: 'Not found',
   //   path: '/404',

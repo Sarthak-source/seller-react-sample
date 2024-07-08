@@ -33,7 +33,7 @@ export default function WarehouseTableView() {
     const fetchWareHouseBatchData = async () => {
       try {
         setLoading(true);
-        const data = await NetworkRepository.getWarehouseList(selectedUserConfig.seller.id);
+        const data = await NetworkRepository.getWarehouseList('');
         setWarehouseData(data);
       } catch (error) {
         console.error(error);

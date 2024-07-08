@@ -31,7 +31,7 @@ export default function OutboundTable() {
   };
 
   const handleApprove = async (order) => {
-    
+
     setTimeout(() => {
       setOutboundData([]);
       setReloading(prev => !prev);
@@ -50,6 +50,8 @@ export default function OutboundTable() {
       setReloading(false);
     }
   };
+
+  
 
   useEffect(() => {
     const fetchOutboundBatchData = async () => {
@@ -87,6 +89,7 @@ export default function OutboundTable() {
             <TableHead>
               <TableRow>
                 <TableCell>Outbound #</TableCell>
+                <TableCell>Mill</TableCell>
                 <TableCell>Warehouse</TableCell>
                 <TableCell>Type</TableCell>
                 <TableCell>Sale Order No</TableCell>
@@ -101,6 +104,7 @@ export default function OutboundTable() {
               {outbounds.Outbound_data?.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell>{order.outbound_num}</TableCell>
+                  <TableCell>{order.ware_house.mill.name}</TableCell>
                   <TableCell>{order.ware_house.name}</TableCell>
                   <TableCell>{order.outbound_type}</TableCell>
                   <TableCell>{order.sale_order_num || 'N/A'}</TableCell>

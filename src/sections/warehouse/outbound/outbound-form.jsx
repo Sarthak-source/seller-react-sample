@@ -27,7 +27,7 @@ const OutboundForm = () => {
 
   const isUpdate = Object.keys(outbounds).length === 0;
 
-  console.log('outbounds',outbounds)
+  console.log('outbounds', outbounds)
   useEffect(() => {
     if (!isUpdate) {
       setFormData({
@@ -39,6 +39,7 @@ const OutboundForm = () => {
         fromWarehouse: outbounds.from_warehouse || '',
         createdBy: outbounds.created_by?.seller?.name || '',
         approvedBy: outbounds.approved_by?.seller?.name || '',
+        mill: '',
       });
 
       setProducts(outbounds.outbound_details)
@@ -60,6 +61,7 @@ const OutboundForm = () => {
     toWarehouse: '',
     createdBy: selectedUserConfig.seller.name,
     approvedBy: '',
+    mill: '',
   });
 
   const [products, setProducts] = useState([]);
@@ -93,8 +95,7 @@ const OutboundForm = () => {
 
   const addProduct = () => {
     if (
-      productData.product &&
-      productData.batch_num &&
+      productData.product && // productData.batch_num &&
       productData.qty &&
       productData.uom &&
       productData.location
@@ -117,7 +118,7 @@ const OutboundForm = () => {
 
     const formattedProducts = products.map(product => ({
       product: product.product.id,
-      batch_num: product.batch_num.value,
+      batch_num: product?.batch_num?.value??null,
       qty: product.qty,
       uom: product.uom,
       location: product.location.value,
@@ -158,6 +159,7 @@ const OutboundForm = () => {
       toWarehouse: '',
       createdBy: selectedUserConfig.seller.name,
       approvedBy: selectedUserConfig.seller.name,
+      mill: '',
     });
     setProducts([]);
   };
@@ -166,7 +168,7 @@ const OutboundForm = () => {
     const fetchWareHouseBatchData = async () => {
       try {
         setLoading(true);
-        const data = await NetworkRepository.getWarehouseList(selectedUserConfig.seller.id);
+        const data = await NetworkRepository.getWarehouseList(formData.mill);
         setWarehouseData(data);
       } catch (error) {
         console.error(error);
@@ -175,7 +177,7 @@ const OutboundForm = () => {
       }
     };
     fetchWareHouseBatchData();
-  }, [selectedUserConfig]);
+  }, [formData.mill]);
 
   useEffect(() => {
     const fetchProductBatchData = async () => {
@@ -250,18 +252,37 @@ const OutboundForm = () => {
               fullWidth
             /> */}
 
+            <Stack spacing={2}>
+              <FormControl fullWidth>
+                <InputLabel htmlFor="mill">Mill</InputLabel>
+                <Select
+                  id="mill"
+                  name="mill"
+                  value={formData.mill}
+                  onChange={handleFormChange}
+                >
+                  {selectedUserConfig.seller.mills.map(mill => (
+                    <MenuItem key={mill.id} value={mill.id}>
+                      {mill.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {/* Your other form fields */}
+            </Stack>
+
             <FormControl fullWidth >
-              <InputLabel htmlFor="warehouse">{isUpdate?"Warehouse":""}</InputLabel>
+              <InputLabel htmlFor="warehouse">{isUpdate ? "Warehouse" : ""}</InputLabel>
               <Select
                 id="warehouse"
                 name="warehouse"
-                disabled={!isUpdate}
-                
+                disabled={!isUpdate || !formData.mill}
+
                 value={formData.warehouse}
 
                 onChange={handleFormChange}
               >
-                {warehouse.map(item => (
+                {warehouse?.map(item => (
                   <MenuItem key={item.id} value={item.id}>
                     {item.name} ({item.code})
                   </MenuItem>
@@ -420,7 +441,9 @@ const OutboundForm = () => {
                   {products.map((product, index) => (
                     <TableRow key={index}>
                       <TableCell>{product.product.code ? product.product.code : product.product.product_type}</TableCell>
-                      <TableCell>{product.batch_num.batch_num ? product.batch_num.batch_num : product.batch_num.label}</TableCell>
+                      <TableCell>
+                        {product.batch_num ? (product.batch_num.batch_num || product.batch_num.label || 'N/A') : 'N/A'}
+                      </TableCell>
                       <TableCell>{product.qty}</TableCell>
                       <TableCell>{product.uom}</TableCell>
                       <TableCell>{product.location ? product.location.label : 'N/A'}</TableCell>

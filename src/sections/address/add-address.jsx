@@ -33,7 +33,7 @@ const AddAddress = ({ openDialog, setOpenDialog, selectedAddress }) => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
-    console.log('selectedAddress',selectedAddress)
+    console.log('selectedAddress', selectedAddress)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -208,7 +208,7 @@ const AddAddress = ({ openDialog, setOpenDialog, selectedAddress }) => {
                     fullWidth
                     sx={{ marginTop: 2 }}
                 />
-                <Select
+                {!selectedAddress && (<Select
                     labelId="select-trader-label"
                     value={selectedTrader}
                     fullWidth
@@ -224,7 +224,7 @@ const AddAddress = ({ openDialog, setOpenDialog, selectedAddress }) => {
                             {trader.name}
                         </MenuItem>
                     ))}
-                </Select>
+                </Select>)}
             </DialogContent>
             <DialogActions>
                 <Button onClick={addOrUpdateAddress}>

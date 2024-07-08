@@ -4,7 +4,7 @@ const storedUser = localStorage.getItem('user');
 const storedSelectedUser = storedUser ? JSON.parse(storedUser) : null;
 
 const storedUserConfig = localStorage.getItem('userConfig');
-const storedSelectedUserConfig = storedUser ? JSON.parse(storedUserConfig) : null;
+const storedSelectedUserConfig = storedUserConfig ? JSON.parse(storedUserConfig) : null;
 
 const initialState = {
     selectedUser: storedSelectedUser,

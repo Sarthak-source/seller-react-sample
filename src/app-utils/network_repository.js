@@ -1595,10 +1595,10 @@ const NetworkRepository = {
   },
 
 
-  getWarehouseList: async (seller) => {
+  getWarehouseList: async (mill) => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.warehouse}?seller=${seller}`,
+        url: `${ApiAppConstants.warehouse}?mill=${mill}`,
         header: { authorization: auth },
       });
 
@@ -2009,6 +2009,31 @@ const NetworkRepository = {
         "inbound": id,
         "approved_date": new Date().toISOString(),
         "approved_by": updated_by,
+        "is_active":"Active"
+      };
+
+      console.log('inbound', data);
+
+      const response = await NetworkAxios.putAxiosHttpMethod({
+        url: `${ApiAppConstants.inbound}`,
+        header: { 'authorization': auth },
+        data,
+      })
+
+      console.log('Inbound Approve Response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error:', error);
+      return error;
+    }
+  },
+
+  inboundReject: async ({ id, updated_by }) => {
+    try {
+      const data = {
+        "inbound": id,
+        "rejected_by": updated_by,
+        "is_active":"Rejected"
       };
 
       console.log('inbound', data);

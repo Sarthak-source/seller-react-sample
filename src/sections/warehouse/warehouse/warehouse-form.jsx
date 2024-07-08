@@ -16,6 +16,7 @@ const WarehouseForm = () => {
     warehouseArea: '',
     locationInPlant: '',
     status: '',
+    
   });
 
   const [locations, setLocations] = useState([]);
@@ -42,10 +43,7 @@ const WarehouseForm = () => {
     const fetchWareHouseBatchData = async () => {
       try {
         setLoading(true);
-        console.log('selectedUserConfig.seller.id',selectedUserConfig.seller.id)
-        const data = await NetworkRepository.getWarehouseList(selectedUserConfig.seller.id);
-       
-       
+        const data = await NetworkRepository.getWarehouseList(formData.plant);
         setWarehouseData(data);
       } catch (error) {
         console.error(error);
@@ -54,7 +52,7 @@ const WarehouseForm = () => {
       }
     };
     fetchWareHouseBatchData();
-  }, [selectedUserConfig]);
+  }, [formData.plant]);
 
   useEffect(()=>{
     const fetchLocationBatchData = async () => {
