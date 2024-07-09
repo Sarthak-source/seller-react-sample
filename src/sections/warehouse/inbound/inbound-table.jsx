@@ -167,12 +167,12 @@ export default function InboundTable() {
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Approve Inbound">
-                        <IconButton disabled={!!order.approved_date} onClick={() => handleOpen(order, 'Approve Inbound?')}>
+                        <IconButton disabled={!!order?.approved_date} onClick={() => handleOpen(order, 'Approve Inbound?')}>
                           <Iconify icon="material-symbols:order-approve" />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Reject Inbound">
-                        <IconButton disabled={!!order.approved_date} onClick={() => handleOpen(order, 'Reject Inbound?')}>
+                        <IconButton disabled={!!order?.rejected_date} onClick={() => handleOpen(order, 'Reject Inbound?')}>
                           <Iconify icon="ic:outline-cancel" />
                         </IconButton>
                       </Tooltip>

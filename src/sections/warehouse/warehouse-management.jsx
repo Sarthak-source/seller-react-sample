@@ -53,19 +53,20 @@ export default function WarehouseView() {
           backgroundColor: '#f9fafb',
         }}
       >
-        <Tab label="Product batch" style={{ marginLeft: '-16px' }} />
+        <Tab label="Warehouse" style={{ marginLeft: '-16px' }} />
+        <Tab label="Product batch" />
         <Tab label="Product batch MFG" />
-        <Tab label="Warehouse" />
         <Tab label="Inbound" />
         <Tab label="Outbound" />
         <Tab label="Stock Ledger" />
+        <Tab label="Warehouse Reports" />
       </Tabs>
       <Box sx={{
         paddingTop: '65px'
       }}>
-        {tab === 0 && <ProductsBatch />}
-        {tab === 1 && <ProductsManufacturing />}
-        {tab === 2 && <WarehouseTableView />}
+        {tab === 0 && <WarehouseTableView />}
+        {tab === 1 && <ProductsBatch />}
+        {tab === 2 && <ProductsManufacturing />}
         {tab === 3 && <InboundTable />}
         {tab === 4 && <OutboundTable />}
         {tab === 5 && <StockLedgerTable />}

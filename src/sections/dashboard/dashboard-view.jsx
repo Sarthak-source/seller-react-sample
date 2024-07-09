@@ -24,9 +24,6 @@ export default function DashboardView() {
 
   const fullScreenState = useSelector((state) => state.fullScreen.fullScreenState);
 
-  
-
-
   const selectTabState = (event, newValue) => {
     dispatch(selectDashboardTab(newValue));
     setTab(newValue)

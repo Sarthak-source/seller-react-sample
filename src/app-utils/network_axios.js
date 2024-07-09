@@ -112,7 +112,7 @@ const NetworkAxiosOptions = {
     },
 
 
-    async postAxiosHttpMethod({ url, data, header, ContentType = 'application/x-www-form-urlencoded' }) {
+    async postAxiosHttpMethod({ url, data, header, ContentType = 'application/x-www-form-urlencoded', errorDataNeed = false }) {
         try {
             console.log('postAxiosHttpMethod', `${this.endPointUrl}${url}`)
             const response = await this.axiosOptions.post(`${this.endPointUrl}${url}`, data, {
@@ -123,8 +123,14 @@ const NetworkAxiosOptions = {
             });
             return response.data;
         } catch (error) {
-            console.error('Error:', error);
-            throw error.response.data.detail;
+            console.log('loadingInstructionUpdateHelele', error.response.data)
+            if (errorDataNeed) {
+                console.error('loadingInstructionUpdateHelele', error);
+                throw error;
+            } else {
+                console.error('Error:', error);
+                throw error.response.data.detail;
+            }
         }
     },
 

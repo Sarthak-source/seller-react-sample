@@ -151,6 +151,7 @@ const WarehouseForm = () => {
         );
 
         setSnackbarMessage('Data saved successfully');
+        handleCancel();
       }
     } catch (error) {
       setSnackbarMessage('Failed to save data');

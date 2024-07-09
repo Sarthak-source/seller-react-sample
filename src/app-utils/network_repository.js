@@ -711,6 +711,7 @@ const NetworkRepository = {
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url: `${ApiAppConstants.loadingInstructionUpdate}`,
         data,
+        errorDataNeed:true,
         ContentType: 'application/json',
         header: {
           'authorization': auth
@@ -720,8 +721,10 @@ const NetworkRepository = {
       console.log('apiResponse', apiResponse)
 
       // log(apiResponse['body']);
+      console.log('loadingInstructionUpdateHelele',apiResponse)
       return apiResponse;
     } catch (error) {
+      console.log('loadingInstructionUpdateHelele',error)
       // Extract error response data from Axios error object
       if (error.response) {
         console.log('Error response:', error.response.data);
@@ -2036,7 +2039,7 @@ const NetworkRepository = {
         "is_active":"Rejected"
       };
 
-      console.log('inbound', data);
+      console.log('jdjdkdkdlslsldmdm', data);
 
       const response = await NetworkAxios.putAxiosHttpMethod({
         url: `${ApiAppConstants.inbound}`,

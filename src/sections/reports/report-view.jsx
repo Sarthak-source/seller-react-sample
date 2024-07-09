@@ -16,14 +16,28 @@ import WarehouseReportView from './warehouse-report/warehouse-report';
 
 // ----------------------------------------------------------------------
 
+
+/**
+ * ReportView Component
+ *
+ * Renders a dashboard for selecting and displaying various reports.
+ *
+ * @returns {JSX.Element}
+ */
+
 export default function ReportView() {
-  const [tab, setTab] = useState(0);
-  const [tabNew, setTabNew] = useState(0);
+  const [tab, setTab] = useState(0); // State for warehouse report tabs
+  const [tabNew, setTabNew] = useState(0); // State for dispatch report tabs
   const [anchorEl, setAnchorEl] = useState(null);
   const [selected, setSelected] = useState('');
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
+  /**
+   * Handle click event to open Popover
+   *
+   * @param {Event} event - Click event
+   */
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -32,6 +46,11 @@ export default function ReportView() {
     setAnchorEl(null);
   };
 
+  /**
+   * Handle menu item click to select a report category
+   *
+   * @param {string} val - Selected report category
+   */
   const menuClick = (val) => {
     setSelected(val);
     handleClose();
@@ -45,6 +64,7 @@ export default function ReportView() {
           <Iconify icon={open ? "icon-park-outline:up-c" : "icon-park-outline:down-c"} />
           {selected || 'Select a report'}
         </Button>
+        {/* Popover for selecting report category */}
         <Popover
           id={id}
           open={open}
@@ -107,6 +127,7 @@ export default function ReportView() {
         </>
       ) : (
         <>
+          {/* Render tabs based on selected report category */}
           {selected === 'Warehouse reports' && (
             <>
               <Tabs
@@ -161,6 +182,7 @@ export default function ReportView() {
                 <Tab label="Dispatch report" style={{ marginLeft: '-16px' }} />
                 <Tab label="Order report" />
               </Tabs>
+              {/* Render corresponding report view based on tab selection */}
               {tabNew === 0 && <DispatchReportView />}
               {tabNew === 1 && <OrderReportView />}
             </>

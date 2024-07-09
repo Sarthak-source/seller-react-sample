@@ -5,11 +5,25 @@ import { useState } from 'react';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import * as XLSX from 'xlsx';
 
+
+/**
+ * RenderHtmlFromLink Component
+ *
+ * @param {string} link - The URL of the HTML content to fetch and render.
+ *
+ * @returns {JSX.Element}
+ */
+
 const RenderHtmlFromLink = ({ link }) => {
   const [htmlContent, setHtmlContent] = useState('');
   const [loading, setLoading] = useState(true);
 
   const width = window.resizeTo(window.innerWidth, window.innerHeight);
+
+
+  /**
+   * Fetch HTML content from the provided link and sanitize it.
+   */
 
   const fetchHtml = async () => {
     try {
@@ -85,11 +99,20 @@ const RenderHtmlFromLink = ({ link }) => {
 
   fetchHtml();
 
+  /**
+   * Download the rendered HTML content as a PDF.
+   */
+
   const downloadPDF = () => {
     const newWindow = window.open('', '_blank');
     newWindow.document.write(htmlContent);
     newWindow.print();
   };
+
+
+  /**
+   * Download the rendered HTML content as an Excel file.
+   */
 
   const downloadExcel = () => {
     const table = document.querySelector('.dataTable');

@@ -78,9 +78,9 @@ export default function DispatchTableRow({
 
     const nav = () => {
         setTimeout(() => {
-          navigate(`/home/`);
+            navigate(`/home/`);
         }, 2000);
-      };
+    };
 
 
     // Check if loadingInstructions is not undefined and is an array
@@ -153,7 +153,7 @@ export default function DispatchTableRow({
             console.log('make it matter', data);
 
             if (data instanceof Error && data.response && data.response.status === 400) {
-                console.log('make it matter', data.response.data);
+                console.log('jdskfsdsdllsd', data.response.data);
                 setBalance(data.response.data);
                 setTaxDialog(true);
             }
@@ -408,6 +408,7 @@ export default function DispatchTableRow({
                         <Stack direction="row" alignItems="center">
                             <TextField
                                 value={editedLrNum}
+                                disabled={usedInState.loadingInstructionScreen === 'invoice'}
                                 style={{ width: `calc(${editedLrNum.length}ch + 30px)`, boxSizing: 'border-box' }}
                                 onChange={(e) => setEditedLrNum(e.target.value)}
                             />
@@ -426,11 +427,11 @@ export default function DispatchTableRow({
                     ) : (
                         <Stack direction="row" alignItems="center">
                             {editedLrNum}
-                            <Tooltip title="Edit LR number">
+                            {usedInState.loadingInstructionScreen !== 'invoice' && (<Tooltip title="Edit LR number">
                                 <IconButton onClick={handleEdit} >
                                     <Iconify icon="basil:edit-outline" color="primary.main" />
                                 </IconButton>
-                            </Tooltip>
+                            </Tooltip>)}
                         </Stack>
                     )}
                 </TableCell>
