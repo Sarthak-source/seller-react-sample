@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Card, CircularProgress, Container, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Card, CircularProgress, Container, FormControl, Grid, IconButton, InputLabel, MenuItem, Paper, Select, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
@@ -12,7 +12,6 @@ import { primary } from 'src/theme/palette';
 
 function StoreHouse() {
     const dispatch = useDispatch();
-
     const [loading, setLoading] = useState(false);
     const selectedStore = useSelector((state) => state.storeState);
     const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
@@ -54,10 +53,25 @@ function StoreHouse() {
     const [typedLot, setTypedLot] = useState({})
     const [lotExits, setLotExist] = useState(false);
     const router = useRouter();
-
-
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     console.log('selectedStore', selectedStore)
+
+    const showSnackbar = (message, severity) => {
+        setSnackbarMessage(message);
+        setSnackbarSeverity(severity);
+        setSnackbarOpen(true);
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
+
 
     useEffect(() => {
         setLotExist(false);
@@ -73,25 +87,25 @@ function StoreHouse() {
     }, [lot, typedLot])
 
     const fileToBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.onerror = (error) => reject(error);
-      reader.readAsDataURL(file);
-    });
-  
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
+
 
     const handleSubmit = async () => {
         if (tareWeight === '') {
-            alert("Enter Tare Weight");
+            showSnackbar("Enter Tare Weight", 'error');
         } else if (grossWeight === '') {
-            alert("Enter Gross Weight");
+            showSnackbar("Enter Gross Weight", 'error');
         } else if (weighbridge === null && !skipLoading) {
-            alert("Add Weighbridge Photo");
+            showSnackbar("Add Weighbridge Photo", 'error');
         } else if (parseFloat(netWeight) <= 0 && !skipLoading) {
-            alert("Net Weight Can't be 0 or Negative");
-        } else if (parseFloat(netWeight) > 50000 && !skipLoading) {
-            alert("Net Weight Can't be Greater than 50000");
+            showSnackbar("Net Weight Can't be 0 or Negative", 'error');
+        } else if (parseFloat(netWeight) > 60000 && !skipLoading) {
+            showSnackbar("Net Weight Can't be Greater than 60000", 'error');
         } else {
 
             const formData = {
@@ -117,7 +131,7 @@ function StoreHouse() {
 
             router.replace('/home/generate-invoice/store-house/summary');
 
-            console.log('formData',formData);
+            console.log('formData', formData);
         }
     };
 
@@ -240,22 +254,22 @@ function StoreHouse() {
 
 
     const addLot = () => {
-        if ( Number.isNaN(selectedQty) || selectedQty === 0 || selectedQty === null  ) {
+        if (Number.isNaN(selectedQty) || selectedQty === 0 || selectedQty === null) {
             alert("Enter Lot Quantity");
             return;
         }
-    
+
         if (selectedQty > totalQuanity) {
             alert("Enter Valid Lot Quantity");
             return;
         }
-    
+
         if (lotQty + parseFloat(selectedQty) > totalQuanity) {
             alert(`Quantity Mismatch: Enter valid quantity, Selected Quantity: ${selectedQty}, Lot Quantity: ${lotQty}, Total Quantity: ${totalQuanity}`);
             return;
         }
-        
-    
+
+
         const newLot = {
             storeName: selectedStorehouse.name,
             name: selectedLot.name,
@@ -266,17 +280,17 @@ function StoreHouse() {
             product_name: selectedStore.storeState.loading_instruction[0]?.order_head?.tender_head?.product?.code && `${selectedStore.storeState.loading_instruction[0].order_head.tender_head.product.code}`,
         };
 
-        
-    
+
+
         const isLotExist = lot.some(l => l.lot_pk === newLot.lot_pk && l.product_pk === newLot.product_pk);
         if (isLotExist) {
             alert("Lot exists");
             return;
         }
-    
+
         setLot([...lot, newLot]);
         setLotQty(prevLotQty => prevLotQty + newLot.qty);
-    
+
         // Clear state variables
         setStoreValue({});
         if (useConfigData === false) {
@@ -284,10 +298,10 @@ function StoreHouse() {
         }
         setSelectedQty(0);
         setTypedLot({});
-    
+
         console.log('lot', lot);
     };
-    
+
 
     return (
         <>
@@ -489,6 +503,17 @@ function StoreHouse() {
                     </Grid>
                 </Container>
             )}
+
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </>
     );
 }

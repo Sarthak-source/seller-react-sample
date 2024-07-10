@@ -59,15 +59,21 @@ const NetworkAxiosOptions = {
         }
     },
 
-    async getAxiosHttpMethod({ url, header, full = true }) {
+    async getAxiosHttpMethod({ url, header, full = true, errorDataNeed = false }) {
         console.log('ddfdfdfdfdf', url);
         const fullUrl = full ? `${this.endPointUrl}${url}` : url;
         try {
             const response = await this.axiosOptions.get(fullUrl, { headers: header || this.cacheOptions });
             return response.data;
         } catch (error) {
-            console.error('Error:', error);
-            throw error.response.data.detail;
+
+            if (errorDataNeed) {
+                console.error('Error:', error);
+                throw error;
+            } else {
+                console.error('Error:', error);
+                throw error.response.data.detail;
+            }
         }
     },
 

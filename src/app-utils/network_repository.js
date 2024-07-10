@@ -71,6 +71,7 @@ const NetworkRepository = {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.checkSeller}?username=${number}`,
+        errorDataNeed: true,
         header: { authorization: auth },
       });
       console.log('Seller Check Response:', apiResponse);
@@ -711,7 +712,7 @@ const NetworkRepository = {
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({
         url: `${ApiAppConstants.loadingInstructionUpdate}`,
         data,
-        errorDataNeed:true,
+        errorDataNeed: true,
         ContentType: 'application/json',
         header: {
           'authorization': auth
@@ -721,10 +722,10 @@ const NetworkRepository = {
       console.log('apiResponse', apiResponse)
 
       // log(apiResponse['body']);
-      console.log('loadingInstructionUpdateHelele',apiResponse)
+      console.log('loadingInstructionUpdateHelele', apiResponse)
       return apiResponse;
     } catch (error) {
-      console.log('loadingInstructionUpdateHelele',error)
+      console.log('loadingInstructionUpdateHelele', error)
       // Extract error response data from Axios error object
       if (error.response) {
         console.log('Error response:', error.response.data);
@@ -836,10 +837,10 @@ const NetworkRepository = {
     supType,
     subSupType,
     docType,
-     invoiceSupType,
-     shipBNo,
-     port,
-     countryCode,
+    invoiceSupType,
+    shipBNo,
+    port,
+    countryCode,
   ) => {
     try {
       const data = JSON.stringify({
@@ -2012,7 +2013,7 @@ const NetworkRepository = {
         "inbound": id,
         "approved_date": new Date().toISOString(),
         "approved_by": updated_by,
-        "is_active":"Active"
+        "is_active": "Active"
       };
 
       console.log('inbound', data);
@@ -2036,7 +2037,7 @@ const NetworkRepository = {
       const data = {
         "inbound": id,
         "rejected_by": updated_by,
-        "is_active":"Rejected"
+        "is_active": "Rejected"
       };
 
       console.log('jdjdkdkdlslsldmdm', data);
@@ -2078,6 +2079,64 @@ const NetworkRepository = {
       return error.toString();
     }
   },
+
+  inwardDispatchApi: async ({
+    tareWright,
+    storePK,
+    grossWeight,
+    product,
+    invoiceQty,
+    quantity,
+    vehicle,
+    lot,
+    weighBridge,
+    lotwiseQuantity,
+  }) => {
+    const data = new FormData();
+
+    data.append('lot', lot);
+    data.append('vehicle', vehicle);
+    data.append('quantity', quantity);
+    data.append('invoice_qty', invoiceQty);
+    data.append('product', product);
+    data.append('store_pk', storePK);
+    data.append('lotwise_quantity', JSON.stringify(lotwiseQuantity)); // Assuming lotwiseQuantity is an object/array
+    data.append('tare_wright', tareWright);
+    data.append('gross_weight', grossWeight);
+    data.append('weigh_bridge', weighBridge); // Assuming weighBridge is a File object
+
+
+    console.log('sjdfskjdfkskfksdksdkf', {
+      tareWright,
+      storePK,
+      grossWeight,
+      product,
+      invoiceQty,
+      quantity,
+      vehicle,
+      lot,
+      weighBridge,
+      lotwiseQuantity,
+  });
+  
+  console.log('FormData:', data);
+  
+
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.inwardDispatch}`,
+        data,
+        ContentType: 'application/json',
+        header: { 'authorization': auth },
+      });
+
+      return apiResponse;
+    } catch (e) {
+      alert(e);
+      return e;
+    }
+  },
+
 }
 
 

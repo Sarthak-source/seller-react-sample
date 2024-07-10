@@ -100,7 +100,7 @@ export default function TenderCreate() {
         showSnackbar('Please enter rate.', 'error');
       } else {
         setLoading(true);
-        await NetworkRepository.tenderPostView(
+      const data  = await NetworkRepository.tenderPostView(
           millValue.id,
           product.id,
           quantityController,

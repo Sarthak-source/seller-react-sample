@@ -16,7 +16,7 @@ const WarehouseForm = () => {
     warehouseArea: '',
     locationInPlant: '',
     status: '',
-    
+
   });
 
   const [locations, setLocations] = useState([]);
@@ -35,7 +35,7 @@ const WarehouseForm = () => {
   const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
   const warehouseData = useSelector((state) => state.warehouseUpdate.warehouses);
 
-  console.log('warehouseData',warehouseData)
+  console.log('warehouseData', warehouseData)
 
   const isUpdate = Object.keys(warehouseData).length !== 0;
 
@@ -54,22 +54,22 @@ const WarehouseForm = () => {
     fetchWareHouseBatchData();
   }, [formData.plant]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchLocationBatchData = async () => {
       try {
         setLoading(true);
-       
+
         const locationDataFetched = await NetworkRepository.getWarehouseLocationList(warehouseData.id);
-        console.log('locationData',locationDataFetched)
+        console.log('locationData', locationDataFetched)
         const mappedLocations = locationDataFetched.map(location => ({
           locationCode: location.code.toString(), // Assuming code is a number
           locationDesc: location.description,
           locationStatus: location.is_active ? 'Active' : 'Inactive', // Assuming is_active is a boolean
         }));
-    
+
         // Set the mapped locations to the state
         setLocations(mappedLocations);
-        
+
       } catch (error) {
         console.error(error);
       } finally {
@@ -79,8 +79,8 @@ const WarehouseForm = () => {
     if (warehouseData.id) {
       fetchLocationBatchData();
     }
-    
-  },[warehouseData])
+
+  }, [warehouseData])
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
@@ -132,14 +132,15 @@ const WarehouseForm = () => {
           updated_by: selectedUserConfig.seller.user,
         });
 
-        setSnackbarMessage('Warehouse updated successfully');
+        setSnackbarMessage(response);
+        
       } else {
         const response = await NetworkRepository.postWarehouseBatch(
           formData.code,
           formData.name,
           formData.plant,
           formData.type,
-          formData.parentWarehouseId || null,
+          null,
           formData.locationInPlant,
           parseFloat(formData.warehouseArea),
           selectedUserConfig.seller.user,
@@ -149,8 +150,9 @@ const WarehouseForm = () => {
             is_active: location.locationStatus
           }))
         );
+        console.log('response Warehouse',response);
 
-        setSnackbarMessage('Data saved successfully');
+        setSnackbarMessage(response);
         handleCancel();
       }
     } catch (error) {
@@ -253,7 +255,7 @@ const WarehouseForm = () => {
                 <MenuItem value="closed">Closed</MenuItem>
               </Select>
             </FormControl>
-            <FormControl fullWidth>
+            {/* <FormControl fullWidth>
               <InputLabel htmlFor="parentWarehouseId">Parent Warehouse Id</InputLabel>
               <Select
                 id="parentWarehouseId"
@@ -268,7 +270,7 @@ const WarehouseForm = () => {
                   </MenuItem>
                 ))}
               </Select>
-            </FormControl>
+            </FormControl> */}
             <TextField
               label="Warehouse Area"
               name="warehouseArea"

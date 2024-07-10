@@ -19,65 +19,78 @@ function SummaryScreen() {
     const isMounted = useRef(true); // Add this line
     const theme = useTheme();
 
-    const [pdfUrl,setPdfUrl] = useState('');
+    const [pdfUrl, setPdfUrl] = useState('');
     const [isDialogOpen, setDialogOpen] = useState(false);
 
+    console.log('fromVehicleInward', fromVehicleInward)
 
     const handleDialogClose = () => {
         setDialogOpen(false);
-      
+
         setPdfData(null)
     };
 
     const handleGenerateInvoice = async () => {
+        console.log('hsdhsakskaksak', storeSummary, {
+            tareWright: storeSummary.storeData.tareWeight.toString(),
+            storePK: storeSummary.storeData.millId,
+            grossWeight: storeSummary.storeData.grossWeight,
+            product: storeSummary.data.product,
+            invoiceQty: storeSummary.data.invoiceQty,
+            quantity: storeSummary.data.quantity,
+            vehicle: storeSummary.data.vehicle_num.toString(),
+            lot: storeSummary.storeData.lotID.toString(),
+            weighBridge: storeSummary.storeData.image,
+            lotwiseQuantity: storeSummary.storeData.lotwiseQ
+        })
+
+        console.log('generatedata')
         setButtonEnable(false);
         setDialogOpen(true)
 
-        if (!buttonEnable) {
-           
-            if (fromVehicleInward) {
-                try {
-                    await NetworkRepository.inwardDispatchApi({
-                        tareWright: storeSummary.storeData.tareWeight.toString(),
-                        storePK: storeSummary.storeData.millId,
-                        grossWeight: storeSummary.storeData.grossWeight,
-                        product: storeSummary.data.product,
-                        invoiceQty: storeSummary.data.invoiceQty,
-                        quantity: storeSummary.data.quantity,
-                        vehicle: storeSummary.data.vehicle_num.toString(),
-                        lot: storeSummary.storeData.lotID.toString(),
-                        weighBridge: storeSummary.storeData.image,
-                        lotwiseQuantity: storeSummary.storeData.lotwiseQ
-                    });
-                } catch (e) {
-                    console.log(e.toString());
-                } finally {
-                    setButtonEnable(true);
-                }
-            } else {
-                try {
-                    let sendData = {
-                        tareWright: storeSummary.storeData.tareWeight.toString(),
-                        lotwiseQuantity: storeSummary.storeData.lotwiseQ,
-                        storePK: storeSummary.storeData.millId,
-                        grossWeight: storeSummary.storeData.grossWeight,
-                        doPK: storeSummary.data.id,
-                        doTypePK: storeSummary.data.do_type.id,
-                        image: storeSummary.storeData.image
-                    };
-                    if (storeSummary.storeData.image != null) {
-                        if (storeSummary.sealRemark != null || storeSummary.sealNumber != null) {
-                            sendData = { ...sendData, sealRemark: storeSummary.sealRemark, sealNumber: storeSummary.sealNumber };
-                        }
+        if (fromVehicleInward) {
+            try {
+                const inwardData = await NetworkRepository.inwardDispatchApi({
+                    tareWright: storeSummary.storeData.tareWeight.toString(),
+                    storePK: storeSummary.storeData.millId,
+                    grossWeight: storeSummary.storeData.grossWeight,
+                    product: storeSummary.data.product,
+                    invoiceQty: storeSummary.data.invoiceQty,
+                    quantity: storeSummary.data.quantity,
+                    vehicle: storeSummary.data.vehicle_num.toString(),
+                    lot: storeSummary.storeData.lotID.toString(),
+                    weighBridge: storeSummary.storeData.image,
+                    lotwiseQuantity: storeSummary.storeData.lotwiseQ
+                });
+            } catch (e) {
+                console.log(e.toString());
+            } finally {
+                setButtonEnable(true);
+            }
+        } else {
+            try {
+                let sendData = {
+                    tareWright: storeSummary.storeData.tareWeight.toString(),
+                    lotwiseQuantity: storeSummary.storeData.lotwiseQ,
+                    storePK: storeSummary.storeData.millId,
+                    grossWeight: storeSummary.storeData.grossWeight,
+                    doPK: storeSummary.data.id,
+                    doTypePK: storeSummary.data.do_type.id,
+                    image: storeSummary.storeData.image
+                };
+                if (storeSummary.storeData.image != null) {
+                    if (storeSummary.sealRemark != null || storeSummary.sealNumber != null) {
+                        sendData = { ...sendData, sealRemark: storeSummary.sealRemark, sealNumber: storeSummary.sealNumber };
                     }
-                    await NetworkRepository.sendStoreHouseData(sendData);
-                } catch (e) {
-                    console.log(e.toString());
-                } finally {
-                    setButtonEnable(true);
                 }
+                await NetworkRepository.sendStoreHouseData(sendData);
+            } catch (e) {
+                console.log(e.toString());
+            } finally {
+                setButtonEnable(true);
             }
         }
+
 
         // Logic for generating invoice
         try {
@@ -151,8 +164,8 @@ function SummaryScreen() {
 
     const printOpen = () => {
         setDialogOpen(true)
-            handlePdf(pdfUrl);
-        
+        handlePdf(pdfUrl);
+
     }
 
     const printDoOpen = (url) => {
@@ -165,15 +178,13 @@ function SummaryScreen() {
 
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                 <Typography variant="h4">Summary</Typography>
-                <LoadingButton variant="contained" startIcon={<Iconify icon="line-md:cloud-print-loop" />} onClick={handleGenerateInvoice}>
+                <LoadingButton variant="contained" loading={!buttonEnable} startIcon={<Iconify icon="line-md:cloud-print-loop" />} onClick={handleGenerateInvoice}>
                     Generate Invoice
                 </LoadingButton>
             </Stack>
 
 
-            <Typography variant="h4" gutterBottom>
-                Summary
-            </Typography>
+
             <Grid container spacing={5}>
                 <>
                     <Grid item xs={12} md={6}>
@@ -190,11 +201,11 @@ function SummaryScreen() {
                                     <Typography variant="body2">Mill :</Typography>
                                     <Label color={primary.main} sx={{ fontSize: '13px', fontWeight: 'bold' }} > {storeSummary.data.mill?.name} </Label>
                                 </Stack>
-                                <Divider />
-                                <Stack direction="row" justifyContent="space-between" alignItems="center" my={1} mx={1}>
+                                {/* <Divider /> */}
+                                {/* <Stack direction="row" justifyContent="space-between" alignItems="center" my={1} mx={1}>
                                     <Typography variant="body2">Mill :</Typography>
                                     <Label color={primary.main} sx={{ fontSize: '13px', fontWeight: 'bold' }} > {storeSummary.data.mill?.name} </Label>
-                                </Stack>
+                                </Stack> */}
                             </CardContent>
                         </Card>
 

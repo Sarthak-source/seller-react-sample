@@ -7,7 +7,7 @@ const OutboundForm = () => {
   const [loading, setLoading] = useState(true);
   const [warehouse, setWarehouseData] = useState([]);
   const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
-  const availableUOMs = ['Mt', 'Qtl'];
+  const availableUOMs = ['MT', 'QTL'];
   const [uom, setUOM] = useState('');
   const getMillsProducts = () => {
     const mills = selectedUserConfig.seller.mills || [];
@@ -109,7 +109,7 @@ const OutboundForm = () => {
         'location': '',
       });
     } else {
-      alert('All fields are required for adding a product.');
+      setSnackbarMessage('All fields are required for adding a product.');
     }
   };
 
@@ -118,7 +118,7 @@ const OutboundForm = () => {
 
     const formattedProducts = products.map(product => ({
       product: product.product.id,
-      batch_num: product?.batch_num?.value??null,
+      batch_num: product?.batch_num?.value ?? null,
       qty: product.qty,
       uom: product.uom,
       location: product.location.value,
@@ -135,7 +135,7 @@ const OutboundForm = () => {
       );
 
       if (response) {
-        setSnackbarMessage('Outbound data submitted successfully!');
+        setSnackbarMessage(response);
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
         handleCancel();
@@ -314,21 +314,20 @@ const OutboundForm = () => {
                 <MenuItem value="Reversal">Reversal</MenuItem>
               </Select>
             </FormControl>
-            <TextField
+            {formData.outboundType === 'Sales' && (<TextField
               label="SO Number"
               name="poNumber"
               disabled={formData.outboundType !== 'Stock Transfer'}
               value={formData.poNumber}
               onChange={handleFormChange}
               fullWidth
-            />
+            />)}
 
-            <FormControl fullWidth>
+            {formData.outboundType === 'Stock Transfer' && (<FormControl fullWidth>
               <InputLabel htmlFor="toWarehouse">To Warehouse</InputLabel>
               <Select
                 id="toWarehouse"
                 name="toWarehouse"
-                disabled={formData.outboundType !== 'StockTransfer'}
                 value={formData.toWarehouse}
                 onChange={handleFormChange}
               >
@@ -338,7 +337,7 @@ const OutboundForm = () => {
                   </MenuItem>
                 ))}
               </Select>
-            </FormControl>
+            </FormControl>)}
 
             <TextField
               label="Created by"
@@ -366,7 +365,10 @@ const OutboundForm = () => {
                 options={productOptions}
                 getOptionLabel={(option) => `${option.product_type.product_type} (${option.code})`} // Use the property that represents the label for each option
                 value={productData.product}
-                onChange={(event, newValue) => setProductData({ ...productData, product: newValue })}
+                onChange={(event, newValue) => {
+                  setProductData({ ...productData, product: newValue })
+                  handleProductChange({ target: { name: 'uom', value: newValue.product_type.unit } }); // Corrected handleProductChange call
+                }}
                 renderInput={(params) => <TextField {...params} label="Product" />}
                 fullWidth
               />
@@ -395,6 +397,7 @@ const OutboundForm = () => {
                   id="uom"
                   name="uom"
                   value={productData.uom}
+                  disabled
                   onChange={handleProductChange}
                 >
                   {availableUOMs.map((uoms) => (

@@ -13,6 +13,7 @@ import StockReportView from './stock-report/stock-report';
 import StoreHouseReportView from './store-house-report/store-house-report';
 import StoreHouseRD1ReportView from './store_house_rg1_report/store_house_rg1_report';
 import WarehouseReportView from './warehouse-report/warehouse-report';
+import WarehouseStockReportView from './warehouse-stock-report/warehouse-stock-report';
 
 // ----------------------------------------------------------------------
 
@@ -152,6 +153,7 @@ export default function ReportView() {
                 <Tab label="Store house report" />
                 <Tab label="Store house RG1 report" />
                 <Tab label="Season-wise report" />
+                <Tab label="Warehouse Stock report" />
               </Tabs>
               {tab === 0 && <WarehouseReportView />}
               {tab === 1 && <StockReportView />}
@@ -159,6 +161,7 @@ export default function ReportView() {
               {tab === 3 && <StoreHouseReportView />}
               {tab === 4 && <StoreHouseRD1ReportView />}
               {tab === 5 && <SeasonWiseReportView />}
+              {tab === 6 && <WarehouseStockReportView/>}
             </>
           )}
           {selected === 'Dispatch reports' && (

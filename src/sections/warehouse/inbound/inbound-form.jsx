@@ -7,7 +7,7 @@ const InboundForm = () => {
   const [loading, setLoading] = useState(true);
   const [warehouse, setWarehouseData] = useState([]);
   const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
-  const availableUOMs = ['Mt', 'Qtl'];
+  const availableUOMs = ['MT', 'QTL'];
   const [uom, setUOM] = useState('');
 
   const getMillsProducts = () => {
@@ -30,6 +30,8 @@ const InboundForm = () => {
   const inbounds = useSelector((state) => state.warehouseUpdate.inbounds);
 
   const isUpdate = Object.keys(inbounds).length === 0;
+
+
 
 
 
@@ -91,7 +93,7 @@ const InboundForm = () => {
         'location': '',
       });
     } else {
-      alert('All fields are required for adding a product.');
+      setSnackbarMessage('All fields are required for adding a product.');
     }
   };
 
@@ -100,7 +102,7 @@ const InboundForm = () => {
 
     const formattedProducts = products.map(product => ({
       product: product.product.id,
-      batch_num: product?.batch_num?.value??null,
+      batch_num: product?.batch_num?.value ?? null,
       qty: product.qty,
       uom: product.uom,
       location: product.location.value,
@@ -120,7 +122,7 @@ const InboundForm = () => {
       );
 
       if (response) {
-        setSnackbarMessage('Inbound data submitted successfully!');
+        setSnackbarMessage(response);
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
         handleCancel();
@@ -237,6 +239,8 @@ const InboundForm = () => {
   console.log('inboundsformData', selectedUserConfig.seller.mills)
 
 
+  console.log('productData.product', productData.product)
+
   return (
     <Stack alignItems="center" justifyContent="center" sx={{ pt: 2 }}>
       <Card sx={{
@@ -334,12 +338,12 @@ const InboundForm = () => {
                 fullWidth
               />)}
 
-              <FormControl fullWidth>
+              {formData.inboundType === 'StockTransfer' && (<FormControl fullWidth>
                 <InputLabel htmlFor="fromWarehouse">From Warehouse</InputLabel>
                 <Select
                   id="fromWarehouse"
                   name="fromWarehouse"
-                  disabled={formData.inboundType !== 'StockTransfer'}
+
                   value={formData.fromWarehouse}
                   onChange={handleFormChange}
                 >
@@ -349,7 +353,7 @@ const InboundForm = () => {
                     </MenuItem>
                   ))}
                 </Select>
-              </FormControl>
+              </FormControl>)}
 
               <TextField
                 label="Created by"
@@ -381,7 +385,10 @@ const InboundForm = () => {
                       options={productOptions}
                       getOptionLabel={(option) => `${option.product_type.product_type} (${option.code})`} // Assuming 'name' is the property you want to use
                       value={productData.product}
-                      onChange={(event, newValue) => setProductData({ ...productData, product: newValue })}
+                      onChange={(event, newValue) => {
+                        setProductData({ ...productData, product: newValue })
+                        handleProductChange({ target: { name: 'uom', value: newValue.product_type.unit } }); // Corrected handleProductChange call
+                      }}
                       renderInput={(params) => <TextField {...params} label="Product" />}
                       fullWidth
                     />
@@ -429,7 +436,7 @@ const InboundForm = () => {
                         labelId="uom-label"
                         id="uom"
                         value={productData.uom}
-                        disabled={!isUpdate}
+                        disabled
                         label="Unit of Measure (UOM)"
                         name="uom"
                         onChange={(event) => {

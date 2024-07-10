@@ -57,7 +57,7 @@ const ProductBatchForm = () => {
     event.preventDefault();
     if (isUpdate) {
       try {
-        await NetworkRepository.productBatchEdit({
+       const data= await NetworkRepository.productBatchEdit({
           id: productBatch.id,
           productId: product,
           batchNo: batchNumber,
@@ -178,10 +178,11 @@ const ProductBatchForm = () => {
                 </Button>
               ),
             }}
+            
           />
           <TextField
             margin="normal"
-            required
+            
             fullWidth
             id="batchStartDate"
             label="Batch Start Date"
@@ -195,7 +196,7 @@ const ProductBatchForm = () => {
           />
           <TextField
             margin="normal"
-            required
+            
             fullWidth
             id="batchEndDate"
             label="Batch End Date"
@@ -206,6 +207,7 @@ const ProductBatchForm = () => {
             InputLabelProps={{
               shrink: true,
             }}
+            placeholder="Optional"
           />
           {isUpdate && (
             <FormControl fullWidth margin="normal">

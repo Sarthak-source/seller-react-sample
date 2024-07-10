@@ -242,7 +242,7 @@ const RenderHtmlFromLink = ({ link }) => {
       ) : (
         <Box
           sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '600px' }}>
-          <SkeletonLoader marginTop='20px'/>
+          <SkeletonLoader marginTop='20px' />
         </Box>
       )}
     </Paper>

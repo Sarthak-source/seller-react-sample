@@ -34,7 +34,7 @@ export default function ProductMFGBatchForm() {
     const selectedUserConfig = useSelector((state) => state.user.selectUserConfig);
     const productMFGBatch = useSelector((state) => state.warehouseUpdate.productMFGbatches);
 
-    console.log('productMFGBatchHello',productMFGBatch)
+    console.log('productMFGBatchHello', productMFGBatch)
 
     const isUpdate = Object.keys(productMFGBatch).length !== 0;
 
@@ -65,34 +65,34 @@ export default function ProductMFGBatchForm() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+
         const formattedManufacturingDate = manufacturingDate ? formatDate(manufacturingDate) : null;
         const formattedExpiryDate = expiryDate ? formatDate(expiryDate) : null;
-    
+
         // Form validation (optional)
         if (!product || !plant || !manufacturingQty || !expiryDate || !uom) {
-            alert('Please fill in all required fields.');
+            setSnackbarMessage('Please fill in all required fields.');
             return;
         }
-        
+
         if (!(productData.length > 0)) {
-            alert('Batch is empty for the selected product, please add a batch');
+            setSnackbarMessage('Batch is empty for the selected product, please add a batch');
             return;
         }
-    
+
         try {
             if (isUpdate) {
                 // Logic for updating existing entry
-                await NetworkRepository.productBatchMfgEdit({
+                const response = await NetworkRepository.productBatchMfgEdit({
                     mfgQty: manufacturingQty,
                     id: productMFGBatch.id,
                     updated_by: selectedUserConfig.seller.user
                 });
-    
-                setSnackbarMessage('Data updated successfully');
+
+                setSnackbarMessage(response);
             } else {
                 // Logic for adding new entry
-                await NetworkRepository.postProductMFGBatch(
+                const response = await NetworkRepository.postProductMFGBatch(
                     product,
                     plant,
                     batchNumber,
@@ -102,12 +102,12 @@ export default function ProductMFGBatchForm() {
                     uom,
                     selectedUserConfig.seller.user
                 );
-    
-                setSnackbarMessage('Data saved successfully');
+
+                setSnackbarMessage(response);
             }
-    
+
             setSnackbarOpen(true);
-    
+
             // Clear the form after successful submission
             setProduct('');
             setPlant('');
@@ -116,13 +116,13 @@ export default function ProductMFGBatchForm() {
             setManufacturingQty('');
             setExpiryDate(null);
             setUOM('');
-    
+
         } catch (error) {
             setSnackbarMessage('Failed to save/update data');
             setSnackbarOpen(true);
         }
     };
-    
+
 
     const formatDate = (date) => {
         const formattedDate = new Date(date);
@@ -156,8 +156,8 @@ export default function ProductMFGBatchForm() {
 
     useEffect(() => {
         if (isUpdate) {
-            console.log('productMFGBatchdatat',productMFGBatch)
-            
+            console.log('productMFGBatchdatat', productMFGBatch)
+
             setProduct(productMFGBatch.product || '');
             setPlant(productMFGBatch.mill || '');
             setBatchNumber(productMFGBatch.batch_num || '');
@@ -183,7 +183,7 @@ export default function ProductMFGBatchForm() {
 
 
     return (
-        <Stack alignItems="center" justifyContent="center" sx={{  pt: 2 }}>
+        <Stack alignItems="center" justifyContent="center" sx={{ pt: 2 }}>
             <Card sx={{
                 p: 5,
                 width: 1,

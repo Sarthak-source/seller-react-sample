@@ -21,7 +21,7 @@ export default function WarehouseStockReportView() {
         setIsFullScreen(!isFullScreen);
     };
 
-    const link = `http://${ip}/reports/WarehouseStock_reports/?mill_pk=${encodeURIComponent(selectedOption)}`
+    const link = `http://${ip}/warehouse_reports/stock_report/?mill_pk=${encodeURIComponent(selectedOption)}`
 
     const FullScreen = ({ icon }) => (
         <Fab onClick={toggleFullScreen} color="primary" sx={{ mt: 2, position: 'fixed', top: "85%", right: 16 }}>

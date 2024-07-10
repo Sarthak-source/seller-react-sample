@@ -137,7 +137,7 @@ export default function InboundTable() {
                 <TableCell>Mill</TableCell>
                 <TableCell>Warehouse</TableCell>
                 <TableCell>Type</TableCell>
-                <TableCell>Sale Order No</TableCell>
+                <TableCell>Purchase Order No</TableCell>
                 <TableCell>To Warehouse</TableCell>
                 <TableCell>Created by</TableCell>
                 <TableCell>Approved by</TableCell>
