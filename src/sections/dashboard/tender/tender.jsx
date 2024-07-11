@@ -259,7 +259,6 @@ export default function TenderView() {
                         onDownload={handleExportCSV}
                         label='Search tenders..'
                         onFullScreen={() => fullScreen()}
-
                     />
                     <Scrollbar>
 

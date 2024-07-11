@@ -1599,10 +1599,10 @@ const NetworkRepository = {
   },
 
 
-  getWarehouseList: async (mill) => {
+  getWarehouseList: async (mill,seller='') => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.warehouse}?mill=${mill}`,
+        url: `${ApiAppConstants.warehouse}?mill=${mill}&seller=${seller}`,
         header: { authorization: auth },
       });
 

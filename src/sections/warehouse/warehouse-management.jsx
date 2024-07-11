@@ -59,7 +59,7 @@ export default function WarehouseView() {
         <Tab label="Inbound" />
         <Tab label="Outbound" />
         <Tab label="Stock Ledger" />
-        <Tab label="Warehouse Reports" />
+        
       </Tabs>
       <Box sx={{
         paddingTop: '65px'

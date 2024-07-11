@@ -54,33 +54,33 @@ const WarehouseForm = () => {
     fetchWareHouseBatchData();
   }, [formData.plant]);
 
-  useEffect(() => {
-    const fetchLocationBatchData = async () => {
-      try {
-        setLoading(true);
+  // useEffect(() => {
+  //   const fetchLocationBatchData = async () => {
+  //     try {
+  //       setLoading(true);
 
-        const locationDataFetched = await NetworkRepository.getWarehouseLocationList(warehouseData.id);
-        console.log('locationData', locationDataFetched)
-        const mappedLocations = locationDataFetched.map(location => ({
-          locationCode: location.code.toString(), // Assuming code is a number
-          locationDesc: location.description,
-          locationStatus: location.is_active ? 'Active' : 'Inactive', // Assuming is_active is a boolean
-        }));
+  //       const locationDataFetched = await NetworkRepository.getWarehouseLocationList(warehouseData.id);
+  //       console.log('locationData', locationDataFetched)
+  //       const mappedLocations = locationDataFetched.map(location => ({
+  //         locationCode: location.code.toString(), // Assuming code is a number
+  //         locationDesc: location.description,
+  //         locationStatus: location.is_active ? 'Active' : 'Inactive', // Assuming is_active is a boolean
+  //       }));
 
-        // Set the mapped locations to the state
-        setLocations(mappedLocations);
+  //       // Set the mapped locations to the state
+  //       setLocations(mappedLocations);
 
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (warehouseData.id) {
-      fetchLocationBatchData();
-    }
+  //     } catch (error) {
+  //       console.error(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   if (warehouseData.id) {
+  //     fetchLocationBatchData();
+  //   }
 
-  }, [warehouseData])
+  // }, [warehouseData])
 
   const handleFormChange = (event) => {
     const { name, value } = event.target;
