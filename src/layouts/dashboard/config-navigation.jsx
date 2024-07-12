@@ -29,7 +29,7 @@ const navConfig = [
     title: 'Warehouse',
     path: '/home/warehouse-management',
     icon: icon('ic_storehouse'),
-    access_role: [1],
+    access_role: [1, 2, 3],
   },
   {
     title: 'traders',

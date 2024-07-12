@@ -7,6 +7,7 @@ import Label from 'src/components/label';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { updateOutbound } from 'src/redux/actions/warehouse-update-action';
 import { useRouter } from 'src/routes/hooks';
+import TableHeader from '../table-header';
 
 export default function OutboundTable() {
   const router = useRouter();
@@ -19,6 +20,9 @@ export default function OutboundTable() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // 'success' or 'error'
   const dispatch = useDispatch();
+
+  const [selectedOption, setSelectedOption] = useState('');
+
 
   const handleOpenOutboundTable = () => {
     dispatch(updateOutbound({}));
@@ -51,13 +55,13 @@ export default function OutboundTable() {
     }
   };
 
-  
+
 
   useEffect(() => {
     const fetchOutboundBatchData = async () => {
       try {
         setLoading(true);
-        const response = await NetworkRepository.getOutboundList();
+        const response = await NetworkRepository.getOutboundList(selectedUserConfig.seller.id, selectedOption);
         const data = response || [];
         setOutboundData(data);
       } catch (error) {
@@ -67,7 +71,11 @@ export default function OutboundTable() {
       }
     };
     fetchOutboundBatchData();
-  }, [reloading]);
+  }, [reloading, selectedUserConfig,selectedOption]);
+
+  const handleSelectChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
 
   console.log('outbounds', outbounds);
 
@@ -81,6 +89,11 @@ export default function OutboundTable() {
           Add Outbound
         </Button>
       </Stack>
+      <TableHeader
+        selectedUser={selectedUserConfig.seller}
+        selectedOption={selectedOption}
+        handleSelectChange={handleSelectChange}
+      />
       {loading ? (
         <SkeletonLoader marginTop='-100' />
       ) : (

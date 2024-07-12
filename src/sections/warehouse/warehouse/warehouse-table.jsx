@@ -1,5 +1,5 @@
 import { useTheme } from '@emotion/react';
-import { Box, Button, IconButton, MenuItem, Paper, Popover, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
+import { Box, Button, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NetworkRepository from 'src/app-utils/network_repository';
@@ -8,6 +8,7 @@ import Label from 'src/components/label';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { updateWarehouse } from 'src/redux/actions/warehouse-update-action';
 import { useRouter } from 'src/routes/hooks';
+import TableHeader from '../table-header';
 
 export default function WarehouseTableView() {
   const theme = useTheme();
@@ -18,11 +19,6 @@ export default function WarehouseTableView() {
   const [selectedOption, setSelectedOption] = useState('');
 
   const dispatch = useDispatch();
-  const [open, setOpen] = useState(null);
-
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
-  };
 
   const handleOpenWarehouseView = () => {
     dispatch(updateWarehouse({}));
@@ -46,42 +42,17 @@ export default function WarehouseTableView() {
         setLoading(false);
       }
     };
+
     fetchWareHouseBatchData();
+
+    return () => {
+      setWarehouseData([]); // Reset data on component unmount
+    };
   }, [selectedUserConfig, selectedOption]);
 
-  const selectedUser = useSelector((state) => state.user.selectedUser);
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
-  };
-
-  const renderMillMenuItems = () => {
-    if (!selectedUser || !selectedUser.mills) {
-      return null;
-    }
-
-    return selectedUser.mills.map((mill, index) => (
-      <MenuItem
-        key={index}
-        onClick={() => handleSelectChange({ target: { value: mill.id } })}
-        sx={{
-          height: 40,
-          backgroundColor: mill.id === selectedOption ? 'primary.main' : 'initial',
-          color: mill.id === selectedOption ? 'white' : 'initial',
-          opacity: 0.8,
-          '&:hover': {
-            backgroundColor: 'primary.main',
-            color: 'white',
-          },
-        }}
-      >
-        {mill.name}
-      </MenuItem>
-    ));
-  };
-
-  const handleCloseMenu = () => {
-    setOpen(null);
   };
 
   return (
@@ -90,68 +61,16 @@ export default function WarehouseTableView() {
         <Typography variant="h4" gutterBottom>
           Warehouse
         </Typography>
-        <Button  variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenWarehouseView}>
+        <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenWarehouseView}>
           Add Warehouse
         </Button>
       </Stack>
 
-      <Paper sx={{ borderRadius: '16px 16px 0 0', }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
-          <Select
-            value={selectedOption}
-            
-            onChange={handleSelectChange}
-            displayEmpty
-            style={{ width: '250px' }}
-            inputProps={{ 'aria-label': 'Without label' }}
-          >
-            <MenuItem value="" disabled>
-              Select a mill
-            </MenuItem>
-            {selectedUser.mills.map((mill) => (
-              <MenuItem key={mill.id} value={mill.id}>
-                {mill.name}
-              </MenuItem>
-            ))}
-          </Select>
-          <Tooltip title="Filter list">
-            <IconButton onClick={handleOpenMenu}>
-              {selectedOption !== '' ? (
-                <Iconify icon="iconoir:filter-list-circle" color="primary.main" />
-              ) : (
-                <Iconify icon="ic:round-filter-list" color="primary.main" />
-              )}
-            </IconButton>
-          </Tooltip>
-        </Box>
-
-        <Popover
-          open={Boolean(open)}
-          anchorEl={open}
-          onClose={handleCloseMenu}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        >
-          <MenuItem
-            sx={{
-              height: 40,
-              backgroundColor: selectedOption === '' ? 'primary.main' : 'initial',
-              color: selectedOption === '' ? 'white' : 'initial',
-              opacity: 0.8,
-              '&:hover': {
-                backgroundColor: 'primary.main',
-                color: 'white',
-              },
-            }}
-            onClick={() => handleSelectChange({ target: { value: '' } })}
-          >
-            All
-          </MenuItem>
-          {renderMillMenuItems()}
-        </Popover>
-      </Paper>
-
-
+      <TableHeader
+        selectedUser={selectedUserConfig.seller} 
+        selectedOption={selectedOption} 
+        handleSelectChange={handleSelectChange} 
+      />
 
       {loading ? (
         <SkeletonLoader marginTop='-100' />

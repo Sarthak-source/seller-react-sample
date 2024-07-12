@@ -23,6 +23,7 @@ import Label from 'src/components/label';
 import SkeletonLoader from 'src/layouts/dashboard/common/skeleton-loader';
 import { updateInbound } from 'src/redux/actions/warehouse-update-action';
 import { useRouter } from 'src/routes/hooks';
+import TableHeader from '../table-header';
 
 export default function InboundTable() {
   const router = useRouter();
@@ -40,6 +41,8 @@ export default function InboundTable() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [snackbarMessage, setSnackbarMessage] = useState('');
+
+  const [selectedOption, setSelectedOption] = useState('');
 
   const handleOpenInboundTable = () => {
     dispatch(updateInbound({}));
@@ -99,7 +102,7 @@ export default function InboundTable() {
     const fetchInboundBatchData = async () => {
       try {
         setLoading(true);
-        const data = await NetworkRepository.getInboundList();
+        const data = await NetworkRepository.getInboundList(selectedUserConfig.seller.id,selectedOption);
         setInboundData(data);
       } catch (error) {
         console.log(error);
@@ -108,13 +111,17 @@ export default function InboundTable() {
       }
     };
     fetchInboundBatchData();
-  }, [reloading]);
+  }, [reloading, selectedUserConfig,selectedOption]);
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  console.log('inbounds',inbounds)
+  const handleSelectChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
+
+  console.log('inbounds', inbounds)
 
   return (
     <Box>
@@ -126,6 +133,11 @@ export default function InboundTable() {
           Add Inbound
         </Button>
       </Stack>
+      <TableHeader
+        selectedUser={selectedUserConfig.seller}
+        selectedOption={selectedOption}
+        handleSelectChange={handleSelectChange}
+      />
       {loading ? (
         <SkeletonLoader marginTop="-100" />
       ) : (

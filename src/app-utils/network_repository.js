@@ -1614,10 +1614,10 @@ const NetworkRepository = {
   },
 
 
-  getInboundList: async () => {
+  getInboundList: async (seller='', mill='') => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.inbound}`,
+        url: `${ApiAppConstants.inbound}?seller=${seller}&mill=${mill}`,
         header: { authorization: auth },
       });
 
@@ -1629,10 +1629,10 @@ const NetworkRepository = {
   },
 
 
-  getOutboundList: async () => {
+  getOutboundList: async (seller='', mill='') => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
-        url: `${ApiAppConstants.outbound}`,
+        url: `${ApiAppConstants.outbound}?seller=${seller}&mill=${mill}`,
         header: { authorization: auth },
       });
 
