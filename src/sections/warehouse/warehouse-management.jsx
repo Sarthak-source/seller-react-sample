@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectWareHouseTab } from 'src/redux/actions/tab-step-action';
 import InboundTable from './inbound/inbound-table';
+import LocationsTableView from './locations/locations-table';
 import OutboundTable from './outbound/outbound-table';
 import ProductsBatch from './product-batch/product-batch-table';
 import ProductsManufacturing from './product-manufacture/product-batch-manufacturing-list';
@@ -32,6 +33,8 @@ export default function WarehouseView() {
 
   const canAccessWarehouse = sellerRoles.includes(1) || sellerRoles.includes(2) || sellerRoles.includes(3);
   const canAccessProductBatch = sellerRoles.includes(1) || sellerRoles.includes(2);
+  const canAccessLocations = sellerRoles.includes(1) || sellerRoles.includes(2) || sellerRoles.includes(3);
+
   const canAccessProductBatchMFG = sellerRoles.includes(1) || sellerRoles.includes(2);
   const canAccessInboundTable = sellerRoles.includes(1) || sellerRoles.includes(2) || sellerRoles.includes(3);
   const canAccessOutbound = sellerRoles.includes(1) || sellerRoles.includes(2) || sellerRoles.includes(3);
@@ -40,6 +43,7 @@ export default function WarehouseView() {
   // Define your tabs configuration
   const tabsConfig = [
     { label: 'Warehouse', component: <WarehouseTableView />, visible: canAccessWarehouse },
+    { label: 'Locations', component: <LocationsTableView />, visible: canAccessLocations },
     { label: 'Product batch', component: <ProductsBatch />, visible: canAccessProductBatch },
     { label: 'Product batch MFG', component: <ProductsManufacturing />, visible: canAccessProductBatchMFG },
     { label: 'Inbound', component: <InboundTable />, visible: canAccessInboundTable },

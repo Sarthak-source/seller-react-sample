@@ -1599,7 +1599,7 @@ const NetworkRepository = {
   },
 
 
-  getWarehouseList: async (mill,seller='') => {
+  getWarehouseList: async (mill, seller = '') => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.warehouse}?mill=${mill}&seller=${seller}`,
@@ -1614,7 +1614,7 @@ const NetworkRepository = {
   },
 
 
-  getInboundList: async (seller='', mill='') => {
+  getInboundList: async (seller = '', mill = '') => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.inbound}?seller=${seller}&mill=${mill}`,
@@ -1629,7 +1629,7 @@ const NetworkRepository = {
   },
 
 
-  getOutboundList: async (seller='', mill='') => {
+  getOutboundList: async (seller = '', mill = '') => {
     try {
       const apiResponse = await NetworkAxios.getAxiosHttpMethod({
         url: `${ApiAppConstants.outbound}?seller=${seller}&mill=${mill}`,
@@ -1656,6 +1656,30 @@ const NetworkRepository = {
       return e;
     }
   },
+
+  postWarehouseLocation: async (ware_house, code, description, created_by, mill) => {
+    try {
+      const apiResponse = await NetworkAxios.postAxiosHttpMethod({
+        url: `${ApiAppConstants.warehouseLocation}`, // Ensure this URL is correct
+        data: {
+          'ware_house': ware_house,
+          'code': code,
+          'description': description,
+          'created_by': created_by,
+          'mill': mill
+        },
+        header: { authorization: auth }, // Ensure auth is defined and valid
+      });
+
+      console.log('\x1b[97m Response :', apiResponse);
+
+      return apiResponse;
+    } catch (e) {
+      alert(e.toString());
+      return e;
+    }
+  },
+
 
   getStockLedgerList: async (mill, seller) => {
     try {
@@ -2117,10 +2141,10 @@ const NetworkRepository = {
       lot,
       weighBridge,
       lotwiseQuantity,
-  });
-  
-  console.log('FormData:', data);
-  
+    });
+
+    console.log('FormData:', data);
+
 
     try {
       const apiResponse = await NetworkAxios.postAxiosHttpMethod({

@@ -441,7 +441,7 @@ const OutboundForm = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {products.map((product, index) => (
+                  {products?.map((product, index) => (
                     <TableRow key={index}>
                       <TableCell>{product.product.code ? product.product.code : product.product.product_type}</TableCell>
                       <TableCell>

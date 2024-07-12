@@ -15,6 +15,7 @@ import UserForm from 'src/sections/sellers/add-sellers';
 import UserView from 'src/sections/sellers/sellers-table';
 import UpdateTraderForm from 'src/sections/traders/update_trader';
 import InboundForm from 'src/sections/warehouse/inbound/inbound-form';
+import LocationForm from 'src/sections/warehouse/locations/locations-form';
 import OutboundForm from 'src/sections/warehouse/outbound/outbound-form';
 import ProductBatchForm from 'src/sections/warehouse/product-batch/product-batch-form';
 import ProductMFGBatchForm from 'src/sections/warehouse/product-manufacture/product-batch-manufacturing-form';
@@ -79,6 +80,7 @@ export default function Router() {
     { path: 'home/warehouse-management/add-warehouse-form', element: <WarehouseForm /> },  // Add warehouse form
     { path: 'home/warehouse-management/add-inbound-form', element: <InboundForm /> },  // Add inbound form
     { path: 'home/warehouse-management/add-outbound-form', element: <OutboundForm /> },  // Add outbound form
+    { path:'home/locations-management/add-locations-form', element: <LocationForm /> },
   ];
 
   // Define the main routes configuration
